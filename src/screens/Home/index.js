@@ -14,15 +14,15 @@ import Nav from './Nav';
 import Loader from '../../components/Loader';
 
 @inject(stores => ({
-    songs: stores.playlist.songs,
-    getSongs: stores.playlist.getSongs,
-    loading: stores.playlist.loading,
-    genre: stores.playlist.genre,
-    changeGenre: stores.playlist.changeGenre,
-    showRefresh: stores.playlist.showRefresh,
-    doRefresh: stores.playlist.doRefresh,
-    showLoadmore: stores.playlist.showLoadmore,
-    doLoadmore: stores.playlist.doLoadmore,
+    songs: stores.home.songs,
+    getSongs: stores.home.getSongs,
+    loading: stores.home.loading,
+    genre: stores.home.genre,
+    changeGenre: stores.home.changeGenre,
+    showRefresh: stores.home.showRefresh,
+    doRefresh: stores.home.doRefresh,
+    showLoadmore: stores.home.showLoadmore,
+    doLoadmore: stores.home.doLoadmore,
 }))
 @observer
 export default class Home extends Component {

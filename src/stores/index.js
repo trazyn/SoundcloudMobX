@@ -1,8 +1,8 @@
 
 import route from './route';
-import playlist from './playlist';
+import home from './home';
 
 export default {
     route,
-    playlist,
+    home,
 };
