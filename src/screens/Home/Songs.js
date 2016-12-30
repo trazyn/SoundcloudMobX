@@ -7,7 +7,8 @@ import {
     View,
     Dimensions,
     Animated,
-    TouchableOpacity
+    TouchableOpacity,
+    InteractionManager,
 } from 'react-native';
 
 import Song from '../../components/Song';
@@ -16,50 +17,67 @@ export default class Songs extends Component {
 
     static propTypes = {
         list: PropTypes.object.isRequired,
+        refreshing: PropTypes.bool.isRequired,
+        refresh: PropTypes.func.isRequired,
     };
 
     state = {
-        opacity: new Animated.Value(0)
+        opacity: new Animated.Value(0),
+        width: new Animated.Value(60),
     };
 
-    pull(e) {
+    refreshing() {
 
-        var { x, y } = e.nativeEvent.contentOffset;
-
-        if (x < -40) {
-        }
-    }
-
-    componentDidMount() {
-        this.state.opacity.setValue(0);
-        Animated.timing(this.state.opacity, {
-            toValue: 1,
-            duration: 100
-        }).start();
+        Animated.sequence([
+            Animated.timing(this.state.width, {
+                toValue: 15,
+                duration: 1000
+            }),
+            Animated.timing(this.state.width, {
+                toValue: 50,
+                duration: 400
+            }),
+        ]).start(e => this.props.refreshing && e.finished && this.refreshing());
     }
 
     render() {
 
-        const { list } = this.props;
-        const ds = new ListView.DataSource({
+        var { list, refresh, refreshing } = this.props;
+        var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
         });
-        const dataSource = ds.cloneWithRows(list.slice());
+        var dataSource = ds.cloneWithRows(list.slice());
+        var opacity = this.state.opacity.interpolate({
+            inputRange: [-30, -5],
+            outputRange: [1, 0],
+        });
+
+        if (refreshing) {
+            opacity = 1;
+            this.refreshing();
+        }
 
         return (
             <View>
 
-                <Animated.View ref="refresh" style={[styles.refresh, {
-                    opacity: this.state.opacity,
-                }]}>
-                    <View style={[styles.line, styles.up]}></View>
+                <Animated.View ref="refresh" style={[styles.refresh, { opacity }]}>
+                    <Animated.View style={[styles.line, {
+                        width: this.state.width
+                    }]}></Animated.View>
                     <Text style={styles.text}>REFRESH</Text>
-                    <View style={[styles.line, styles.down]}></View>
+                    <Animated.View style={[styles.line, {
+                        width: this.state.width
+                    }]}></Animated.View>
                 </Animated.View>
 
                 <ListView
 
-                ref='container'
+                onScrollEndDrag={e => {
+
+                    if (e.nativeEvent.contentOffset.x < -30) {
+                        InteractionManager.runAfterInteractions(() => refresh());
+                    }
+                }}
 
                 style={styles.container}
                 showsHorizontalScrollIndicator={false}
@@ -70,7 +88,15 @@ export default class Songs extends Component {
                 snapToAlignment='start'
 
                 scrollEventThrottle={16}
-                onScroll={this.pull.bind(this)}
+                onScroll={Animated.event(
+                    [{
+                        nativeEvent: {
+                            contentOffset: {
+                                x: this.state.opacity
+                            }
+                        }
+                    }]
+                )}
 
                 enableEmptySections={true}
                 dataSource={dataSource}
@@ -129,6 +155,7 @@ const styles = StyleSheet.create({
         top: width / 2 + 30,
         left: -11,
         alignItems: 'center',
+        opacity: 0,
         transform: [{
             rotate: '90deg'
         }],
@@ -146,7 +173,7 @@ const styles = StyleSheet.create({
     },
 
     line: {
-        height: 1,
+        height: .5,
         width: 60,
         backgroundColor: '#000'
     },

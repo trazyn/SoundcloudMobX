@@ -22,6 +22,8 @@ import Nav from './Nav';
     loading: stores.playlist.loading,
     genre: stores.playlist.genre,
     changeGenre: stores.playlist.changeGenre,
+    refreshing: stores.playlist.refreshing,
+    refresh: stores.playlist.refresh,
 }))
 @observer
 export default class Home extends Component {
@@ -32,16 +34,17 @@ export default class Home extends Component {
         loading: PropTypes.bool.isRequired,
         genre: PropTypes.string.isRequired,
         changeGenre: PropTypes.func.isRequired,
+        refreshing: PropTypes.bool.isRequired,
+        refresh: PropTypes.func.isRequired,
     };
 
     async componentDidMount() {
         await this.props.getSongs();
-        console.log(this.props.songs);
     }
 
     render() {
 
-        const { songs, loading, genre, changeGenre } = this.props;
+        const { songs, loading, genre, changeGenre, refresh, refreshing } = this.props;
 
         StatusBar.setNetworkActivityIndicatorVisible(loading);
 
@@ -71,7 +74,11 @@ export default class Home extends Component {
                                         color: 'rgba(0,0,0,.5)',
                                     }}>Popular Music</Text>
                                 </View>
-                                <Songs list={songs}></Songs>
+                                <Songs {...{
+                                    list: songs,
+                                    refreshing,
+                                    refresh,
+                                }}></Songs>
                             </View>
                         )
                 }
