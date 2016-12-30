@@ -111,6 +111,8 @@ export default class Songs extends Component {
                     }]
                 )}
 
+                automaticallyAdjustContentInsets={false}
+                onEndReachedThreshold={1}
                 onEndReached={doLoadmore}
 
                 enableEmptySections={true}
