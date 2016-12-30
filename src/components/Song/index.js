@@ -68,7 +68,7 @@ export default class Song extends Component {
 
                     <View>
                         <Text style={styles.title} ellipsizeMode="tail" numberOfLines={1}>{title}</Text>
-                        <Text style={styles.username}>{user.username}</Text>
+                        <Text style={styles.username}>{user ? user.username : 'UNKNOW'}</Text>
 
                         <View style={styles.meta}>
                             <TouchableOpacity style={styles.metaItem}>

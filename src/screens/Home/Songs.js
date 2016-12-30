@@ -12,37 +12,25 @@ import {
 } from 'react-native';
 
 import Song from '../../components/Song';
+import Loader from '../../components/Loader';
 
 export default class Songs extends Component {
 
     static propTypes = {
         list: PropTypes.object.isRequired,
-        refreshing: PropTypes.bool.isRequired,
-        refresh: PropTypes.func.isRequired,
+        showRefresh: PropTypes.bool.isRequired,
+        doRefresh: PropTypes.func.isRequired,
+        showLoadmore: PropTypes.bool.isRequired,
+        doLoadmore: PropTypes.func.isRequired,
     };
 
     state = {
-        opacity: new Animated.Value(0),
-        width: new Animated.Value(60),
+        opacity: new Animated.Value(0)
     };
-
-    refreshing() {
-
-        Animated.sequence([
-            Animated.timing(this.state.width, {
-                toValue: 15,
-                duration: 1000
-            }),
-            Animated.timing(this.state.width, {
-                toValue: 50,
-                duration: 400
-            }),
-        ]).start(e => this.props.refreshing && e.finished && this.refreshing());
-    }
 
     render() {
 
-        var { list, refresh, refreshing } = this.props;
+        var { list, doRefresh, showRefresh, doLoadmore, showLoadmore } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
         });
@@ -52,30 +40,55 @@ export default class Songs extends Component {
             outputRange: [1, 0],
         });
 
-        if (refreshing) {
+        if (showRefresh) {
             opacity = 1;
-            this.refreshing();
         }
 
         return (
             <View>
 
-                <Animated.View ref="refresh" style={[styles.refresh, { opacity }]}>
-                    <Animated.View style={[styles.line, {
-                        width: this.state.width
-                    }]}></Animated.View>
-                    <Text style={styles.text}>REFRESH</Text>
-                    <Animated.View style={[styles.line, {
-                        width: this.state.width
-                    }]}></Animated.View>
-                </Animated.View>
+                <Loader {...{
+                    show: true,
+                    animate: showRefresh,
+                    text: 'REFRESH',
+                    style4container: {
+                        left: -11,
+                        opacity,
+                    }
+                }}></Loader>
+
+                {
+                    showLoadmore && (
+                        <View style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width,
+                            height,
+                            backgroundColor: 'rgba(255,255,255,.9)',
+                            zIndex: 99
+                        }}>
+                            <Loader {...{
+                                show: true,
+                                animate: true,
+                                text: 'LOAD MORE',
+                                style4container: {
+                                    width,
+                                    transform: [{
+                                        rotate: '0deg'
+                                    }]
+                                }
+                            }}></Loader>
+                        </View>
+                    )
+                }
 
                 <ListView
 
                 onScrollEndDrag={e => {
 
                     if (e.nativeEvent.contentOffset.x < -30) {
-                        InteractionManager.runAfterInteractions(() => refresh());
+                        InteractionManager.runAfterInteractions(() => doRefresh());
                     }
                 }}
 
@@ -97,6 +110,8 @@ export default class Songs extends Component {
                         }
                     }]
                 )}
+
+                onEndReached={doLoadmore}
 
                 enableEmptySections={true}
                 dataSource={dataSource}
@@ -149,36 +164,4 @@ const styles = StyleSheet.create({
         paddingLeft: (width - 340) / 4 + 20,
         marginTop: 16
     },
-
-    refresh: {
-        position: 'absolute',
-        top: width / 2 + 30,
-        left: -11,
-        alignItems: 'center',
-        opacity: 0,
-        transform: [{
-            rotate: '90deg'
-        }],
-    },
-
-    text: {
-        width: 60,
-        paddingLeft: 2,
-        paddingTop: 3,
-        paddingBottom: 3,
-        letterSpacing: 2,
-        fontWeight: '100',
-        textAlign: 'center',
-        fontSize: 7
-    },
-
-    line: {
-        height: .5,
-        width: 60,
-        backgroundColor: '#000'
-    },
-
-    pad: {
-        marginRight: (width - 340) / 2 + 13
-    }
 });

@@ -4,17 +4,14 @@ import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Text,
-    TouchableOpacity,
     Dimensions,
     StatusBar,
-    ActivityIndicator,
-    ScrollView,
-    ListView,
     StyleSheet,
 } from 'react-native';
 
 import Songs from './Songs';
 import Nav from './Nav';
+import Loader from '../../components/Loader';
 
 @inject(stores => ({
     songs: stores.playlist.songs,
@@ -22,8 +19,10 @@ import Nav from './Nav';
     loading: stores.playlist.loading,
     genre: stores.playlist.genre,
     changeGenre: stores.playlist.changeGenre,
-    refreshing: stores.playlist.refreshing,
-    refresh: stores.playlist.refresh,
+    showRefresh: stores.playlist.showRefresh,
+    doRefresh: stores.playlist.doRefresh,
+    showLoadmore: stores.playlist.showLoadmore,
+    doLoadmore: stores.playlist.doLoadmore,
 }))
 @observer
 export default class Home extends Component {
@@ -34,8 +33,10 @@ export default class Home extends Component {
         loading: PropTypes.bool.isRequired,
         genre: PropTypes.string.isRequired,
         changeGenre: PropTypes.func.isRequired,
-        refreshing: PropTypes.bool.isRequired,
-        refresh: PropTypes.func.isRequired,
+        showRefresh: PropTypes.bool.isRequired,
+        doRefresh: PropTypes.func.isRequired,
+        showLoadmore: PropTypes.bool.isRequired,
+        doLoadmore: PropTypes.func.isRequired,
     };
 
     async componentDidMount() {
@@ -44,7 +45,7 @@ export default class Home extends Component {
 
     render() {
 
-        const { songs, loading, genre, changeGenre, refresh, refreshing } = this.props;
+        const { songs, loading, genre, changeGenre, doRefresh, showRefresh, doLoadmore, showLoadmore } = this.props;
 
         StatusBar.setNetworkActivityIndicatorVisible(loading);
 
@@ -58,15 +59,21 @@ export default class Home extends Component {
 
                 {
                     loading
-                        ? (<ActivityIndicator style={styles.loading} size="small" animating={loading}></ActivityIndicator>)
+                        ? (
+                            <Loader show={loading} animate={true} style4container={{
+                                width,
+                                top: 340,
+                                transform: [{
+                                    rotate: '0deg'
+                                }],
+                            }}></Loader>
+                        )
                         : (
                             <View style={{
                                 alignItems: 'center'
                             }}>
                                 <View style={styles.title}>
-                                    <Text style={{
-                                        fontWeight: 'bold'
-                                    }}>
+                                    <Text>
                                         {songs.length} &nbsp;
                                     </Text>
 
@@ -76,8 +83,10 @@ export default class Home extends Component {
                                 </View>
                                 <Songs {...{
                                     list: songs,
-                                    refreshing,
-                                    refresh,
+                                    doRefresh,
+                                    showRefresh,
+                                    doLoadmore,
+                                    showLoadmore,
                                 }}></Songs>
                             </View>
                         )
@@ -100,12 +109,4 @@ const styles = StyleSheet.create({
         marginTop: 100,
         flexDirection: 'row',
     },
-
-    loading: {
-        position: 'absolute',
-        top: 340,
-        width,
-        alignItems: 'center',
-        zIndex: 9
-    }
 });
