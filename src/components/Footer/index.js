@@ -59,7 +59,7 @@ export default class Footer extends Component {
                         name: 'Home'
                     });
                 }}>
-                    <Icon name="home" ref="Home"></Icon>
+                    <Icon name="home" ref="Home" size={16}></Icon>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => {
@@ -67,15 +67,15 @@ export default class Footer extends Component {
                         name: 'PlayList'
                     });
                 }}>
-                    <Icon name="playlist" ref="PlayList"></Icon>
+                    <Icon name="playlist" ref="PlayList" size={16}></Icon>
                 </TouchableOpacity>
 
                 <TouchableOpacity>
-                    <Icon name="magnifier" ref="Discover"></Icon>
+                    <Icon name="magnifier" ref="Discover" size={16}></Icon>
                 </TouchableOpacity>
 
                 <TouchableOpacity>
-                    <Icon name="heart" ref="Fav"></Icon>
+                    <Icon name="heart" ref="Fav" size={16}></Icon>
                 </TouchableOpacity>
             </View>
         );

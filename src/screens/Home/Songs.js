@@ -52,7 +52,7 @@ export default class Songs extends Component {
                     animate: showRefresh,
                     text: 'REFRESH',
                     style4container: {
-                        left: -11,
+                        left: -40,
                         opacity,
                     }
                 }}></Loader>

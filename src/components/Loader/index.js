@@ -24,7 +24,7 @@ export default class Loader extends Component {
     };
 
     state = {
-        width: new Animated.Value(60)
+        width: new Animated.Value(90)
     };
 
     animating() {
@@ -37,7 +37,7 @@ export default class Loader extends Component {
                 duration: 1000
             }),
             Animated.timing(width, {
-                toValue: 50,
+                toValue: 90,
                 duration: 400
             }),
         ]).start(e => {
@@ -45,13 +45,19 @@ export default class Loader extends Component {
             if (this.props.show && this.props.animate && e.finished) {
                 this.animating();
             } else {
-                width.setValue(60);
+                width.setValue(90);
             }
         });
     }
 
     componentDidMount() {
         if (this.props.animate) {
+            this.animating();
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.animate !== nextProps.animate) {
             this.animating();
         }
     }
@@ -90,19 +96,19 @@ const styles = StyleSheet.create({
     },
 
     text: {
-        width: 60,
+        width: 120,
         paddingLeft: 2,
         paddingTop: 3,
         paddingBottom: 3,
         letterSpacing: 2,
         fontWeight: '100',
         textAlign: 'center',
-        fontSize: 7
+        fontSize: 11,
     },
 
     line: {
         height: .5,
-        width: 60,
+        width: 90,
         backgroundColor: '#000'
     },
 });

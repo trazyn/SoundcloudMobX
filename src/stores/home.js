@@ -49,21 +49,25 @@ class PlayList {
 
     @action async getSongs(genre = self.genre) {
 
+        self.rate = 1;
         self.loading = true;
 
         var response = await axios.get(self.requestAddress());
         var songs = self.filter(response.data, genre);
 
         self.loading = false;
+        self.songs.clear();
         self.songs.push(...songs);
     }
 
     @action changeGenre(genre) {
 
-        self.songs.clear();
-        self.genre = genre;
-        self.getSongs(genre);
-        self.rate = 1;
+        if (!self.loading) {
+            self.songs.clear();
+            self.genre = genre;
+            self.getSongs(genre);
+            self.rate = 1;
+        }
     }
 
     @action async doRefresh()  {

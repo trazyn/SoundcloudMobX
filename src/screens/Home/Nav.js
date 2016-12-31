@@ -79,8 +79,11 @@ const styles = StyleSheet.create({
     },
 
     genre: {
+        marginTop: 30,
         color: 'rgba(0,0,0,.4)',
-        fontWeight: '100'
+        fontWeight: '100',
+        fontSize: 16,
+        letterSpacing: 3,
     },
 
     genreActive: {
