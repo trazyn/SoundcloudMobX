@@ -22,6 +22,7 @@ export default class Songs extends Component {
         doRefresh: PropTypes.func.isRequired,
         showLoadmore: PropTypes.bool.isRequired,
         doLoadmore: PropTypes.func.isRequired,
+        play: PropTypes.func.isRequired,
     };
 
     state = {
@@ -30,7 +31,7 @@ export default class Songs extends Component {
 
     render() {
 
-        var { list, doRefresh, showRefresh, doLoadmore, showLoadmore } = this.props;
+        var { list, doRefresh, showRefresh, doLoadmore, showLoadmore, play } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
         });
@@ -126,6 +127,7 @@ export default class Songs extends Component {
                             title: song.title,
                             id: song['id'],
                             artwork: song['artwork_url'],
+                            duration: song['duration'],
                             commentCount: song['comment_count'],
                             likesCount: song['likes_count'],
                             playbackCount: song['playback_count'],
@@ -145,6 +147,8 @@ export default class Songs extends Component {
                             fav: song['user_favorite'],
                             user: song['user'],
                             waveform: song['waveform_url'],
+
+                            play,
 
                             style: [(index === list.length - 1 && styles.pad), {
                                 left: -index * .5 - .5

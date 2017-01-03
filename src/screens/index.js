@@ -4,7 +4,8 @@ import { observer, inject } from 'mobx-react/native';
 import {
     View,
     Navigator,
-    StyleSheet
+    StyleSheet,
+    Animated,
 } from 'react-native';
 
 import Home from './Home';
@@ -12,6 +13,8 @@ import Fav from './Fav';
 import Discover from './Discover';
 import PlayList from './PlayList';
 import Profile from './Profile';
+import Player from '../components/Player';
+import Footer from '../components/Footer';
 
 const components = {
     Home,
@@ -19,6 +22,7 @@ const components = {
     Discover,
     PlayList,
     Profile,
+    Player,
 };
 
 @inject(stores => ({
@@ -31,37 +35,76 @@ export default class Views extends Component {
         route: PropTypes.object.isRequired
     };
 
+    state = {
+        height: new Animated.Value(50)
+    };
+
     componentWillReact() {
-        this.refs.nav.replace(this.props.route);
+
+        var navigator = this.refs.nav;
+
+        switch ('Player') {
+
+            case this.props.route.name:
+                navigator.push(this.props.route);
+
+                Animated.timing(this.state.height, {
+                    toValue: 0,
+                    duration: 100,
+                    delay: 100,
+                }).start();
+                break;
+
+            default:
+                navigator.replace(this.props.route);
+                Animated.timing(this.state.height, {
+                    toValue: 50,
+                    duration: 100
+                }).start();
+        }
     }
 
     render() {
 
+        const opacity = this.state.height.interpolate({
+            inputRange: [0, 50],
+            outputRange: [0, 1],
+        });
+
         return (
-            <Navigator {...{
+            <View style={{
+                flex: 1
+            }}>
+                <Navigator {...{
 
-                style: styles.container,
+                    style: styles.container,
 
-                initialRoute: this.props.route,
+                    initialRoute: this.props.route,
 
-                renderScene: (route, navigator) => {
+                    renderScene: (route, navigator) => {
 
-                    const name = route.name;
-                    const component = components[name];
+                        const name = route.name;
+                        const component = components[name];
 
-                    if (!component) {
-                        return console.error(`No such view name: '${name}'`);
-                    }
+                        if (!component) {
+                            return console.error(`No such view name: '${name}'`);
+                        }
 
-                    return React.createElement(component, {
-                        ...this.props,
-                        route,
-                        navigator,
-                    });
-                },
+                        return React.createElement(component, {
+                            ...this.props,
+                            route,
+                            navigator,
+                        });
+                    },
 
-                ref: 'nav'
-            }}></Navigator>
+                    ref: 'nav'
+                }}></Navigator>
+
+                <Footer style={{
+                    opacity,
+                    height: this.state.height,
+                }}></Footer>
+            </View>
         );
     }
 }

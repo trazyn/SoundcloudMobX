@@ -6,7 +6,6 @@ import {
     StyleSheet,
 } from 'react-native';
 
-import Footer from './components/Footer';
 import Screens from './screens';
 import stores from './stores';
 
@@ -22,7 +21,6 @@ export default class App extends Component {
             <Provider {...stores}>
                 <View style={styles.container}>
                     <Screens></Screens>
-                    <Footer></Footer>
                 </View>
             </Provider>
         );

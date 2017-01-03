@@ -107,5 +107,4 @@ class PlayList {
 }
 
 const self = new PlayList();
-
 export default self;

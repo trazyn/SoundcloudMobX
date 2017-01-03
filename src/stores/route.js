@@ -8,10 +8,7 @@ class Route {
     };
 
     @action setRoute(route) {
-
-        if (this.value.name !== route.name) {
-            this.value = route;
-        }
+        this.value = route;
     }
 }
 

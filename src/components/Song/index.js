@@ -6,16 +6,20 @@ import {
     View,
     Text,
     TouchableOpacity,
+    TouchableHighlight,
     Dimensions,
     StyleSheet,
     Image,
 } from 'react-native';
+
+import blacklist from '../../utils/backlist';
 
 export default class Song extends Component {
 
     static propTypes = {
         title: PropTypes.string.isRequired,
         id: PropTypes.number.isRequired,
+        duration: PropTypes.number.isRequired,
         commentCount: PropTypes.number.isRequired,
         likesCount: PropTypes.number.isRequired,
         playbackCount: PropTypes.number.isRequired,
@@ -36,6 +40,8 @@ export default class Song extends Component {
         releaseYear: PropTypes.number,
         desc: PropTypes.string,
         artwork: PropTypes.string,
+
+        play: PropTypes.func.isRequired,
     };
 
     human(number) {
@@ -49,7 +55,7 @@ export default class Song extends Component {
 
     render() {
 
-        const { title, id, user, artwork, likesCount, commentCount, playbackCount } = this.props;
+        const { title, id, user, artwork, likesCount, commentCount, playbackCount, play } = this.props;
 
         return (
             <View style={[styles.container, this.props.style]}>
@@ -87,7 +93,9 @@ export default class Song extends Component {
                             </TouchableOpacity>
 
                             <View style={styles.play}>
-                                <MKIcon name="play-arrow" style={styles.playIcon}></MKIcon>
+                                <TouchableHighlight onPress={() => play({...blacklist(this.props, 'play')})}>
+                                    <MKIcon name="play-arrow" style={styles.playIcon}></MKIcon>
+                                </TouchableHighlight>
                             </View>
                         </View>
                     </View>

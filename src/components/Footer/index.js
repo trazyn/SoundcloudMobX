@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     StyleSheet,
     Dimensions,
+    Animated,
 } from 'react-native';
 
 @inject(stores => ({
@@ -24,23 +25,27 @@ export default class Footer extends Component {
     highlight() {
 
         var name = this.props.route.name;
+        var ele = this.refs[name];
 
-        this.refs[name].setNativeProps({
-            style: {
-                color: 'red'
-            }
-        });
+        if (ele) {
 
-        for (var key in this.refs) {
+            ele.setNativeProps({
+                style: {
+                    color: 'red'
+                }
+            });
 
-            if (key !== name) {
+            for (var key in this.refs) {
 
-                this.refs[key].setNativeProps({
+                if (key !== name) {
 
-                    style: {
-                        color: '#000'
-                    }
-                });
+                    this.refs[key].setNativeProps({
+
+                        style: {
+                            color: '#000'
+                        }
+                    });
+                }
             }
         }
     }
@@ -53,7 +58,7 @@ export default class Footer extends Component {
         var { setRoute } = this.props;
 
         return (
-            <View style={styles.container}>
+            <Animated.View style={[styles.container, this.props.style]}>
                 <TouchableOpacity onPress={() => {
                     setRoute({
                         name: 'Home'
@@ -77,7 +82,7 @@ export default class Footer extends Component {
                 <TouchableOpacity>
                     <Icon name="heart" ref="Fav" size={16}></Icon>
                 </TouchableOpacity>
-            </View>
+            </Animated.View>
         );
     }
 }

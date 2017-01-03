@@ -23,6 +23,8 @@ import Loader from '../../components/Loader';
     doRefresh: stores.home.doRefresh,
     showLoadmore: stores.home.showLoadmore,
     doLoadmore: stores.home.doLoadmore,
+
+    setRoute: stores.route.setRoute.bind(stores.route),
 }))
 @observer
 export default class Home extends Component {
@@ -37,10 +39,20 @@ export default class Home extends Component {
         doRefresh: PropTypes.func.isRequired,
         showLoadmore: PropTypes.bool.isRequired,
         doLoadmore: PropTypes.func.isRequired,
+
+        setRoute: PropTypes.func.isRequired,
     };
 
     async componentDidMount() {
         await this.props.getSongs();
+    }
+
+    play(song) {
+
+        this.props.setRoute({
+            name: 'Player',
+            song,
+        });
     }
 
     render() {
@@ -87,6 +99,8 @@ export default class Home extends Component {
                                     showRefresh,
                                     doLoadmore,
                                     showLoadmore,
+
+                                    play: this.play.bind(this)
                                 }}></Songs>
                             </View>
                         )
@@ -107,6 +121,7 @@ const styles = StyleSheet.create({
 
     title: {
         marginTop: 100,
+        marginBottom: 10,
         flexDirection: 'row',
     },
 });
