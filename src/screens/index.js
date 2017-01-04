@@ -39,28 +39,26 @@ export default class Views extends Component {
         height: new Animated.Value(50)
     };
 
+    componentWillReciveProps(nextProps) {
+        console.log(this.refs.nav.getCurrentRoutes());
+    }
+
     componentWillReact() {
 
         var navigator = this.refs.nav;
 
         switch ('Player') {
-
             case this.props.route.name:
                 navigator.push(this.props.route);
-
                 Animated.timing(this.state.height, {
                     toValue: 0,
                     duration: 100,
-                    delay: 100,
+                    delay: 200,
                 }).start();
                 break;
 
             default:
                 navigator.replace(this.props.route);
-                Animated.timing(this.state.height, {
-                    toValue: 50,
-                    duration: 100
-                }).start();
         }
     }
 
@@ -80,6 +78,16 @@ export default class Views extends Component {
                     style: styles.container,
 
                     initialRoute: this.props.route,
+
+                    onDidFocus: (route) => {
+
+                        if (route.name !== 'Player') {
+                            Animated.timing(this.state.height, {
+                                toValue: 50,
+                                duration: 100
+                            }).start();
+                        }
+                    },
 
                     renderScene: (route, navigator) => {
 

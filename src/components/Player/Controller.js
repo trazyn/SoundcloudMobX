@@ -52,7 +52,7 @@ const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
     control: {
         width,
-        marginTop: 50,
+        marginTop: 40,
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center'

@@ -100,8 +100,8 @@ export default class Player extends Component {
                                     },
 
                                     style: {
-                                        width: 64,
-                                        height: 64,
+                                        width: 96,
+                                        height: 96,
                                     }
                                 }}></Image>
                             </View>
@@ -132,8 +132,8 @@ export default class Player extends Component {
                 </Image>
 
                 <View style={styles.dots}>
-                    <View style={styles.dot}></View>
-                    <View style={styles.dot}></View>
+                    <View style={[styles.dot]}></View>
+                    <View style={[styles.dot, styles.active]}></View>
                 </View>
             </View>
         );
@@ -171,16 +171,16 @@ const styles = StyleSheet.create({
 
     cover: {
         width,
-        height: 470,
+        height: 490,
         resizeMode: 'cover',
     },
 
     avatar: {
         marginLeft: 20,
-        marginBottom: 30,
+        marginBottom: 40,
         height: 96,
         width: 96,
-        borderRadius: 64,
+        borderRadius: 96,
         overflow: 'hidden'
     },
 
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     duration: {
         position: 'absolute',
         right: 0,
-        top: 310,
+        top: 330,
         width: 80,
         padding: 4,
         backgroundColor: 'rgba(255,255,255,.9)',
@@ -246,5 +246,9 @@ const styles = StyleSheet.create({
         width: 6,
         borderRadius: 6,
         backgroundColor: 'rgba(0,0,0,.6)',
+    },
+
+    active: {
+        backgroundColor: 'rgba(255,255,255,.4)',
     }
 });
