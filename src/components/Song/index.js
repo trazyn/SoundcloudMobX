@@ -93,11 +93,9 @@ export default class Song extends Component {
                                 <Text style={styles.metaText}>{this.human(playbackCount)}</Text>
                             </TouchableOpacity>
 
-                            <View style={styles.play}>
-                                <TouchableHighlight onPress={() => play({...blacklist(this.props, 'play')})}>
+                                <TouchableHighlight style={styles.play} onPress={() => play({...blacklist(this.props, 'play')})}>
                                     <MKIcon name="play-arrow" style={styles.playIcon}></MKIcon>
                                 </TouchableHighlight>
-                            </View>
                         </View>
                     </View>
                 </View>
@@ -196,7 +194,8 @@ const styles = StyleSheet.create({
         shadowOffset: {
             height: 2,
             width: 2
-        }
+        },
+        overflow: 'hidden'
     },
 
     playIcon: {

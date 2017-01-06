@@ -29,7 +29,6 @@ export default class PlayList extends Component {
 
     getActivePosition(layout) {
         this.activePosition = layout.y;
-        console.log(layout);
     }
 
     componentDidMount() {
@@ -43,7 +42,7 @@ export default class PlayList extends Component {
             offset = self.activePosition;
 
             if (self.contentHeight - offset < self.scrollViewHeight) {
-                offset = self.contentHeight - self.scrollViewHeight + index * .5;
+                offset = self.contentHeight - self.scrollViewHeight;
             }
 
             self.refs.container.scrollTo({
@@ -67,12 +66,8 @@ export default class PlayList extends Component {
 
             ref="container"
 
-            initialListSize={index}
-
-            scrollRenderAheadDistance={(index + 1) * 68}
-
+            initialListSize={index + 1}
             removeClippedSubviews={true}
-
             onContentSizeChange={(w, h) => this.contentHeight = h}
             onLayout={(e) => this.scrollViewHeight = e.nativeEvent.layout.height}
 
