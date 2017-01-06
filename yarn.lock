@@ -2147,6 +2147,10 @@ react-native:
     xmldoc "^0.4.0"
     yargs "^6.4.0"
 
+react-native-effects-view:
+  version "0.4.0"
+  resolved "http://registry.npm.taobao.org/react-native-effects-view/download/react-native-effects-view-0.4.0.tgz#4c36a70129bb5c4361cb0fd3f5afc0878a1a8d5f"
+
 react-native-vector-icons:
   version "3.0.0"
   resolved "http://registry.npm.taobao.org/react-native-vector-icons/download/react-native-vector-icons-3.0.0.tgz#a2f63757dee4fb89f67eef660e25e86926ae6827"

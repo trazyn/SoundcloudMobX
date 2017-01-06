@@ -8,11 +8,13 @@ import {
     Image,
     TouchableOpacity,
     TouchableHighlight,
+    ScrollView,
     Dimensions,
     StyleSheet,
 } from 'react-native';
 
 import Bar from './Bar';
+import PlayList from './PlayList';
 import Controller from './Controller';
 
 @inject(stores => ({
@@ -31,29 +33,29 @@ export default class Player extends Component {
         stop: PropTypes.func.isRequired,
     };
 
-    parseDuration(num) {
+    state = {
+        index: 1
+    };
 
-        var minutes = 0;
-        var seconds = 0;
+    componentDidMount() {
 
-        num = Math.floor(num / 1000);
-
-        minutes = ('0' + Math.floor(num / 60)).slice(-2);
-        seconds = ('0' + num % 60).slice(-2);
-
-        return { minutes, seconds };
+        this.refs.viewport.scrollTo({
+            x: width,
+            animated: false
+        });
     }
 
     render() {
 
-        const { song } = this.props.route;
+        const { song, playlist } = this.props.route;
+        const { playing, toggle } = this.props;
 
         if (!song || !song.id) {
             return false;
         }
 
-        var time = this.parseDuration(song.duration);
         var cover = song.artwork.replace(/large\./, 't500x500.');
+        var times = song.times;
 
         return (
             <View style={styles.container}>
@@ -70,7 +72,6 @@ export default class Player extends Component {
                         resizeMode: 'cover'
                     }
                 }}>
-
                     <View style={styles.header}>
                         <TouchableOpacity onPress={() => this.props.navigator.pop()} style={{
                             backgroundColor: 'transparent',
@@ -85,55 +86,77 @@ export default class Player extends Component {
                         </TouchableOpacity>
                     </View>
 
-                    <Image {...{
-                        source: {
-                            uri: cover
-                        },
+                    <ScrollView
 
-                        style: styles.cover
-                    }}>
-                        <View style={styles.hero}>
-                            <View style={styles.avatar}>
-                                <Image {...{
-                                    source: {
-                                        uri: song.user.avatar_url
-                                    },
+                    ref="viewport"
 
-                                    style: {
-                                        width: 96,
-                                        height: 96,
-                                    }
-                                }}></Image>
-                            </View>
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
 
-                            <View style={{
-                                flex: 1,
-                                justifyContent: 'flex-start',
-                                flexDirection: 'row',
-                            }}>
-                                <Text style={styles.author}>{song.user.username}</Text>
-                            </View>
-                            <TouchableHighlight>
-                                <Text style={styles.title}>{song.title}</Text>
-                            </TouchableHighlight>
+                    onMomentumScrollEnd={e => {
+                        this.setState({
+                            index: e.nativeEvent.contentOffset.x / width
+                        });
+                    }}
 
-                            <View style={styles.duration}>
-                                <Text style={styles.current}>00:00</Text>
-                                <Text style={styles.total}> / {time.minutes}:{time.seconds}</Text>
-                            </View>
+                    decelerationRate={0}
+                    snapToInterval={width}
+                    snapToAlignment='start'>
+                        <View style={styles.viewport}>
+                            <PlayList list={playlist.slice()} current={song}></PlayList>
                         </View>
-                    </Image>
+                        <View style={styles.viewport}>
+                            <Image {...{
+                                source: {
+                                    uri: cover
+                                },
 
-                    <Bar {...{
-                        duration: song.duration
-                    }}></Bar>
+                                style: styles.cover
+                            }}>
+                                <View style={styles.hero}>
+                                    <View style={styles.avatar}>
+                                        <Image {...{
+                                            source: {
+                                                uri: song.user.avatar_url
+                                            },
 
-                    <Controller></Controller>
+                                            style: {
+                                                width: 96,
+                                                height: 96,
+                                            }
+                                        }}></Image>
+                                    </View>
+
+                                    <View style={{
+                                        flex: 1,
+                                        justifyContent: 'flex-start',
+                                        flexDirection: 'row',
+                                    }}>
+                                        <Text style={styles.author}>{song.user.username}</Text>
+                                    </View>
+                                    <TouchableHighlight>
+                                        <Text style={styles.title}>{song.title}</Text>
+                                    </TouchableHighlight>
+
+                                    <View style={styles.duration}>
+                                        <Text style={styles.current}>00:00</Text>
+                                        <Text style={styles.total}> / {times.minutes}:{times.seconds}</Text>
+                                    </View>
+                                </View>
+                            </Image>
+
+                            <Bar {...{
+                                duration: song.duration
+                            }}></Bar>
+                        </View>
+                    </ScrollView>
                 </Image>
 
+                <Controller playing={playing}></Controller>
+
                 <View style={styles.dots}>
-                    <View style={[styles.dot]}></View>
-                    <View style={[styles.dot, styles.active]}></View>
+                    <View style={[styles.dot, this.state.index === 0 && styles.active]}></View>
+                    <View style={[styles.dot, this.state.index === 1 && styles.active]}></View>
                 </View>
             </View>
         );
@@ -146,6 +169,11 @@ const styles = StyleSheet.create({
         width,
         height,
         backgroundColor: '#fff',
+    },
+
+    viewport: {
+        width,
+        height,
     },
 
     header: {
@@ -249,6 +277,6 @@ const styles = StyleSheet.create({
     },
 
     active: {
-        backgroundColor: 'rgba(255,255,255,.4)',
+        backgroundColor: '#f50'
     }
 });

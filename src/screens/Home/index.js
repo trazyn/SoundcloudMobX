@@ -52,6 +52,7 @@ export default class Home extends Component {
         this.props.setRoute({
             name: 'Player',
             song,
+            playlist: this.props.songs
         });
     }
 

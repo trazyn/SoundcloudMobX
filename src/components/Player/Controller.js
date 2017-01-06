@@ -11,6 +11,10 @@ import {
 
 export default class Controller extends Component {
 
+    static propTypes = {
+        playing: PropTypes.bool.isRequired,
+    };
+
     render() {
 
         return (
@@ -29,7 +33,11 @@ export default class Controller extends Component {
 
                     <View style={styles.play}>
                         <TouchableOpacity style={styles.transparent}>
-                            <Icon name="control-play" size={20} color="black"></Icon>
+                        {
+                            this.props.playing
+                                ? <Icon name="control-play" size={20} color="black"></Icon>
+                                : <Icon name="control-pause" size={20} color="black"></Icon>
+                        }
                         </TouchableOpacity>
                     </View>
 
@@ -51,11 +59,13 @@ export default class Controller extends Component {
 const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
     control: {
+        position: 'absolute',
+        bottom: 65,
         width,
-        marginTop: 40,
         flexDirection: 'row',
         justifyContent: 'space-around',
-        alignItems: 'center'
+        alignItems: 'center',
+        zIndex: 9
     },
 
     transparent: {
