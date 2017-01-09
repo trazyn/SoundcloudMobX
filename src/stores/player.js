@@ -40,7 +40,13 @@ class Player {
     }
 
     @action toggle() {
-        self.playing = !self.playing;
+        var playing = self.playing = !self.playing;
+
+        if (playing) {
+            self.whoosh.play();
+        } else {
+            self.whoosh.pause();
+        }
     }
 
     @action async start() {
@@ -87,8 +93,8 @@ class Player {
         clearTimeout(timer);
         self.loaded = 0;
         self.tick = 0;
-        self.playing = false;
         self.song = {};
+        self.playing = false;
     }
 
     @action setup(data) {

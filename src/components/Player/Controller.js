@@ -13,6 +13,7 @@ export default class Controller extends Component {
 
     static propTypes = {
         playing: PropTypes.bool.isRequired,
+        toggle: PropTypes.func.isRequired,
     };
 
     render() {
@@ -32,7 +33,7 @@ export default class Controller extends Component {
                     </View>
 
                     <View style={styles.play}>
-                        <TouchableOpacity style={styles.transparent}>
+                        <TouchableOpacity style={styles.transparent} onPress={this.props.toggle}>
                         {
                             this.props.playing
                                 ? <Icon name="control-pause" size={20} color="black"></Icon>

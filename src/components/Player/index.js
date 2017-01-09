@@ -179,7 +179,7 @@ export default class Player extends Component {
                     </ScrollView>
                 </Image>
 
-                <Controller playing={playing}></Controller>
+                <Controller toggle={toggle} playing={playing}></Controller>
 
                 <View style={styles.dots}>
                     <View style={[styles.dot, this.state.index === 0 && styles.active]}></View>
