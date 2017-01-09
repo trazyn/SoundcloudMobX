@@ -19,22 +19,30 @@ import Controller from './Controller';
 
 @inject(stores => ({
     playing: stores.player.playing,
+    playlist: stores.player.playlist,
+    song: stores.player.song,
     toggle: stores.player.toggle,
-    start: stores.player.toggle,
-    stop: stores.player.toggle,
+    start: stores.player.start,
+    stop: stores.player.stop,
+    loaded: stores.player.loaded,
+    tick: stores.player.tick,
 }))
 @observer
 export default class Player extends Component {
 
     static propTypes = {
         playing: PropTypes.bool.isRequired,
+        playlist: PropTypes.object.isRequired,
+        song: PropTypes.object.isRequired,
         toggle: PropTypes.func.isRequired,
         start: PropTypes.func.isRequired,
         stop: PropTypes.func.isRequired,
+        loaded: PropTypes.number.isRequired,
+        tick: PropTypes.number.isRequired,
     };
 
     state = {
-        index: 1
+        index: 1,
     };
 
     componentDidMount() {
@@ -43,17 +51,12 @@ export default class Player extends Component {
             x: width,
             animated: false
         });
+        this.props.start();
     }
 
     render() {
 
-        const { song, playlist } = this.props.route;
-        const { playing, toggle } = this.props;
-
-        if (!song || !song.id) {
-            return false;
-        }
-
+        var { playing, toggle, song, playlist, loaded, tick } = this.props;
         var cover = song.artwork.replace(/large\./, 't500x500.');
         var times = song.times;
 
@@ -146,7 +149,8 @@ export default class Player extends Component {
                             </Image>
 
                             <Bar {...{
-                                duration: song.duration
+                                passed: tick / song.duration,
+                                loaded
                             }}></Bar>
                         </View>
                     </ScrollView>

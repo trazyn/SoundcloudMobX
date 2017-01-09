@@ -6,14 +6,36 @@ import {
     Image,
     TouchableHighlight,
     Dimensions,
+    Animated,
     StyleSheet,
 } from 'react-native';
 
 export default class Bar extends Component {
 
     static propTypes = {
-        duration: PropTypes.number.isRequired,
+        passed: PropTypes.number.isRequired,
+        loaded: PropTypes.number.isRequired,
     };
+
+    state = {
+        loaded: new Animated.Value(0),
+        passed: new Animated.Value(0),
+    };
+
+    componentWillReceiveProps(nextProps) {
+
+        Animated.timing(this.state.loaded, {
+            toValue: width * nextProps.loaded,
+            duration: 100
+        }).start();
+
+        console.log(nextProps.passed);
+
+        Animated.timing(this.state.passed, {
+            toValue: width * nextProps.passed,
+            duration: 100
+        });
+    }
 
     render() {
 
@@ -21,9 +43,14 @@ export default class Bar extends Component {
 
         return (
             <View style={styles.container}>
-                <View style={styles.passed}>
+                <Animated.View style={[styles.passed, {
+                    width: this.state.passed
+                }]}>
+                    <Animated.View style={[styles.loaded, {
+                        width: this.state.loaded
+                    }]}></Animated.View>
                     <View style={styles.indicator}></View>
-                </View>
+                </Animated.View>
             </View>
         );
     }
@@ -42,15 +69,27 @@ const styles = StyleSheet.create({
     },
 
     passed: {
-        flex: 1,
-        width: 30,
+        position: 'absolute',
+        top: 0,
+        left: 0,
         height: 2,
+        width: 0,
         backgroundColor: '#f50',
-        alignItems: 'flex-end',
-        justifyContent: 'flex-end'
+    },
+
+    loaded: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        height: 2,
+        width: 0,
+        backgroundColor: 'rgba(0,0,0,.3)',
     },
 
     indicator: {
+        position: 'absolute',
+        top: -4,
+        left: 0,
         width: 6,
         height: 6,
         borderRadius: 6,

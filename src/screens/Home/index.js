@@ -25,6 +25,8 @@ import Loader from '../../components/Loader';
     doLoadmore: stores.home.doLoadmore,
 
     setRoute: stores.route.setRoute.bind(stores.route),
+
+    player: stores.player,
 }))
 @observer
 export default class Home extends Component {
@@ -41,6 +43,8 @@ export default class Home extends Component {
         doLoadmore: PropTypes.func.isRequired,
 
         setRoute: PropTypes.func.isRequired,
+
+        player: PropTypes.object.isRequired,
     };
 
     async componentDidMount() {
@@ -49,10 +53,13 @@ export default class Home extends Component {
 
     play(song) {
 
-        this.props.setRoute({
-            name: 'Player',
+        this.props.player.setPlayer({
             song,
             playlist: this.props.songs
+        });
+
+        this.props.setRoute({
+            name: 'Player'
         });
     }
 
