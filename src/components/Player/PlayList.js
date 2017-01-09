@@ -31,15 +31,13 @@ export default class PlayList extends Component {
         this.activePosition = layout.y;
     }
 
-    componentDidMount() {
+    highlight() {
 
         var self = this;
-        var index = this.props.list.findIndex(e => e.id === this.props.current.id);
-        var offset = 0;
 
         InteractionManager.runAfterInteractions(() => {
 
-            offset = self.activePosition;
+            var offset = self.activePosition;
 
             if (self.contentHeight - offset < self.scrollViewHeight) {
                 offset = self.contentHeight - self.scrollViewHeight;
@@ -51,6 +49,8 @@ export default class PlayList extends Component {
             });
         });
     }
+
+    componentDidMount = this.highlight.bind(this);
 
     render() {
 

@@ -54,11 +54,27 @@ export default class Player extends Component {
         this.props.start();
     }
 
+
+    parseTimes(num) {
+
+        var minutes = 0;
+        var seconds = 0;
+
+        num = Math.floor(num / 1000);
+
+        minutes = ('0' + Math.floor(num / 60)).slice(-2);
+        seconds = ('0' + num % 60).slice(-2);
+
+        return { minutes, seconds };
+    }
+
+
     render() {
 
         var { playing, toggle, song, playlist, loaded, tick } = this.props;
         var cover = song.artwork.replace(/large\./, 't500x500.');
-        var times = song.times;
+        var times = this.parseTimes(song.duration);
+        var current = this.parseTimes(tick);
 
         return (
             <View style={styles.container}>
@@ -97,8 +113,15 @@ export default class Player extends Component {
                     showsHorizontalScrollIndicator={false}
 
                     onMomentumScrollEnd={e => {
+
+                        var index = e.nativeEvent.contentOffset.x / width;
+
+                        if (index === 1) {
+                            this.refs.playList.highlight();
+                        }
+
                         this.setState({
-                            index: e.nativeEvent.contentOffset.x / width
+                            index
                         });
                     }}
 
@@ -106,7 +129,7 @@ export default class Player extends Component {
                     snapToInterval={width}
                     snapToAlignment='start'>
                         <View style={styles.viewport}>
-                            <PlayList list={playlist.slice()} current={song}></PlayList>
+                            <PlayList ref="playList" list={playlist.slice()} current={song}></PlayList>
                         </View>
                         <View style={styles.viewport}>
                             <Image {...{
@@ -142,7 +165,7 @@ export default class Player extends Component {
                                     </TouchableHighlight>
 
                                     <View style={styles.duration}>
-                                        <Text style={styles.current}>00:00</Text>
+                                        <Text style={styles.current}>{current.minutes}:{current.seconds}</Text>
                                         <Text style={styles.total}> / {times.minutes}:{times.seconds}</Text>
                                     </View>
                                 </View>

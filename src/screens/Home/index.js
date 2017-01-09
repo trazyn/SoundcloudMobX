@@ -53,7 +53,7 @@ export default class Home extends Component {
 
     play(song) {
 
-        this.props.player.setPlayer({
+        this.props.player.setup({
             song,
             playlist: this.props.songs
         });

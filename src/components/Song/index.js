@@ -20,7 +20,6 @@ export default class Song extends Component {
         title: PropTypes.string.isRequired,
         id: PropTypes.number.isRequired,
         duration: PropTypes.number.isRequired,
-        times: PropTypes.object.isRequired,
         commentCount: PropTypes.number.isRequired,
         likesCount: PropTypes.number.isRequired,
         playbackCount: PropTypes.number.isRequired,

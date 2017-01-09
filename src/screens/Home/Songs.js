@@ -29,19 +29,6 @@ export default class Songs extends Component {
         opacity: new Animated.Value(0)
     };
 
-    parseDuration(num) {
-
-        var minutes = 0;
-        var seconds = 0;
-
-        num = Math.floor(num / 1000);
-
-        minutes = ('0' + Math.floor(num / 60)).slice(-2);
-        seconds = ('0' + num % 60).slice(-2);
-
-        return { minutes, seconds };
-    }
-
     render() {
 
         var { list, doRefresh, showRefresh, doLoadmore, showLoadmore, play } = this.props;
@@ -141,7 +128,6 @@ export default class Songs extends Component {
                             id: song['id'],
                             artwork: song['artwork_url'],
                             duration: song['duration'],
-                            times: this.parseDuration(song.duration),
                             commentCount: song['comment_count'],
                             likesCount: song['likes_count'],
                             playbackCount: song['playback_count'],

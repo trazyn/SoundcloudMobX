@@ -45,41 +45,43 @@ class Player {
 
     @action async start() {
 
-        var whoosh = self.whoosh;
-
-        if (whoosh) {
-            whoosh.stop();
+        if (self.playing) {
+            return;
         }
+
+        self.playing = true;
 
         await self.download();
 
-        whoosh = new Sound(self.filename, '', err => {
+        self.whoosh = new Sound(self.filename, '', err => {
+
+            var whoosh = self.whoosh;
+
             if (err) {
                 console.error('Failed to load the sound', err);
             } else {
 
+                var tick = 0;
                 self.timer = setTimeout(function playing() {
-                    self.tick += 500;
-                    setTimeout(playing, 500);
+                    whoosh.getCurrentTime(seconds => tick = seconds * 1000);
+                    self.tick = tick;
+                    self.timer = setTimeout(playing, 500);
                 }, 500);
 
                 whoosh.play(success => {
-
-                    if (!success) {
-                        whoosh.stop();
-                    }
+                    success && whoosh.stop();
                 });
             }
         });
-
-        self.playing = true;
     }
 
     @action stop() {
 
-        var { whoosh, timer } = this;
+        var { whoosh, timer } = self;
+
         if (whoosh) {
             whoosh.stop();
+            whoosh.release();
         }
 
         clearTimeout(timer);
@@ -89,12 +91,14 @@ class Player {
         self.song = {};
     }
 
-    @action setPlayer(player) {
+    @action setup(data) {
 
-        var { song, playlist } = player;
+        var { song, playlist } = data;
 
-        self.stop();
-        self.song = song;
+        if (song.id !== self.song.id) {
+            self.stop();
+            self.song = song;
+        }
         self.playlist = playlist;
 
     }

@@ -29,17 +29,18 @@ export default class Bar extends Component {
             duration: 100
         }).start();
 
-        console.log(nextProps.passed);
-
         Animated.timing(this.state.passed, {
             toValue: width * nextProps.passed,
             duration: 100
-        });
+        }).start();
     }
 
     render() {
 
-        const { duration } = this.props;
+        var left = this.state.passed.interpolate({
+            inputRange: [0, width],
+            outputRange: [0, width],
+        });
 
         return (
             <View style={styles.container}>
@@ -49,7 +50,9 @@ export default class Bar extends Component {
                     <Animated.View style={[styles.loaded, {
                         width: this.state.loaded
                     }]}></Animated.View>
-                    <View style={styles.indicator}></View>
+                    <Animated.View style={[styles.indicator, {
+                        left
+                    }]}></Animated.View>
                 </Animated.View>
             </View>
         );
@@ -69,12 +72,13 @@ const styles = StyleSheet.create({
     },
 
     passed: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        height: 2,
+        flex: 1,
         width: 0,
+        height: 2,
         backgroundColor: '#f50',
+        alignItems: 'flex-end',
+        justifyContent: 'flex-end',
+        zIndex: 1
     },
 
     loaded: {

@@ -23,11 +23,11 @@ export default class Controller extends Component {
 
                     <View style={styles.inline}>
                         <TouchableOpacity style={styles.transparent}>
-                            <Icon name="shuffle" size={14} color="black"></Icon>
+                            <Icon name="shuffle" size={15} color="black"></Icon>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.transparent}>
-                            <Icon name="control-start" size={14} color="black"></Icon>
+                            <Icon name="control-start" size={15} color="black"></Icon>
                         </TouchableOpacity>
                     </View>
 
@@ -35,19 +35,19 @@ export default class Controller extends Component {
                         <TouchableOpacity style={styles.transparent}>
                         {
                             this.props.playing
-                                ? <Icon name="control-play" size={20} color="black"></Icon>
-                                : <Icon name="control-pause" size={20} color="black"></Icon>
+                                ? <Icon name="control-pause" size={20} color="black"></Icon>
+                                : <Icon name="control-play" size={20} color="black"></Icon>
                         }
                         </TouchableOpacity>
                     </View>
 
                     <View style={styles.inline}>
                         <TouchableOpacity style={styles.transparent}>
-                            <Icon name="control-end" size={14} color="black"></Icon>
+                            <Icon name="control-end" size={15} color="black"></Icon>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.transparent}>
-                            <Icon name="heart" size={14} color="red"></Icon>
+                            <Icon name="heart" size={15} color="red"></Icon>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
 
     transparent: {
         backgroundColor: 'transparent',
-        margin: 10,
+        margin: 12,
     },
 
     play: {
