@@ -24,6 +24,7 @@ import Controller from './Controller';
     toggle: stores.player.toggle,
     start: stores.player.start,
     next: stores.player.next,
+    prev: stores.player.prev,
     stop: stores.player.stop,
     loaded: stores.player.loaded,
     tick: stores.player.tick,
@@ -40,6 +41,7 @@ export default class Player extends Component {
         toggle: PropTypes.func.isRequired,
         start: PropTypes.func.isRequired,
         next: PropTypes.func.isRequired,
+        prev: PropTypes.func.isRequired,
         stop: PropTypes.func.isRequired,
         loaded: PropTypes.number.isRequired,
         tick: PropTypes.number.isRequired,
@@ -76,7 +78,7 @@ export default class Player extends Component {
 
     render() {
 
-        var { playing, toggle, next, song, playlist, loaded, tick, mode, changeMode } = this.props;
+        var { playing, toggle, next, prev, song, playlist, loaded, tick, mode, changeMode } = this.props;
         var cover = song.artwork.replace(/large\./, 't500x500.');
         var times = this.parseTimes(song.duration);
         var current = this.parseTimes(tick);
@@ -184,7 +186,15 @@ export default class Player extends Component {
                     </ScrollView>
                 </Image>
 
-                <Controller toggle={toggle} next={next} mode={mode} changeMode={changeMode} playing={playing}></Controller>
+                <Controller
+                toggle={toggle}
+                next={next}
+                prev={prev}
+                mode={mode}
+                changeMode={changeMode}
+                fav={song.fav}
+                playing={playing}>
+                </Controller>
 
                 <View style={styles.dots}>
                     <View style={[styles.dot, this.state.index === 0 && styles.active]}></View>

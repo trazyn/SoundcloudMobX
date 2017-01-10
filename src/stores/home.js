@@ -11,11 +11,13 @@ class PlayList {
     @observable showRefresh = false;
     @observable showLoadmore = false;
 
-    rate = 1;
+    nextHref = '';
 
     filter(data) {
 
         var genre = self.genre;
+
+        this.nextHref = data['next_href'];
 
         return data.collection
             .map(song => song.origin || song)
@@ -57,9 +59,9 @@ class PlayList {
             });
     }
 
-    requestAddress(offset = 0) {
+    request() {
 
-        var url = `https://api.soundcloud.com/tracks?linked_partitioning=1&client_id=${CLIENT_ID}&limit=50&offset=${offset}`;
+        var url = this.nextHref || `https://api.soundcloud.com/tracks?linked_partitioning=1&client_id=${CLIENT_ID}&limit=50`;
         var genre = self.genre;
 
         if (GENRES_MAP.includes(genre)) {
@@ -78,10 +80,9 @@ class PlayList {
 
     @action async getSongs(genre = self.genre) {
 
-        self.rate = 1;
         self.loading = true;
 
-        var response = await axios.get(self.requestAddress());
+        var response = await axios.get(self.request());
         var songs = self.filter(response.data, genre);
 
         self.loading = false;
@@ -95,7 +96,6 @@ class PlayList {
             self.songs.clear();
             self.genre = genre;
             self.getSongs(genre);
-            self.rate = 1;
         }
     }
 
@@ -107,14 +107,12 @@ class PlayList {
 
         self.showRefresh = true;
 
-        var response = await axios.get(self.requestAddress());
+        var response = await axios.get(self.request());
         var songs = self.filter(response.data);
 
         self.showRefresh = false;
         self.songs.clear();
         self.songs.push(...songs);
-
-        self.rate = 1;
     }
 
     @action async doLoadmore() {
@@ -125,13 +123,11 @@ class PlayList {
 
         self.showLoadmore = true;
 
-        var response = await axios.get(self.requestAddress(self.rate * 50));
+        var response = await axios.get(self.request());
         var songs = self.filter(response.data);
 
         self.showLoadmore = false;
         self.songs.push(...songs);
-
-        ++self.rate;
     }
 }
 

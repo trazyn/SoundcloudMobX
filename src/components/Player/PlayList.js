@@ -49,7 +49,6 @@ export default class PlayList extends Component {
     }
 
     componentDidMount() {
-        console.log(this.offset);
         InteractionManager.runAfterInteractions(this.highlight.bind(this));
     }
 

@@ -17,8 +17,10 @@ export default class Controller extends Component {
         playing: PropTypes.bool.isRequired,
         toggle: PropTypes.func.isRequired,
         next: PropTypes.func.isRequired,
+        prev: PropTypes.func.isRequired,
         mode: PropTypes.string.isRequired,
         changeMode: PropTypes.func.isRequired,
+        fav: PropTypes.bool.isRequired,
     };
 
     render() {
@@ -36,7 +38,7 @@ export default class Controller extends Component {
                             }
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.transparent}>
+                        <TouchableOpacity style={styles.transparent} onPress={this.props.prev}>
                             <Icon name="control-start" size={15} color="black"></Icon>
                         </TouchableOpacity>
                     </View>
@@ -57,7 +59,9 @@ export default class Controller extends Component {
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.transparent}>
-                            <Icon name="heart" size={15} color="red"></Icon>
+                            <Icon name="heart" size={15} style={this.props.fav && {
+                                color: 'red'
+                            }}></Icon>
                         </TouchableOpacity>
                     </View>
                 </View>

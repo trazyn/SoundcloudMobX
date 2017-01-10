@@ -18,13 +18,18 @@ class Player {
     whoosh;
     timer;
 
-    download() {
+    loadfile() {
 
         var song = self.song;
 
         self.filename = `${Sound.CACHES}/${song.title}`;
 
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
+
+            if (await RNFS.exists(self.filename)) {
+                self.loaded = 1;
+                resolve();
+            }
 
             RNFS.downloadFile({
                 fromUrl: `${song.streamUrl}?client_id=${CLIENT_ID}`,
@@ -58,7 +63,7 @@ class Player {
 
         self.playing = true;
 
-        await self.download();
+        await self.loadfile();
 
         self.whoosh = new Sound(self.filename, '', err => {
 
@@ -136,7 +141,7 @@ class Player {
         return playlist[Math.floor(Math.random() * shuffle.length)];
     }
 
-    @action next() {
+    cursor(offset = 1) {
 
         var playlist = self.playlist;
         var index = playlist.findIndex(e => e.id === self.song.id);
@@ -147,7 +152,7 @@ class Player {
             if (index === playlist.length - 1) {
                 song = playlist[0];
             } else {
-                song = playlist[++index];
+                song = playlist[index + offset];
             }
         } else {
             song = self.shuffle(playlist, index);
@@ -158,6 +163,9 @@ class Player {
         });
         self.start();
     }
+
+    @action next = () => this.cursor(+1);
+    @action prev = () => this.cursor(-1);
 
     @action async init() {
         var mode = await AsyncStorage.getItem('@Player:mode');
