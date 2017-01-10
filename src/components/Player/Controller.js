@@ -9,11 +9,16 @@ import {
     StyleSheet,
 } from 'react-native';
 
+import { PLAYER_MODE } from '../../config';
+
 export default class Controller extends Component {
 
     static propTypes = {
         playing: PropTypes.bool.isRequired,
         toggle: PropTypes.func.isRequired,
+        next: PropTypes.func.isRequired,
+        mode: PropTypes.string.isRequired,
+        changeMode: PropTypes.func.isRequired,
     };
 
     render() {
@@ -23,8 +28,12 @@ export default class Controller extends Component {
                 <View style={styles.control}>
 
                     <View style={styles.inline}>
-                        <TouchableOpacity style={styles.transparent}>
-                            <Icon name="shuffle" size={15} color="black"></Icon>
+                        <TouchableOpacity style={styles.transparent} onPress={this.props.changeMode}>
+                            {
+                                (this.props.mode === PLAYER_MODE[0])
+                                    ? <Icon name="loop" size={15} color="black"></Icon>
+                                    : <Icon name="shuffle" size={15} color="black"></Icon>
+                            }
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.transparent}>
@@ -43,7 +52,7 @@ export default class Controller extends Component {
                     </View>
 
                     <View style={styles.inline}>
-                        <TouchableOpacity style={styles.transparent}>
+                        <TouchableOpacity style={styles.transparent} onPress={this.props.next}>
                             <Icon name="control-end" size={15} color="black"></Icon>
                         </TouchableOpacity>
 

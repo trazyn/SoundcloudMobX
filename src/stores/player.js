@@ -1,9 +1,9 @@
 
 import { observable, action } from 'mobx';
 import RNFS from 'react-native-fs';
-import axios from 'axios';
 import Sound from 'react-native-sound';
-import { CLIENT_ID } from '../config';
+import { CLIENT_ID, PLAYER_MODE } from '../config';
+import { AsyncStorage } from 'react-native';
 
 class Player {
 
@@ -12,6 +12,7 @@ class Player {
     @observable playlist = {};
     @observable loaded = 0;
     @observable tick = 500;
+    @observable mode = PLAYER_MODE[0];
 
     filename;
     whoosh;
@@ -75,7 +76,7 @@ class Player {
                 }, 500);
 
                 whoosh.play(success => {
-                    success && whoosh.stop();
+                    success && self.next();
                 });
             }
         });
@@ -105,8 +106,65 @@ class Player {
             self.stop();
             self.song = song;
         }
-        self.playlist = playlist;
 
+        if (playlist) {
+            self.playlist = playlist;
+        }
+    }
+
+    @action async changeMode() {
+
+        var index = PLAYER_MODE.indexOf(self.mode);
+
+        if (index === -1 || index === PLAYER_MODE.length - 1) {
+            self.mode = PLAYER_MODE[0];
+        } else {
+            self.mode = PLAYER_MODE[++index];
+        }
+
+        await AsyncStorage.setItem('@Player:mode', self.mode);
+    }
+
+    shuffle(playlist, index) {
+
+        var shuffle = new Array(playlist.length - 1);
+
+        shuffle = shuffle.fill(0).map((e, i) => {
+            return i < index ? i : ++i;
+        });
+
+        return playlist[Math.floor(Math.random() * shuffle.length)];
+    }
+
+    @action next() {
+
+        var playlist = self.playlist;
+        var index = playlist.findIndex(e => e.id === self.song.id);
+        var song;
+
+        if (self.mode === PLAYER_MODE[0]) {
+
+            if (index === playlist.length - 1) {
+                song = playlist[0];
+            } else {
+                song = playlist[++index];
+            }
+        } else {
+            song = self.shuffle(playlist, index);
+        }
+
+        self.setup({
+            song
+        });
+        self.start();
+    }
+
+    @action async init() {
+        var mode = await AsyncStorage.getItem('@Player:mode');
+
+        if (PLAYER_MODE.includes(mode)) {
+            self.mode = mode;
+        }
     }
 }
 

@@ -18,6 +18,11 @@ export const TAG_MAP = [
     'dubstep',
 ];
 
+export const PLAYER_MODE = [
+    'LOOP',
+    'SHUFF',
+];
+
 export const IMAGE_SIZES = {
     LARGE: 't300x300',
     XLARGE: 't500x500',

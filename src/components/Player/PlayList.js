@@ -18,6 +18,8 @@ export default class PlayList extends Component {
         current: PropTypes.object.isRequired,
     };
 
+    offset = {};
+
     human(number) {
 
         if (number > 1000) {
@@ -27,30 +29,29 @@ export default class PlayList extends Component {
         return number;
     }
 
-    getActivePosition(layout) {
-        this.activePosition = layout.y;
-    }
+    highlight(offset = this.offset[this.props.current.id].y) {
 
-    highlight() {
+        if (this.contentHeight - offset < this.scrollViewHeight) {
+            offset = this.contentHeight - this.scrollViewHeight;
+        }
 
-        var self = this;
-
-        InteractionManager.runAfterInteractions(() => {
-
-            var offset = self.activePosition;
-
-            if (self.contentHeight - offset < self.scrollViewHeight) {
-                offset = self.contentHeight - self.scrollViewHeight;
-            }
-
-            self.refs.container.scrollTo({
-                y: offset,
-                animated: false
-            });
+        this.refs.container.scrollTo({
+            y: offset,
+            animated: false
         });
     }
 
-    componentDidMount = this.highlight.bind(this);
+    componentWillReceiveProps(nextProps) {
+
+        if (nextProps.current.id !== this.props.current.id) {
+            this.highlight(this.offset[nextProps.current.id].y);
+        }
+    }
+
+    componentDidMount() {
+        console.log(this.offset);
+        InteractionManager.runAfterInteractions(this.highlight.bind(this));
+    }
 
     render() {
 
@@ -79,7 +80,9 @@ export default class PlayList extends Component {
                 var active = song.id === current.id;
 
                 return (
-                    <View style={styles.item} onLayout={(e) => active && this.getActivePosition(e.nativeEvent.layout)} ref="items">
+                    <View style={styles.item} onLayout={e => {
+                        this.offset[song.id] = e.nativeEvent.layout;
+                    }} ref="items">
                         <View>
                             <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.title, active && styles.active]}>{song.title}</Text>
                         </View>

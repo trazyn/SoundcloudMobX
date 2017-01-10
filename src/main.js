@@ -11,7 +11,8 @@ import stores from './stores';
 
 export default class App extends Component {
 
-    componentDidMount() {
+    async componentDidMount() {
+        await stores.player.init();
         console.ignoredYellowBox = ['Warning: ReactNative.createElement', 'Remote debugger', 'View '];
     }
 
