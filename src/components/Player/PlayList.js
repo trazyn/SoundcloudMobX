@@ -8,6 +8,7 @@ import {
     StyleSheet,
     Dimensions,
     InteractionManager,
+    TouchableOpacity,
     Image,
 } from 'react-native';
 
@@ -79,36 +80,40 @@ export default class PlayList extends Component {
                 var active = song.id === current.id;
 
                 return (
-                    <View style={styles.item} onLayout={e => {
+                    <TouchableOpacity style={styles.item} onLayout={e => {
                         this.offset[song.id] = e.nativeEvent.layout;
-                    }} ref="items">
+                    }}
+                    onPress={e => this.props.play(song)}
+                    ref="items">
                         <View>
-                            <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.title, active && styles.active]}>{song.title}</Text>
-                        </View>
-                        <View style={styles.meta}>
-                            <View style={styles.avatar}>
-                                <Image {...{
-                                    source: {
-                                        uri: song.user.avatar_url
-                                    },
+                            <View>
+                                <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.title, active && styles.active]}>{song.title}</Text>
+                            </View>
+                            <View style={styles.meta}>
+                                <View style={styles.avatar}>
+                                    <Image {...{
+                                        source: {
+                                            uri: song.user.avatar_url
+                                        },
 
-                                    style: {
-                                        width: 24,
-                                        height: 24,
-                                    }
-                                }}></Image>
+                                        style: {
+                                            width: 24,
+                                            height: 24,
+                                        }
+                                    }}></Image>
+                                    </View>
+                                <Text style={[styles.username, active && styles.active]}>{song.user.username}</Text>
+
+                                <View style={styles.right}>
+                                    <Icon name="heart" size={12} style={active && styles.active} color="rgba(255,255,255,.5)"></Icon>
+                                    <Text style={[styles.text, active && styles.active]}>{this.human(song.likes_count)}</Text>
+
+                                    <Icon name="bubble" style={active && styles.active} size={12} color="rgba(255,255,255,.5)"></Icon>
+                                    <Text style={[styles.text, active && styles.active]}>{this.human(song.comment_count)}</Text>
                                 </View>
-                            <Text style={[styles.username, active && styles.active]}>{song.user.username}</Text>
-
-                            <View style={styles.right}>
-                                <Icon name="heart" size={12} style={active && styles.active} color="rgba(255,255,255,.5)"></Icon>
-                                <Text style={[styles.text, active && styles.active]}>{this.human(song.likes_count)}</Text>
-
-                                <Icon name="bubble" style={active && styles.active} size={12} color="rgba(255,255,255,.5)"></Icon>
-                                <Text style={[styles.text, active && styles.active]}>{this.human(song.comment_count)}</Text>
                             </View>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 );
             }}>
             </ListView>

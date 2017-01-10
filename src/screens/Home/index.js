@@ -65,7 +65,7 @@ export default class Home extends Component {
 
     render() {
 
-        const { songs, loading, genre, changeGenre, doRefresh, showRefresh, doLoadmore, showLoadmore } = this.props;
+        const { songs, loading, genre, changeGenre, doRefresh, showRefresh, doLoadmore, showLoadmore, player } = this.props;
 
         StatusBar.setNetworkActivityIndicatorVisible(loading);
 
@@ -99,10 +99,11 @@ export default class Home extends Component {
 
                                     <Text style={{
                                         color: 'rgba(0,0,0,.5)',
-                                    }}>Popular Music</Text>
+                                    }}>Tracks in Quene</Text>
                                 </View>
                                 <Songs {...{
                                     list: songs,
+                                    current: player.song,
                                     doRefresh,
                                     showRefresh,
                                     doLoadmore,

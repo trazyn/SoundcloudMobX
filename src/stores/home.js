@@ -26,7 +26,7 @@ class PlayList {
                 return {
                     title: song.title,
                     id: song['id'],
-                    artwork: song['artwork_url'],
+                    artwork: (song['artwork_url'] || '').replace(/\large\./, 't500x500.'),
                     duration: song['duration'],
                     kind: song['kind'],
                     commentCount: song['comment_count'],
@@ -51,11 +51,14 @@ class PlayList {
                 };
             })
             .filter(song => {
+
+                var must = song.duration < 600000 && song.id && song.streamable;
+
                 if (genre in GENRES_MAP) {
-                    return song.id && song.streamable && song.kind === 'track' && song.duration < 60000;
+                    return song.kind === 'track' && must;
                 }
 
-                return song.streamable && song.kind === 'track';
+                return must;
             });
     }
 

@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 
 import blacklist from '../../utils/backlist';
+import Playing from './Playing';
 
 export default class Song extends Component {
 
@@ -42,6 +43,7 @@ export default class Song extends Component {
         artwork: PropTypes.string,
 
         play: PropTypes.func.isRequired,
+        playing: PropTypes.bool.isRequired,
     };
 
     human(number) {
@@ -55,48 +57,63 @@ export default class Song extends Component {
 
     render() {
 
-        const { title, id, user, artwork, likesCount, commentCount, playbackCount, play } = this.props;
+        const { title, id, user, artwork, likesCount, commentCount, playbackCount, play, playing } = this.props;
 
         return (
             <View style={[styles.container, this.props.style]}>
+                {
+                    playing
+                }
+
                 <View style={styles.inner}>
+
                     {
-                        artwork
-                            ? (
-                                <Image source={{
-                                    uri: artwork.replace(/\large\./, 't500x500.')
-                                }}
-                                style={styles.artwork}>
-                                </Image>
-                            )
-                            : <View style={[styles.artwork, styles.placeholder]}></View>
+                        playing
+
+                        ? <Playing artwork={artwork} title={title}></Playing>
+                        : (
+                            <View>
+                                {
+                                    artwork
+                                        ? (
+                                            <Image source={{
+                                                uri: artwork
+                                            }}
+                                            style={styles.artwork}>
+                                            </Image>
+                                        )
+                                        : <View style={[styles.artwork, styles.placeholder]}></View>
+                                }
+
+                                <View>
+                                    <Text style={styles.title} ellipsizeMode="tail" numberOfLines={1}>{title}</Text>
+                                    <Text style={styles.username}>{user ? user.username : 'UNKNOW'}</Text>
+
+                                    <View style={styles.meta}>
+                                        <TouchableOpacity style={styles.metaItem}>
+                                            <Icon name="heart" style={styles.metaIcon}></Icon>
+                                            <Text style={styles.metaText}>{this.human(likesCount)}</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity style={styles.metaItem}>
+                                            <Icon name="bubble" style={styles.metaIcon}></Icon>
+                                            <Text style={styles.metaText}>{this.human(commentCount)}</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity style={styles.metaItem}>
+                                            <Icon name="music-tone-alt" style={styles.metaIcon}></Icon>
+                                            <Text style={styles.metaText}>{this.human(playbackCount)}</Text>
+                                        </TouchableOpacity>
+
+                                            <TouchableHighlight style={styles.play} onPress={() => play({...blacklist(this.props, 'play')})}>
+                                                <MKIcon name="play-arrow" style={styles.playIcon}></MKIcon>
+                                            </TouchableHighlight>
+                                    </View>
+                                </View>
+                            </View>
+                        )
                     }
 
-                    <View>
-                        <Text style={styles.title} ellipsizeMode="tail" numberOfLines={1}>{title}</Text>
-                        <Text style={styles.username}>{user ? user.username : 'UNKNOW'}</Text>
-
-                        <View style={styles.meta}>
-                            <TouchableOpacity style={styles.metaItem}>
-                                <Icon name="heart" style={styles.metaIcon}></Icon>
-                                <Text style={styles.metaText}>{this.human(likesCount)}</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={styles.metaItem}>
-                                <Icon name="bubble" style={styles.metaIcon}></Icon>
-                                <Text style={styles.metaText}>{this.human(commentCount)}</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={styles.metaItem}>
-                                <Icon name="music-tone-alt" style={styles.metaIcon}></Icon>
-                                <Text style={styles.metaText}>{this.human(playbackCount)}</Text>
-                            </TouchableOpacity>
-
-                                <TouchableHighlight style={styles.play} onPress={() => play({...blacklist(this.props, 'play')})}>
-                                    <MKIcon name="play-arrow" style={styles.playIcon}></MKIcon>
-                                </TouchableHighlight>
-                        </View>
-                    </View>
                 </View>
             </View>
         );

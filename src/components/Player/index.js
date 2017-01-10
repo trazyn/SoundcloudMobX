@@ -30,6 +30,7 @@ import Controller from './Controller';
     tick: stores.player.tick,
     mode: stores.player.mode,
     changeMode: stores.player.changeMode,
+    setup: stores.player.setup,
 }))
 @observer
 export default class Player extends Component {
@@ -47,6 +48,7 @@ export default class Player extends Component {
         tick: PropTypes.number.isRequired,
         mode: PropTypes.string.isRequired,
         changeMode: PropTypes.func.isRequired,
+        setup: PropTypes.func.isRequired,
     };
 
     state = {
@@ -136,7 +138,20 @@ export default class Player extends Component {
                     snapToInterval={width}
                     snapToAlignment='start'>
                         <View style={styles.viewport}>
-                            <PlayList ref="playList" list={playlist.slice()} current={song}></PlayList>
+                            <PlayList
+                            ref="playList"
+                            list={playlist.slice()}
+                            play={(song) => {
+
+                                var { setup, start } = this.props;
+
+                                setup({
+                                    song,
+                                });
+                                start();
+                            }}
+                            current={song}>
+                            </PlayList>
                         </View>
                         <View style={styles.viewport}>
                             <Image {...{

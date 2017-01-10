@@ -23,6 +23,7 @@ export default class Songs extends Component {
         showLoadmore: PropTypes.bool.isRequired,
         doLoadmore: PropTypes.func.isRequired,
         play: PropTypes.func.isRequired,
+        current: PropTypes.object.isRequired,
     };
 
     state = {
@@ -126,6 +127,7 @@ export default class Songs extends Component {
                         <Song {...{
 
                             ...song,
+                            playing: this.props.current.id === song.id,
 
                             play,
 
