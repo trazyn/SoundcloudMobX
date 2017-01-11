@@ -47,6 +47,7 @@ class PlayList {
                     uri: song['uri'],
                     fav: song['user_favorite'],
                     user: song['user'],
+                    filetype: song['original_format'],
                     waveform: song['waveform_url'],
                 };
             })

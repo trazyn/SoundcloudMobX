@@ -22,7 +22,7 @@ class Player {
 
         var song = self.song;
 
-        self.filename = `${Sound.CACHES}/${song.title}`;
+        self.filename = `${Sound.CACHES}/${song.title}.${song.filetype}`;
 
         return new Promise(async (resolve, reject) => {
 
@@ -107,7 +107,7 @@ class Player {
 
         var { song, playlist } = data;
 
-        if (song.id !== self.song.id) {
+        if (song && song.id !== self.song.id) {
             self.stop();
             self.song = song;
         }

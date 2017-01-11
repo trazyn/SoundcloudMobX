@@ -16,6 +16,7 @@ export default class Playing extends Component {
     static propTypes = {
         title: PropTypes.string.isRequired,
         artwork: PropTypes.string.isRequired,
+        enter: PropTypes.func.isRequired,
     };
 
     state = {
@@ -119,7 +120,7 @@ export default class Playing extends Component {
                         resizeMode: 'cover'
                     }
                 }}>
-                    <View style={styles.shadow}>
+                    <TouchableOpacity style={styles.shadow} onPress={this.props.enter}>
                         <Animated.View style={[styles.cover, {
                             transform: [{
                                 rotate
@@ -138,7 +139,7 @@ export default class Playing extends Component {
                             }}>
                             </Image>
                         </Animated.View>
-                    </View>
+                    </TouchableOpacity>
 
                     <View style={styles.equalizer}>
                         <Animated.View style={[styles.line, styles.line1, {

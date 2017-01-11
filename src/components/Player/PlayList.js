@@ -17,6 +17,7 @@ export default class PlayList extends Component {
     static propTypes = {
         list: PropTypes.array.isRequired,
         current: PropTypes.object.isRequired,
+        play: PropTypes.func.isRequired,
     };
 
     offset = {};
@@ -32,14 +33,22 @@ export default class PlayList extends Component {
 
     highlight(offset = this.offset[this.props.current.id].y) {
 
-        if (this.contentHeight - offset < this.scrollViewHeight) {
-            offset = this.contentHeight - this.scrollViewHeight;
-        }
+        var container = this.refs.container;
+        var activeOffset = this.offset[this.props.current.id];
 
-        this.refs.container.scrollTo({
-            y: offset,
-            animated: false
-        });
+        if (container && activeOffset) {
+
+            offset = offset === void 0 ? activeOffset.y : offset;
+
+            if (this.contentHeight - offset < this.scrollViewHeight) {
+                offset = this.contentHeight - this.scrollViewHeight;
+            }
+
+            container.scrollTo({
+                y: offset,
+                animated: false
+            });
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -72,7 +81,7 @@ export default class PlayList extends Component {
             onContentSizeChange={(w, h) => this.contentHeight = h}
             onLayout={(e) => this.scrollViewHeight = e.nativeEvent.layout.height}
 
-            style={styles.container}
+            style={[styles.container, this.props.style]}
             enableEmptySections={true}
             dataSource={dataSource}
             renderRow={song => {
@@ -133,8 +142,8 @@ const styles = StyleSheet.create({
     item: {
         height: 58,
         margin: 10,
-        marginLeft: 20,
-        marginRight: 20,
+        marginLeft: 10,
+        marginRight: 10,
         borderBottomWidth: .5,
         borderBottomColor: 'rgba(0,0,0,.1)',
         backgroundColor: 'transparent',

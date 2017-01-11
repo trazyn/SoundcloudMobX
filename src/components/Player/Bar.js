@@ -26,7 +26,7 @@ export default class Bar extends Component {
 
         Animated.timing(this.state.loaded, {
             toValue: width * nextProps.loaded,
-            duration: 100
+            duration: 50
         }).start();
 
         Animated.timing(this.state.passed, {

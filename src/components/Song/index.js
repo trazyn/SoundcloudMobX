@@ -70,14 +70,14 @@ export default class Song extends Component {
                     {
                         playing
 
-                        ? <Playing artwork={artwork} title={title}></Playing>
+                        ? <Playing artwork={artwork} title={title} enter={() => play({...blacklist(this.props, 'play')})}></Playing>
                         : (
                             <View>
                                 {
                                     artwork
                                         ? (
                                             <Image source={{
-                                                uri: artwork
+                                                uri: artwork,
                                             }}
                                             style={styles.artwork}>
                                             </Image>

@@ -64,15 +64,7 @@ export default class Footer extends Component {
                         name: 'Home'
                     });
                 }}>
-                    <Icon name="home" ref="Home" size={16}></Icon>
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => {
-                    setRoute({
-                        name: 'PlayList'
-                    });
-                }}>
-                    <Icon name="playlist" ref="PlayList" size={16}></Icon>
+                    <Icon name="playlist" ref="Home" size={16}></Icon>
                 </TouchableOpacity>
 
                 <TouchableOpacity>
@@ -97,7 +89,7 @@ const styles = StyleSheet.create({
         height: 50,
         borderTopWidth: 1,
         borderTopColor: '#d9d9d9',
-        backgroundColor: '#fff',
+        backgroundColor: 'rgba(255,255,255,.6)',
         alignItems: 'center',
         justifyContent: 'space-around',
         flexDirection: 'row',

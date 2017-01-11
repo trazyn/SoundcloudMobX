@@ -48,7 +48,14 @@ export default class Home extends Component {
     };
 
     async componentDidMount() {
-        await this.props.getSongs();
+
+        if (!this.props.songs.length) {
+            await this.props.getSongs();
+        }
+
+        this.props.player.setup({
+            playlist: this.props.songs
+        });
     }
 
     play(song) {

@@ -77,6 +77,12 @@ export default class Player extends Component {
         return { minutes, seconds };
     }
 
+    componentWillReciveProps(nextProps) {
+
+        if (nextProps.song.id !== this.props.song.id && this.state.index !== 0) {
+            this.refs.playList.highlight();
+        }
+    }
 
     render() {
 
@@ -337,3 +343,4 @@ const styles = StyleSheet.create({
         backgroundColor: '#f50'
     }
 });
+

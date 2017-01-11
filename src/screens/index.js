@@ -11,7 +11,6 @@ import {
 import Home from './Home';
 import Fav from './Fav';
 import Discover from './Discover';
-import PlayList from './PlayList';
 import Profile from './Profile';
 import Player from '../components/Player';
 import Footer from '../components/Footer';
@@ -20,7 +19,6 @@ const components = {
     Home,
     Fav,
     Discover,
-    PlayList,
     Profile,
     Player,
 };
