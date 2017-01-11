@@ -27,9 +27,14 @@ class Player {
 
         return new Promise(async (resolve, reject) => {
 
-            if (await RNFS.exists(self.filename) || false) {
+            if (self.downloader) {
+                await RNFS.stopDownload(self.downloader.jobId);
+                self.downloader = null;
+            }
+
+            if (await RNFS.exists(self.filename)) {
                 self.loaded = 1;
-                resolve();
+                return resolve();
             }
 
             self.downloader = RNFS.downloadFile({
@@ -39,12 +44,13 @@ class Player {
                     self.loaded = state.bytesWritten / state.contentLength;
 
                     if (self.loaded === 1) {
+                        self.downloader = null;
                         resolve();
                     }
                 }
             });
 
-            self.downloader.promise.catch(ex => ex);
+            (((filename, promise) => promise.catch(async ex => RNFS.unlink(filename))))(self.filename, self.downloader.promise);
         });
     }
 
@@ -73,7 +79,7 @@ class Player {
             var whoosh = self.whoosh;
 
             if (err) {
-                console.error('Failed to load the sound', err);
+                console.error(`Failed to load the sound: ${self.filename}`, err);
             } else {
 
                 var tick = 0;
@@ -133,13 +139,9 @@ class Player {
         await AsyncStorage.setItem('@Player:mode', self.mode);
     }
 
-    async shuffle(playlist, index) {
+    shuffle(playlist, index) {
 
         var shuffle = new Array(playlist.length - 1);
-
-        if (self.downloader) {
-            await RNFS.stopDownload(self.downloader.jobId);
-        }
 
         shuffle = shuffle.fill(0).map((e, i) => {
             return i < index ? i : ++i;
@@ -148,7 +150,7 @@ class Player {
         return playlist[Math.floor(Math.random() * shuffle.length)];
     }
 
-    async cursor(offset = 1) {
+    cursor(offset = 1) {
 
         var playlist = self.playlist;
         var index = playlist.findIndex(e => e.id === self.song.id);
@@ -162,7 +164,7 @@ class Player {
                 song = playlist[index + offset];
             }
         } else {
-            song = await self.shuffle(playlist, index);
+            song = self.shuffle(playlist, index);
         }
 
         self.setup({
