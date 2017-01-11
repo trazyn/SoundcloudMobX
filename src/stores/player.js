@@ -17,6 +17,7 @@ class Player {
     filename;
     whoosh;
     timer;
+    downloader;
 
     loadfile() {
 
@@ -26,12 +27,12 @@ class Player {
 
         return new Promise(async (resolve, reject) => {
 
-            if (await RNFS.exists(self.filename)) {
+            if (await RNFS.exists(self.filename) || false) {
                 self.loaded = 1;
                 resolve();
             }
 
-            RNFS.downloadFile({
+            self.downloader = RNFS.downloadFile({
                 fromUrl: `${song.streamUrl}?client_id=${CLIENT_ID}`,
                 toFile: self.filename,
                 progress: (state) => {
@@ -42,6 +43,8 @@ class Player {
                     }
                 }
             });
+
+            self.downloader.promise.catch(ex => ex);
         });
     }
 
@@ -130,9 +133,13 @@ class Player {
         await AsyncStorage.setItem('@Player:mode', self.mode);
     }
 
-    shuffle(playlist, index) {
+    async shuffle(playlist, index) {
 
         var shuffle = new Array(playlist.length - 1);
+
+        if (self.downloader) {
+            await RNFS.stopDownload(self.downloader.jobId);
+        }
 
         shuffle = shuffle.fill(0).map((e, i) => {
             return i < index ? i : ++i;
@@ -141,7 +148,7 @@ class Player {
         return playlist[Math.floor(Math.random() * shuffle.length)];
     }
 
-    cursor(offset = 1) {
+    async cursor(offset = 1) {
 
         var playlist = self.playlist;
         var index = playlist.findIndex(e => e.id === self.song.id);
@@ -155,7 +162,7 @@ class Player {
                 song = playlist[index + offset];
             }
         } else {
-            song = self.shuffle(playlist, index);
+            song = await self.shuffle(playlist, index);
         }
 
         self.setup({

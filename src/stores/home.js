@@ -53,7 +53,7 @@ class PlayList {
             })
             .filter(song => {
 
-                var must = song.duration < 600000 && song.id && song.streamable;
+                var must = song.duration < 600000 && song.id && song.streamable && song.artwork;
 
                 if (genre in GENRES_MAP) {
                     return song.kind === 'track' && must;
@@ -85,6 +85,8 @@ class PlayList {
     @action async getSongs(genre = self.genre) {
 
         self.loading = true;
+
+        self.nextHref = '';
 
         var response = await axios.get(self.request());
         var songs = self.filter(response.data, genre);

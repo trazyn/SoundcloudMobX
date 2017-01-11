@@ -73,17 +73,11 @@ export default class Song extends Component {
                         ? <Playing artwork={artwork} title={title} enter={() => play({...blacklist(this.props, 'play')})}></Playing>
                         : (
                             <View>
-                                {
-                                    artwork
-                                        ? (
-                                            <Image source={{
-                                                uri: artwork,
-                                            }}
-                                            style={styles.artwork}>
-                                            </Image>
-                                        )
-                                        : <View style={[styles.artwork, styles.placeholder]}></View>
-                                }
+                                <Image source={{
+                                    uri: artwork,
+                                }}
+                                style={styles.artwork}>
+                                </Image>
 
                                 <View>
                                     <Text style={styles.title} ellipsizeMode="tail" numberOfLines={1}>{title}</Text>
@@ -162,10 +156,6 @@ const styles = StyleSheet.create({
     artwork: {
         width: 300,
         height: 300,
-    },
-
-    placeholder: {
-        backgroundColor: `#${('00' + (Math.random() * 1000 | 0)).slice(-3)}`
     },
 
     meta: {
