@@ -118,6 +118,7 @@ const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         width: 300,
+        height: 432.5,
         marginRight: (width - 340) / 4,
         marginLeft: (width - 340) / 4,
         borderWidth: 0,

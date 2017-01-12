@@ -14,6 +14,7 @@ import Discover from './Discover';
 import Profile from './Profile';
 import Player from '../components/Player';
 import Footer from '../components/Footer';
+import RippleHeader from '../components/RippleHeader';
 
 const components = {
     Home,
@@ -36,10 +37,6 @@ export default class Views extends Component {
     state = {
         height: new Animated.Value(50)
     };
-
-    componentWillReciveProps(nextProps) {
-        console.log(this.refs.nav.getCurrentRoutes());
-    }
 
     componentWillReact() {
 
@@ -71,6 +68,9 @@ export default class Views extends Component {
             <View style={{
                 flex: 1
             }}>
+                <RippleHeader style={{
+                    opacity
+                }}></RippleHeader>
                 <Navigator {...{
 
                     style: styles.container,

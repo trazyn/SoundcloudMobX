@@ -59,7 +59,7 @@ export default class Footer extends Component {
 
         return (
             <Animated.View style={[styles.container, this.props.style]}>
-                <TouchableOpacity onPress={() => {
+                <TouchableOpacity onPress={e => {
                     setRoute({
                         name: 'Home'
                     });
@@ -71,7 +71,11 @@ export default class Footer extends Component {
                     <Icon name="magnifier" ref="Discover" size={16}></Icon>
                 </TouchableOpacity>
 
-                <TouchableOpacity>
+                <TouchableOpacity onPress={e => {
+                    setRoute({
+                        name: 'Fav'
+                    });
+                }}>
                     <Icon name="heart" ref="Fav" size={16}></Icon>
                 </TouchableOpacity>
             </Animated.View>
@@ -87,8 +91,8 @@ const styles = StyleSheet.create({
         bottom: 0,
         width,
         height: 50,
-        borderTopWidth: 1,
-        borderTopColor: '#d9d9d9',
+        borderTopWidth: .5,
+        borderTopColor: '#000',
         backgroundColor: 'rgba(255,255,255,.6)',
         alignItems: 'center',
         justifyContent: 'space-around',

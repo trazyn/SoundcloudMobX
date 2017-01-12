@@ -62,7 +62,6 @@ export default class Home extends Component {
 
         this.props.player.setup({
             song,
-            playlist: this.props.songs
         });
 
         this.props.setRoute({
@@ -131,7 +130,7 @@ const styles = StyleSheet.create({
 
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#f1dfdd',
         alignItems: 'center',
     },
 

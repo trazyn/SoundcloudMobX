@@ -55,13 +55,13 @@ export default class Player extends Component {
         index: 1,
     };
 
-    componentDidMount() {
+    async componentDidMount() {
 
         this.refs.viewport.scrollTo({
             x: width,
             animated: false
         });
-        this.props.start();
+        await this.props.start();
     }
 
     parseTimes(num) {
@@ -147,14 +147,14 @@ export default class Player extends Component {
                             <PlayList
                             ref="playList"
                             list={playlist.slice()}
-                            play={(song) => {
+                            play={async song => {
 
                                 var { setup, start } = this.props;
 
                                 setup({
                                     song,
                                 });
-                                start();
+                                await start();
                             }}
                             current={song}>
                             </PlayList>
@@ -343,4 +343,3 @@ const styles = StyleSheet.create({
         backgroundColor: '#f50'
     }
 });
-

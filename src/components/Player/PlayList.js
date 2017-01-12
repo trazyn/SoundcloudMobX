@@ -53,8 +53,10 @@ export default class PlayList extends Component {
 
     componentWillReceiveProps(nextProps) {
 
-        if (nextProps.current.id !== this.props.current.id) {
-            this.highlight(this.offset[nextProps.current.id].y);
+        var offset = this.offset[nextProps.current.id];
+
+        if (nextProps.current.id !== this.props.current.id && offset) {
+            this.highlight(offset.y);
         }
     }
 

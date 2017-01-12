@@ -85,7 +85,6 @@ class PlayList {
     @action async getSongs(genre = self.genre) {
 
         self.loading = true;
-
         self.nextHref = '';
 
         var response = await axios.get(self.request());
@@ -112,6 +111,7 @@ class PlayList {
         }
 
         self.showRefresh = true;
+        self.nextHref = '';
 
         var response = await axios.get(self.request());
         var songs = self.filter(response.data);

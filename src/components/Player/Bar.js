@@ -52,7 +52,9 @@ export default class Bar extends Component {
                     }]}></Animated.View>
                     <Animated.View style={[styles.indicator, {
                         left
-                    }]}></Animated.View>
+                    }]}>
+                        <View style={styles.indicatorShadow}></View>
+                    </Animated.View>
                 </Animated.View>
             </View>
         );
@@ -92,15 +94,21 @@ const styles = StyleSheet.create({
 
     indicator: {
         position: 'absolute',
-        top: -4,
+        top: -5,
         left: 0,
-        width: 6,
+        width: 12,
+        height: 12,
+        borderRadius: 12,
+        backgroundColor: 'rgba(255,85,0,.4)'
+    },
+
+    indicatorShadow: {
+        position: 'absolute',
+        top: 3,
+        left: 3,
         height: 6,
+        width: 6,
         borderRadius: 6,
-        backgroundColor: '#fff',
-        transform: [{
-            translateY: 2,
-            translateX: 2,
-        }]
+        backgroundColor: '#f50'
     }
 });

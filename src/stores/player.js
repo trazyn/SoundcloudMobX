@@ -14,10 +14,11 @@ class Player {
     @observable tick = 500;
     @observable mode = PLAYER_MODE[0];
 
+    quene = [];
     filename;
     whoosh;
     timer;
-    downloader;
+    downloading;
 
     loadfile() {
 
@@ -27,9 +28,9 @@ class Player {
 
         return new Promise(async (resolve, reject) => {
 
-            if (self.downloader) {
-                await RNFS.stopDownload(self.downloader.jobId);
-                self.downloader = null;
+            if (self.downloading) {
+                await RNFS.stopDownload(self.downloading.jobId);
+                self.downloading = null;
             }
 
             if (await RNFS.exists(self.filename)) {
@@ -37,20 +38,20 @@ class Player {
                 return resolve();
             }
 
-            self.downloader = RNFS.downloadFile({
+            self.downloading = RNFS.downloadFile({
                 fromUrl: `${song.streamUrl}?client_id=${CLIENT_ID}`,
                 toFile: self.filename,
                 progress: (state) => {
                     self.loaded = state.bytesWritten / state.contentLength;
 
                     if (self.loaded === 1) {
-                        self.downloader = null;
+                        self.downloading = null;
                         resolve();
                     }
                 }
             });
 
-            (((filename, promise) => promise.catch(async ex => RNFS.unlink(filename))))(self.filename, self.downloader.promise);
+            (((filename, promise) => promise.catch(async ex => RNFS.unlink(filename))))(self.filename, self.downloading.promise);
         });
     }
 
@@ -74,25 +75,31 @@ class Player {
 
         await self.loadfile();
 
-        self.whoosh = new Sound(self.filename, '', err => {
+        return new Promise((resolve, reject) => {
 
-            var whoosh = self.whoosh;
+            self.whoosh = new Sound(self.filename, '', err => {
 
-            if (err) {
-                console.error(`Failed to load the sound: ${self.filename}`, err);
-            } else {
+                var whoosh = self.whoosh;
 
-                var tick = 0;
-                self.timer = setTimeout(function playing() {
-                    whoosh.getCurrentTime(seconds => tick = seconds * 1000);
-                    self.tick = tick;
-                    self.timer = setTimeout(playing, 500);
-                }, 500);
+                if (err) {
+                    console.error(`Failed to load the sound: ${self.filename}`, err);
+                    reject();
+                } else {
 
-                whoosh.play(success => {
-                    success && self.next();
-                });
-            }
+                    var tick = 0;
+                    self.timer = setTimeout(function playing() {
+                        whoosh.getCurrentTime(seconds => tick = seconds * 1000);
+                        self.tick = tick;
+                        self.timer = setTimeout(playing, 500);
+                    }, 500);
+
+                    whoosh.play(success => {
+                        success && self.next();
+                    });
+
+                    resolve();
+                }
+            });
         });
     }
 
@@ -112,17 +119,22 @@ class Player {
         self.playing = false;
     }
 
-    @action setup(data) {
+    @action setup(data, needTrack = true) {
 
         var { song, playlist } = data;
+
+        if (playlist) {
+            self.quene = [];
+            self.playlist = playlist;
+        }
 
         if (song && song.id !== self.song.id) {
             self.stop();
             self.song = song;
-        }
 
-        if (playlist) {
-            self.playlist = playlist;
+            if (needTrack) {
+                self.quene.push(song);
+            }
         }
     }
 
@@ -139,18 +151,7 @@ class Player {
         await AsyncStorage.setItem('@Player:mode', self.mode);
     }
 
-    shuffle(playlist, index) {
-
-        var shuffle = new Array(playlist.length - 1);
-
-        shuffle = shuffle.fill(0).map((e, i) => {
-            return i < index ? i : ++i;
-        });
-
-        return playlist[Math.floor(Math.random() * shuffle.length)];
-    }
-
-    cursor(offset = 1) {
+    @action async next() {
 
         var playlist = self.playlist;
         var index = playlist.findIndex(e => e.id === self.song.id);
@@ -161,20 +162,40 @@ class Player {
             if (index === playlist.length - 1) {
                 song = playlist[0];
             } else {
-                song = playlist[index + offset];
+                song = playlist[index + 1];
             }
         } else {
-            song = self.shuffle(playlist, index);
+            var shuffle = new Array(playlist.length - 1);
+
+            shuffle = shuffle.fill(0).map((e, i) => {
+                return i < index ? i : ++i;
+            });
+
+            song = playlist[Math.floor(Math.random() * shuffle.length)];
         }
 
         self.setup({
             song
         });
-        self.start();
+        await self.start();
     }
 
-    @action next = () => this.cursor(+1);
-    @action prev = () => this.cursor(-1);
+    @action async prev() {
+
+        var song = self.quene[self.quene.length - 2];
+
+        if (!song) {
+            song = self.quene[0];
+        } else {
+            self.quene.pop();
+        }
+
+        self.setup({
+            song
+        }, false);
+
+        await self.start();
+    }
 
     @action async init() {
         var mode = await AsyncStorage.getItem('@Player:mode');
