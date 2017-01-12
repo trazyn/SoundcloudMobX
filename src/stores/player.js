@@ -55,6 +55,10 @@ class Player {
         });
     }
 
+    isPaused() {
+        return self.tick && self.quene.slice(-1)[0] === self.song;
+    }
+
     @action toggle() {
         var playing = self.playing = !self.playing;
 
@@ -72,6 +76,10 @@ class Player {
         }
 
         self.playing = true;
+
+        if (self.isPaused()) {
+            return self.whoosh.play();
+        }
 
         await self.loadfile();
 
