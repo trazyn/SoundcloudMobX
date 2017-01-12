@@ -67,7 +67,11 @@ export default class Footer extends Component {
                     <Icon name="playlist" ref="Home" size={16}></Icon>
                 </TouchableOpacity>
 
-                <TouchableOpacity>
+                <TouchableOpacity onPress={e => {
+                    setRoute({
+                        name: 'Discover'
+                    });
+                }}>
                     <Icon name="magnifier" ref="Discover" size={16}></Icon>
                 </TouchableOpacity>
 

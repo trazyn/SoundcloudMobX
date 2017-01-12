@@ -25,7 +25,6 @@ import Controller from './Controller';
     start: stores.player.start,
     next: stores.player.next,
     prev: stores.player.prev,
-    stop: stores.player.stop,
     loaded: stores.player.loaded,
     tick: stores.player.tick,
     mode: stores.player.mode,
@@ -43,7 +42,6 @@ export default class Player extends Component {
         start: PropTypes.func.isRequired,
         next: PropTypes.func.isRequired,
         prev: PropTypes.func.isRequired,
-        stop: PropTypes.func.isRequired,
         loaded: PropTypes.number.isRequired,
         tick: PropTypes.number.isRequired,
         mode: PropTypes.string.isRequired,
@@ -77,7 +75,7 @@ export default class Player extends Component {
         return { minutes, seconds };
     }
 
-    componentWillReciveProps(nextProps) {
+    componentWillReceiveProps(nextProps) {
 
         if (nextProps.song.id !== this.props.song.id && this.state.index !== 0) {
             this.refs.playList.highlight();

@@ -59,6 +59,17 @@ class Player {
         return self.tick && self.quene.slice(-1)[0] === self.song;
     }
 
+    stop() {
+
+        var { whoosh, timer } = self;
+
+        self.loaded = 0;
+        self.tick = 0;
+        self.song = {};
+        self.playing = false;
+    }
+
+
     @action toggle() {
         var playing = self.playing = !self.playing;
 
@@ -83,48 +94,46 @@ class Player {
 
         await self.loadfile();
 
-        return new Promise((resolve, reject) => {
-
-            self.whoosh = new Sound(self.filename, '', err => {
-
-                var whoosh = self.whoosh;
-
-                if (err) {
-                    console.error(`Failed to load the sound: ${self.filename}`, err);
-                    reject();
-                } else {
-
-                    var tick = 0;
-                    self.timer = setTimeout(function playing() {
-                        whoosh.getCurrentTime(seconds => tick = seconds * 1000);
-                        self.tick = tick;
-                        self.timer = setTimeout(playing, 500);
-                    }, 500);
-
-                    whoosh.play(success => {
-                        success && self.next();
-                    });
-
-                    resolve();
-                }
-            });
-        });
-    }
-
-    @action stop() {
-
-        var { whoosh, timer } = self;
-
-        if (whoosh) {
-            whoosh.stop();
-            whoosh.release();
+        if (self.whoosh) {
+            self.whoosh.stop();
+            self.whoosh.release();
         }
 
-        clearTimeout(timer);
-        self.loaded = 0;
-        self.tick = 0;
-        self.song = {};
-        self.playing = false;
+        self.whoosh = new Sound(self.filename, '', async err => {
+
+            var whoosh = self.whoosh;
+
+            if (err) {
+                await RNFS.unlink(self.filename);
+                self.next();
+            } else {
+
+                var tick = 0;
+                clearTimeout(self.timer);
+                self.timer = setTimeout(function playing() {
+                    whoosh.getCurrentTime(seconds => {
+                        tick = seconds * 1000;
+
+                        /** Sometimes the play callback is not invoked by 'react-native-sound', we need check current time */
+                        if (seconds === 0) {
+                            return self.next();
+                        }
+                    });
+                    self.tick = tick;
+                    self.timer = setTimeout(playing, 500);
+                }, 500);
+
+                whoosh.play(success => {
+
+                    if (success) {
+                        self.next();
+                    } else {
+                        self.stop();
+                        console.error(`Failed to play: ${self.filename}`);
+                    }
+                });
+            }
+        });
     }
 
     @action setup(data, needTrack = true) {
@@ -159,7 +168,7 @@ class Player {
         await AsyncStorage.setItem('@Player:mode', self.mode);
     }
 
-    @action async next() {
+    @action next() {
 
         var playlist = self.playlist;
         var index = playlist.findIndex(e => e.id === self.song.id);
@@ -185,10 +194,10 @@ class Player {
         self.setup({
             song
         });
-        await self.start();
+        self.start();
     }
 
-    @action async prev() {
+    @action prev() {
 
         var song = self.quene[self.quene.length - 2];
 
@@ -202,7 +211,7 @@ class Player {
             song
         }, false);
 
-        await self.start();
+        self.start();
     }
 
     @action async init() {

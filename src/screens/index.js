@@ -19,9 +19,9 @@ import RippleHeader from '../components/RippleHeader';
 const components = {
     Home,
     Fav,
-    Discover,
     Profile,
     Player,
+    Discover,
 };
 
 @inject(stores => ({
