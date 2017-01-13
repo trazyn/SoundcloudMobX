@@ -86,7 +86,9 @@ const styles = StyleSheet.create({
     container: {
         position: 'absolute',
         top: width / 2 + 30,
+        height: 24,
         alignItems: 'center',
+        justifyContent: 'center',
         backgroundColor: 'transparent',
         opacity: 1,
         transform: [{

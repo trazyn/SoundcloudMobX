@@ -16,6 +16,7 @@ import {
 import Bar from './Bar';
 import PlayList from './PlayList';
 import Controller from './Controller';
+import parseTimes from '../../utils/parseTimes';
 
 @inject(stores => ({
     playing: stores.player.playing,
@@ -62,19 +63,6 @@ export default class Player extends Component {
         await this.props.start();
     }
 
-    parseTimes(num) {
-
-        var minutes = 0;
-        var seconds = 0;
-
-        num = Math.floor(num / 1000);
-
-        minutes = ('0' + Math.floor(num / 60)).slice(-2);
-        seconds = ('0' + num % 60).slice(-2);
-
-        return { minutes, seconds };
-    }
-
     componentWillReceiveProps(nextProps) {
 
         if (nextProps.song.id !== this.props.song.id && this.state.index !== 0) {
@@ -86,8 +74,8 @@ export default class Player extends Component {
 
         var { playing, toggle, next, prev, song, playlist, loaded, tick, mode, changeMode } = this.props;
         var cover = song.artwork.replace(/large\./, 't500x500.');
-        var times = this.parseTimes(song.duration);
-        var current = this.parseTimes(tick);
+        var times = parseTimes(song.duration);
+        var current = parseTimes(tick);
 
         return (
             <View style={styles.container}>

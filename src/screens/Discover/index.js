@@ -17,12 +17,15 @@ import Card from './Card';
 @inject(stores => ({
     type: stores.discover.type,
     changeType: stores.discover.changeType,
+    chart: stores.chart,
+    setRoute: stores.route.setRoute.bind(stores.route),
 }))
 export default class Discover extends Component {
 
     static propTypes = {
         type: PropTypes.oneOf(['top', 'trending']).isRequired,
         changeType: PropTypes.func.isRequired,
+        setRoute: PropTypes.func.isRequired,
     };
 
     componentWillMount() {
@@ -30,6 +33,15 @@ export default class Discover extends Component {
         for (var genre of CHART_GENRES_MAP) {
             genre.store = new CardStore();
         }
+    }
+
+    showChart(store) {
+
+        this.props.chart.setup(store);
+
+        this.props.setRoute({
+            name: 'Chart',
+        });
     }
 
     render() {
@@ -66,7 +78,7 @@ export default class Discover extends Component {
                                             if (genre) {
                                                 return (
                                                     <Provider card={genre.store} key={index}>
-                                                        <Card genre={genre}></Card>
+                                                        <Card genre={genre} showChart={this.showChart.bind(this)}></Card>
                                                     </Provider>
                                                 );
                                             }

@@ -12,6 +12,7 @@ import Home from './Home';
 import Fav from './Fav';
 import Discover from './Discover';
 import Profile from './Profile';
+import Chart from './Chart';
 import Player from '../components/Player';
 import Footer from '../components/Footer';
 import RippleHeader from '../components/RippleHeader';
@@ -22,6 +23,7 @@ const components = {
     Profile,
     Player,
     Discover,
+    Chart,
 };
 
 @inject(stores => ({
@@ -35,15 +37,19 @@ export default class Views extends Component {
     };
 
     state = {
-        height: new Animated.Value(50)
+        height: new Animated.Value(50),
     };
+
+    needHideFooter(route) {
+        return ['Player', 'Chart'].includes(route.name);
+    }
 
     componentWillReact() {
 
         var navigator = this.refs.nav;
 
-        switch ('Player') {
-            case this.props.route.name:
+        switch (true) {
+            case this.needHideFooter(this.props.route):
                 navigator.push(this.props.route);
                 Animated.timing(this.state.height, {
                     toValue: 0,
@@ -79,7 +85,7 @@ export default class Views extends Component {
 
                     onDidFocus: (route) => {
 
-                        if (route.name !== 'Player') {
+                        if (!this.needHideFooter(route)) {
                             Animated.timing(this.state.height, {
                                 toValue: 50,
                                 duration: 100

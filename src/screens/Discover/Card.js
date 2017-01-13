@@ -23,6 +23,7 @@ export default class Card extends Component {
         type: PropTypes.oneOf(['top', 'trending']).isRequired,
         genre: PropTypes.object.isRequired,
         card: PropTypes.object.isRequired,
+        showChart: PropTypes.func.isRequired,
     };
 
     state = {
@@ -36,6 +37,8 @@ export default class Card extends Component {
         if (!card.songs.length) {
             await card.getSongs(genre, type);
         }
+
+        card.setGenre(genre);
     }
 
     async componentWillReceiveProps(nextProps) {
@@ -60,10 +63,11 @@ export default class Card extends Component {
 
     render() {
 
-        var song = this.props.card.songs.slice()[0];
+        var { card, showChart } = this.props;
+        var song = card.songs.slice()[0];
 
         return (
-            <TouchableOpacity style={styles.container}>
+            <TouchableOpacity style={styles.container} onPress={e => card.songs.length && showChart(card)}>
                 {
                     song
                     ? (
