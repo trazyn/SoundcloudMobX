@@ -4,7 +4,7 @@ export default (song) => {
     return {
         title: song.title,
         id: song['id'],
-        artwork: (song['artwork_url'] || '').replace(/\large\./, 't500x500.'),
+        artwork: (song['artwork_url'] || 'https://unsplash.it/500/500?random').replace(/\large\./, 't500x500.'),
         duration: song['duration'],
         kind: song['kind'],
         commentCount: song['comment_count'],

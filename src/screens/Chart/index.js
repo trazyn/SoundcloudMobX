@@ -18,6 +18,7 @@ import {
 
 import parseTimes from '../../utils/parseTimes';
 import Loader from '../../components/Loader';
+import FadeImage from '../../components/FadeImage';
 
 @inject(stores => ({
     songs: stores.chart.songs,
@@ -43,7 +44,7 @@ export default class Chart extends Component {
             var song = this.props.songs[start + index];
 
             return (
-                <Image key={index + start} {...{
+                <FadeImage key={index + start} {...{
                     source: {
                         uri: song.artwork
                     },
@@ -52,7 +53,7 @@ export default class Chart extends Component {
                         height: 75,
                         width: 75,
                     }
-                }}></Image>
+                }}></FadeImage>
             );
         });
     }
@@ -245,6 +246,7 @@ const styles = StyleSheet.create({
         color: 'rgba(0,0,0,.7)',
         fontSize: 13,
         width: 240,
+        backgroundColor: 'transparent',
     },
 
     author: {
@@ -252,14 +254,17 @@ const styles = StyleSheet.create({
         color: 'rgba(0,0,0,.5)',
         fontSize: 11,
         width: 240,
+        backgroundColor: 'transparent',
     },
 
     fav: {
         marginLeft: 18,
+        backgroundColor: 'transparent',
     },
 
     times: {
         color: 'rgba(0,0,0,.5)',
         fontSize: 11,
+        backgroundColor: 'transparent',
     },
 });

@@ -7,10 +7,11 @@ import {
     Dimensions,
     StatusBar,
     Image,
-    Animated,
     TouchableOpacity,
     StyleSheet,
 } from 'react-native';
+
+import FadeImage from '../../components/FadeImage';
 
 @inject(stores => ({
     card: stores.card,
@@ -24,10 +25,6 @@ export default class Card extends Component {
         genre: PropTypes.object.isRequired,
         card: PropTypes.object.isRequired,
         showChart: PropTypes.func.isRequired,
-    };
-
-    state = {
-        opacity: new Animated.Value(0)
     };
 
     async componentDidMount() {
@@ -71,7 +68,7 @@ export default class Card extends Component {
                 {
                     song
                     ? (
-                        <Animated.Image {...{
+                        <FadeImage {...{
                             source: {
                                 uri: song.artwork,
                             },
@@ -79,18 +76,10 @@ export default class Card extends Component {
                             style: {
                                 height: 150,
                                 width: 150,
-                                opacity: this.state.opacity,
                             },
-
-                            onLoadEnd: () => {
-                                Animated.timing(this.state.opacity, {
-                                    toValue: 1,
-                                    duration: 200
-                                }).start();
-                            }
                         }}>
                             {this.renderContent()}
-                        </Animated.Image>
+                        </FadeImage>
                     )
                     : (
                         <Image {...{
