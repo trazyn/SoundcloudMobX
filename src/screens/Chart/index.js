@@ -74,6 +74,20 @@ export default class Chart extends Component {
             && player.playlist.slice().reduce((accumulator, e, index) => accumulator && e.id === songs[index].id);
     }
 
+    showPlaying() {
+
+        this.props.player.start();
+
+        this.setState({
+            ...this.state,
+            playing: true
+        });
+
+        this.props.setRoute({
+            name: 'Player'
+        });
+    }
+
     togglePlayer() {
 
         var { songs, player } = this.props;
@@ -86,18 +100,12 @@ export default class Chart extends Component {
                 playlist: songs
             });
 
-            player.start();
-
-            this.setState({
-                ...this.state,
-                playing: true
-            });
-
-            this.props.setRoute({
-                name: 'Player'
-            });
+            this.showPlaying();
         } else {
             player.toggle();
+            this.setState({
+                playing: false
+            });
         }
     }
 
@@ -108,7 +116,7 @@ export default class Chart extends Component {
 
     render() {
 
-        var { songs, genre, doRefresh, showRefresh, doLoadmore, showLoadmore, hasEnd } = this.props;
+        var { songs, genre, doRefresh, showRefresh, doLoadmore, showLoadmore, hasEnd, player } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
         });
@@ -117,6 +125,7 @@ export default class Chart extends Component {
             inputRange: [-40, -10],
             outputRange: [1, 0],
         });
+        var isPlaying = this.isPlaying();
 
         return (
             <View style={styles.container}>
@@ -183,7 +192,7 @@ export default class Chart extends Component {
                 onEndReached={() => {
 
                     if (hasEnd === false) {
-                        doLoadmore();
+                        doLoadmore(player.appendPlaylist);
                     }
                 }}
 
@@ -207,13 +216,13 @@ export default class Chart extends Component {
                 renderRow={(song, sectionId, rowId) => {
 
                     var times = parseTimes(song.duration);
+                    var active = isPlaying && song.id === player.song.id;
 
                     return (
                         <View>
-                            <TouchableOpacity style={styles.song} onPress={() => {
+                            <TouchableOpacity onPress={() => {
 
-                                var { player, setRoute } = this.props;
-                                var isPlaying = this.isPlaying();
+                                var { setRoute } = this.props;
 
                                 if (isPlaying) {
                                     player.setup({
@@ -226,22 +235,20 @@ export default class Chart extends Component {
                                     });
                                 }
 
-                                player.start();
-
-                                setRoute({
-                                    name: 'Player'
-                                });
+                                this.showPlaying();
                             }}>
-                                <View>
-                                    <Text numberOfLines={1} ellipsizeMode="tail" style={styles.title}>{song.title}</Text>
-                                    <Text numberOfLines={1} ellipsizeMode="tail" style={styles.author}>{song.user.username}</Text>
+                                <View style={styles.song}>
+                                    <View>
+                                        <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.title, active && styles.active]}>{song.title}</Text>
+                                        <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.author, active && styles.active]}>{song.user.username}</Text>
+                                    </View>
+
+                                    <Icon name="heart" size={10} style={[styles.fav, song.fav && {
+                                        color: 'red'
+                                    }]}></Icon>
+
+                                    <Text style={styles.times}>{times.minutes}:{times.seconds}</Text>
                                 </View>
-
-                                <Icon name="heart" size={10} style={[styles.fav, song.fav && {
-                                    color: 'red'
-                                }]}></Icon>
-
-                                <Text style={styles.times}>{times.minutes}:{times.seconds}</Text>
                             </TouchableOpacity>
 
                             {
@@ -383,6 +390,10 @@ const styles = StyleSheet.create({
         fontSize: 11,
         width: 240,
         backgroundColor: 'transparent',
+    },
+
+    active: {
+        color: '#f50',
     },
 
     fav: {

@@ -23,9 +23,9 @@ export default class Card {
         return new Promise(async (resolve, reject) => {
 
             var url = `https://api-v2.soundcloud.com/charts?kind=${this.type}&genre=soundcloud%3Agenres%3A${this.genre.key}&client_id=fDoItMDbsbZz8dY16ZzARCZmzgHBPotA&limit=20&offset=0&linked_partitioning=1&app_version=1484129465`;
-            var response = await axios.get(self.nextHref || url);
+            var response = await axios.get(this.nextHref || url);
 
-            this.nextHref = response.data.next_href;
+            this.nextHref = response.data.next_href + '&client_id=fDoItMDbsbZz8dY16ZzARCZmzgHBPotA';
 
             resolve(filter(response.data));
         });

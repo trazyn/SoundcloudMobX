@@ -228,6 +228,10 @@ class Player {
         self.start();
     }
 
+    @action appendPlaylist(songs) {
+        self.playlist.push(...songs);
+    }
+
     @action async init() {
         var mode = await AsyncStorage.getItem('@Player:mode');
 

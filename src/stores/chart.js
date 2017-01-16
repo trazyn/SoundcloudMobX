@@ -19,7 +19,7 @@ class Chart extends Card {
         self.showRefresh = false;
     }
 
-    @action async doLoadmore() {
+    @action async doLoadmore(updatePlaylist) {
 
         self.showLoadmore = true;
 
@@ -36,6 +36,10 @@ class Chart extends Card {
 
         self.songs.push(...songs);
         self.showLoadmore = false;
+
+        if ('function' === typeof appendPlaylist) {
+            appendPlaylist(songs);
+        }
     }
 
     setup(target) {
