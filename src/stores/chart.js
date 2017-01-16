@@ -13,6 +13,8 @@ class Chart extends Card {
 
         self.hasEnd = false;
         self.showRefresh = true;
+        self.nextHref = '';
+
         var songs = await self.request();
 
         self.songs.replace(songs);
@@ -46,6 +48,7 @@ class Chart extends Card {
         self.songs = target.songs;
         self.genre = target.genre;
         self.type = target.type;
+        self.nextHref = target.nextHref;
         self.hasEnd = false;
     }
 };
