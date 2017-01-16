@@ -2,8 +2,9 @@
 import { observable, action } from 'mobx';
 import RNFS from 'react-native-fs';
 import Sound from 'react-native-sound';
-import { CLIENT_ID, PLAYER_MODE } from '../config';
+import axios from 'axios';
 import { AsyncStorage } from 'react-native';
+import { CLIENT_ID, PLAYER_MODE } from '../config';
 
 class Player {
 
@@ -28,6 +29,8 @@ class Player {
 
         return new Promise(async (resolve, reject) => {
 
+            var fromUrl = song.streamUrl;
+
             if (self.downloading) {
                 await RNFS.stopDownload(self.downloading.jobId);
                 self.downloading = null;
@@ -38,8 +41,19 @@ class Player {
                 return resolve();
             }
 
+            if (!fromUrl) {
+                let response = await axios.get(song.uri + '/streams', {
+                    params: {
+                        client_id: CLIENT_ID,
+                    }
+                });
+                fromUrl = response.data.http_mp3_128_url;
+            } else {
+                fromUrl = `${fromUrl}?client_id=${CLIENT_ID}`;
+            }
+
             self.downloading = RNFS.downloadFile({
-                fromUrl: `${song.streamUrl}?client_id=${CLIENT_ID}`,
+                fromUrl,
                 toFile: self.filename,
                 progress: (state) => {
                     self.loaded = state.bytesWritten / state.contentLength;

@@ -27,23 +27,24 @@ export default class Card extends Component {
         showChart: PropTypes.func.isRequired,
     };
 
-    async componentDidMount() {
+    componentDidMount() {
 
         var { card, genre, type } = this.props;
 
-        if (!card.songs.length) {
-            await card.getSongs(genre, type);
-        }
-
         card.setGenre(genre);
+        card.setType(type);
+
+        if (!card.songs.length) {
+            card.getSongs();
+        }
     }
 
-    async componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps) {
 
         var { card, genre, type } = this.props;
 
         if (this.props.type !== nextProps.type) {
-            await card.getSongs(genre, nextProps.type);
+            card.getSongs(genre, nextProps.type);
         }
     }
 

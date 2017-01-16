@@ -23,9 +23,9 @@ export default (song) => {
         streamUrl: song['stream_url'],
         taglist: song['tag_list'],
         uri: song['uri'],
-        fav: song['user_favorite'],
+        fav: song['user_favorite'] || false,
         user: song['user'],
-        filetype: song['original_format'],
+        filetype: song['original_format'] || 'mp3',
         waveform: song['waveform_url'],
     };
 };

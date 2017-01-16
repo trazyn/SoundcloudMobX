@@ -7,13 +7,10 @@ import {
     View,
     Text,
     Dimensions,
-    StatusBar,
-    Image,
     Animated,
     TouchableOpacity,
-    ScrollView,
+    ListView,
     StyleSheet,
-    InteractionManager,
 } from 'react-native';
 
 import parseTimes from '../../utils/parseTimes';
@@ -25,6 +22,12 @@ import FadeImage from '../../components/FadeImage';
     genre: stores.chart.genre,
     doRefresh: stores.chart.doRefresh,
     showRefresh: stores.chart.showRefresh,
+    doLoadmore: stores.chart.doLoadmore,
+    showLoadmore: stores.chart.showLoadmore,
+    hasEnd: stores.chart.hasEnd,
+
+    setRoute: stores.route.setRoute.bind(stores.route),
+
     player: stores.player,
 }))
 @observer
@@ -35,6 +38,10 @@ export default class Chart extends Component {
         genre: PropTypes.object.isRequired,
         doRefresh: PropTypes.func.isRequired,
         showRefresh: PropTypes.bool.isRequired,
+        doLoadmore: PropTypes.func.isRequired,
+        showLoadmore: PropTypes.bool.isRequired,
+        hasEnd: PropTypes.bool.isRequired,
+        setRoute: PropTypes.func.isRequired,
     };
 
     renderCoverWall(start = 0, end = 5) {
@@ -58,13 +65,54 @@ export default class Chart extends Component {
         });
     }
 
+    isPlaying() {
+
+        var { player, songs } = this.props;
+
+        return player.playing
+            && player.playlist.length === songs.length
+            && player.playlist.slice().reduce((accumulator, e, index) => accumulator && e.id === songs[index].id);
+    }
+
+    togglePlayer() {
+
+        var { songs, player } = this.props;
+        var playing = this.state.playing;
+
+        if (!playing) {
+
+            player.setup({
+                song: songs[0],
+                playlist: songs
+            });
+
+            player.start();
+
+            this.setState({
+                ...this.state,
+                playing: true
+            });
+
+            this.props.setRoute({
+                name: 'Player'
+            });
+        } else {
+            player.toggle();
+        }
+    }
+
     state = {
-        opacity: new Animated.Value(0)
+        opacity: new Animated.Value(0),
+        playing: this.isPlaying(),
     };
 
     render() {
 
-        var { songs, genre, showRefresh } = this.props;
+        var { songs, genre, doRefresh, showRefresh, doLoadmore, showLoadmore, hasEnd } = this.props;
+        var ds = new ListView.DataSource({
+            rowHasChanged: (r1, r2) => r1.id !== r2.id
+        });
+        var dataSource = ds.cloneWithRows(songs.slice());
         var opacity = this.state.opacity.interpolate({
             inputRange: [-40, -10],
             outputRange: [1, 0],
@@ -112,18 +160,30 @@ export default class Chart extends Component {
                             </Text>
                         </View>
 
-                        <TouchableOpacity>
-                            <Icon name="cloud-download" size={20} color="red"></Icon>
+                        <TouchableOpacity onPress={this.togglePlayer.bind(this)}>
+                            {
+                                this.state.playing
+                                    ? (<Icon name="control-pause" size={20} color="red"></Icon>)
+                                    : (<Icon name="control-play" size={20} color="red"></Icon>)
+                            }
                         </TouchableOpacity>
                     </View>
                 </View>
 
-                <ScrollView
+                <ListView
 
                 onScrollEndDrag={e => {
 
                     if (e.nativeEvent.contentOffset.y < -40) {
-                        this.props.doRefresh();
+                        doRefresh();
+                    }
+                }}
+
+                onEndReachedThreshold={1}
+                onEndReached={() => {
+
+                    if (hasEnd === false) {
+                        doLoadmore();
                     }
                 }}
 
@@ -140,30 +200,98 @@ export default class Chart extends Component {
 
                 style={[styles.songs, showRefresh && {
                     paddingTop: 40
-                }]}>
-                    {
-                        songs.map((song, index) => {
+                }]}
 
-                            var times = parseTimes(song.duration);
+                enableEmptySections={true}
+                dataSource={dataSource}
+                renderRow={(song, sectionId, rowId) => {
 
-                            return (
-                                <TouchableOpacity key={index} style={styles.song}>
-                                    <View>
-                                        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.title}>{song.title}</Text>
-                                        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.author}>{song.user.username}</Text>
+                    var times = parseTimes(song.duration);
+
+                    return (
+                        <View>
+                            <TouchableOpacity style={styles.song} onPress={() => {
+
+                                var { player, setRoute } = this.props;
+                                var isPlaying = this.isPlaying();
+
+                                if (isPlaying) {
+                                    player.setup({
+                                        song,
+                                    });
+                                } else {
+                                    player.setup({
+                                        song,
+                                        playlist: songs
+                                    });
+                                }
+
+                                player.start();
+
+                                setRoute({
+                                    name: 'Player'
+                                });
+                            }}>
+                                <View>
+                                    <Text numberOfLines={1} ellipsizeMode="tail" style={styles.title}>{song.title}</Text>
+                                    <Text numberOfLines={1} ellipsizeMode="tail" style={styles.author}>{song.user.username}</Text>
+                                </View>
+
+                                <Icon name="heart" size={10} style={[styles.fav, song.fav && {
+                                    color: 'red'
+                                }]}></Icon>
+
+                                <Text style={styles.times}>{times.minutes}:{times.seconds}</Text>
+                            </TouchableOpacity>
+
+                            {
+                                ++rowId === 50 && (
+                                    <View style={{
+                                        width,
+                                        marginBottom: 15,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        flexDirection: 'row',
+                                    }}>
+                                        <View style={styles.line}></View>
+
+                                        <Text style={styles.end}>END</Text>
+
+                                        <View style={styles.line}></View>
                                     </View>
+                                )
+                            }
+                        </View>
+                    );
+                }}>
+                </ListView>
 
-                                    <Icon name="heart" size={10} style={[styles.fav, song.fav && {
-                                        color: 'red'
-                                    }]}></Icon>
+                {
+                    showLoadmore && (
 
-                                    <Text style={styles.times}>{times.minutes}:{times.seconds}</Text>
-                                </TouchableOpacity>
-                            );
-                        })
-                    }
-                </ScrollView>
-
+                        <View style={{
+                            position: 'absolute',
+                            top: 150,
+                            left: 0,
+                            width,
+                            height: height - 150,
+                            backgroundColor: 'rgba(255,255,255,.9)',
+                            zIndex: 99
+                        }}>
+                            <Loader {...{
+                                show: true,
+                                animate: true,
+                                text: 'LOAD MORE',
+                                style4container: {
+                                    width,
+                                    transform: [{
+                                        rotate: '0deg'
+                                    }]
+                                }
+                            }}></Loader>
+                        </View>
+                    )
+                }
             </View>
         );
     }
@@ -266,5 +394,18 @@ const styles = StyleSheet.create({
         color: 'rgba(0,0,0,.5)',
         fontSize: 11,
         backgroundColor: 'transparent',
+    },
+
+    line: {
+        height: 1,
+        width: 20,
+        backgroundColor: '#000'
+    },
+
+    end: {
+        marginRight: 10,
+        marginLeft: 10,
+        fontSize: 12,
+        fontWeight: '100'
     },
 });

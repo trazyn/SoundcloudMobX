@@ -13,6 +13,7 @@ import {
 import { CHART_GENRES_MAP } from '../../config';
 import CardStore from '../../stores/card';
 import Card from './Card';
+import blacklist from '../../utils/backlist';
 
 @inject(stores => ({
     type: stores.discover.type,
@@ -78,7 +79,7 @@ export default class Discover extends Component {
                                             if (genre) {
                                                 return (
                                                     <Provider card={genre.store} key={index}>
-                                                        <Card genre={genre} showChart={this.showChart.bind(this)}></Card>
+                                                        <Card genre={blacklist(genre, 'store')} showChart={this.showChart.bind(this)}></Card>
                                                     </Provider>
                                                 );
                                             }

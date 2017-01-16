@@ -52,15 +52,12 @@ export default class Home extends Component {
         if (!this.props.songs.length) {
             await this.props.getSongs();
         }
-
-        this.props.player.setup({
-            playlist: this.props.songs
-        });
     }
 
     play(song) {
 
         this.props.player.setup({
+            playlist: this.props.songs,
             song,
         });
 
