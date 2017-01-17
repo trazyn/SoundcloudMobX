@@ -42,12 +42,14 @@ class Player {
             }
 
             if (!fromUrl) {
-                let response = await axios.get(song.uri + '/streams', {
+                let response = axios.get(song.uri + '/streams', {
                     params: {
                         client_id: CLIENT_ID,
                     }
-                });
-                fromUrl = response.data.http_mp3_128_url;
+                }).catch(ex => console.err(`Failed to get stream: ${song.uri}`));
+                let data = (await response).data;
+
+                fromUrl = data.http_mp3_128_url;
             } else {
                 fromUrl = `${fromUrl}?client_id=${CLIENT_ID}`;
             }

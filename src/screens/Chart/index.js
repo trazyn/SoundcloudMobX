@@ -70,6 +70,7 @@ export default class Chart extends Component {
         var { player, songs } = this.props;
 
         return player.playing
+            && player.playlist.length
             && player.playlist.length === songs.length
             && player.playlist.slice().reduce((accumulator, e, index) => accumulator && e.id === songs[index].id);
     }
