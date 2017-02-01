@@ -16,6 +16,7 @@ import Chart from './Chart';
 import Player from '../components/Player';
 import Footer from '../components/Footer';
 import RippleHeader from '../components/RippleHeader';
+import Login from './Login';
 
 const components = {
     Home,
@@ -24,51 +25,61 @@ const components = {
     Player,
     Discover,
     Chart,
+    Login,
 };
 
 @inject(stores => ({
-    route: stores.route.value
+    route: stores.route.value,
+    setRoute: stores.route.setRoute.bind(stores.route),
+    needLogin: !!stores.session.isLogin(),
 }))
 @observer
 export default class Views extends Component {
 
     static propTypes = {
-        route: PropTypes.object.isRequired
+        route: PropTypes.object.isRequired,
+        setRoute: PropTypes.func.isRequired,
+        needLogin: PropTypes.bool.isRequired,
     };
 
     state = {
         height: new Animated.Value(50),
+        showFooter: true,
     };
 
     needHideFooter(route) {
-        return ['Player', 'Chart'].includes(route.name);
+        return ['Player', 'Chart', 'Login'].includes(route.name);
     }
 
     componentWillReact() {
 
         var navigator = this.refs.nav;
+        var route = this.props.route;
 
         switch (true) {
-            case this.needHideFooter(this.props.route):
-                navigator.push(this.props.route);
+            case this.needHideFooter(route):
                 Animated.timing(this.state.height, {
                     toValue: 0,
                     duration: 100,
                     delay: 200,
                 }).start();
+
+            case 'Login' === route.name:
+                navigator.push(this.props.route);
                 break;
 
             default:
-                navigator.replace(this.props.route);
+                navigator.replace(route);
         }
     }
 
     render() {
 
-        const opacity = this.state.height.interpolate({
+        var opacity = this.state.height.interpolate({
             inputRange: [0, 50],
             outputRange: [0, 1],
         });
+        var { route, setRoute, needLogin } = this.props;
 
         return (
             <View style={{
@@ -121,7 +132,12 @@ export default class Views extends Component {
                     ref: 'nav'
                 }}></Navigator>
 
-                <Footer style={{
+                <Footer
+                show={this.state.showFooter}
+                route={route}
+                setRoute={setRoute}
+                needLogin={needLogin}
+                style={{
                     opacity,
                     height: this.state.height,
                 }}></Footer>

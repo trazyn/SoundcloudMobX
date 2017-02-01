@@ -3,7 +3,6 @@ import React, { Component, PropTypes } from 'react';
 import { Provider } from 'mobx-react/native';
 import {
     View,
-    Linking,
     StyleSheet,
 } from 'react-native';
 
@@ -14,10 +13,7 @@ export default class App extends Component {
 
     async componentDidMount() {
 
-        Linking.addEventListener('url', e => {
-            console.warn(e.url);
-        });
-
+        await stores.session.init();
         await stores.player.init();
         console.ignoredYellowBox = ['Warning: ReactNative.createElement', 'Remote debugger', 'View '];
     }

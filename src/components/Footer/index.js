@@ -10,21 +10,17 @@ import {
     Animated,
 } from 'react-native';
 
-@inject(stores => ({
-    route: stores.route.value,
-    setRoute: stores.route.setRoute.bind(stores.route)
-}))
-@observer
 export default class Footer extends Component {
 
     static propTypes = {
         route: PropTypes.object.isRequired,
         setRoute: PropTypes.func.isRequired,
+        needLogin: PropTypes.bool.isRequired,
     };
 
-    highlight() {
+    highlight(props = this.props) {
 
-        var name = this.props.route.name;
+        var name = props.route.name;
         var ele = this.refs[name];
 
         if (ele) {
@@ -51,11 +47,14 @@ export default class Footer extends Component {
     }
 
     componentDidMount = () => this.highlight();
-    componentWillReact = () => this.highlight();
+
+    componentWillReceiveProps(nextProps) {
+        this.highlight(nextProps);
+    }
 
     render() {
 
-        var { setRoute } = this.props;
+        var { setRoute, route, needLogin } = this.props;
 
         return (
             <Animated.View style={[styles.container, this.props.style]}>
@@ -77,7 +76,7 @@ export default class Footer extends Component {
 
                 <TouchableOpacity onPress={e => {
                     setRoute({
-                        name: 'Fav'
+                        name: needLogin ? 'Login' : 'Fav'
                     });
                 }}>
                     <Icon name="heart" ref="Fav" size={16}></Icon>
