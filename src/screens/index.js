@@ -93,6 +93,15 @@ export default class Views extends Component {
                         }
                     },
 
+                    configureScene: (route, routeStack) => {
+
+                        if (['Player', 'Login'].includes(route.name)) {
+                            return Navigator.SceneConfigs.FloatFromBottom;
+                        } else {
+                            return Navigator.SceneConfigs.PushFromRight;
+                        }
+                    },
+
                     renderScene: (route, navigator) => {
 
                         const name = route.name;

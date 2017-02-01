@@ -91,7 +91,6 @@ const styles = StyleSheet.create({
     },
 
     indicator: {
-
         width: 14,
         marginTop: 8,
         borderBottomColor: 'transparent',
