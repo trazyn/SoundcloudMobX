@@ -15,7 +15,7 @@ export default class Footer extends Component {
     static propTypes = {
         route: PropTypes.object.isRequired,
         setRoute: PropTypes.func.isRequired,
-        needLogin: PropTypes.bool.isRequired,
+        isLogin: PropTypes.func.isRequired,
     };
 
     highlight(props = this.props) {
@@ -54,11 +54,11 @@ export default class Footer extends Component {
 
     render() {
 
-        var { setRoute, route, needLogin } = this.props;
+        var { setRoute, route, isLogin } = this.props;
 
         return (
             <Animated.View style={[styles.container, this.props.style]}>
-                <TouchableOpacity onPress={e => {
+                <TouchableOpacity style={styles.item} onPress={e => {
                     setRoute({
                         name: 'Home'
                     });
@@ -66,7 +66,7 @@ export default class Footer extends Component {
                     <Icon name="playlist" ref="Home" size={16}></Icon>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={e => {
+                <TouchableOpacity style={styles.item} onPress={e => {
                     setRoute({
                         name: 'Discover'
                     });
@@ -74,9 +74,9 @@ export default class Footer extends Component {
                     <Icon name="magnifier" ref="Discover" size={16}></Icon>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={e => {
+                <TouchableOpacity style={styles.item} onPress={e => {
                     setRoute({
-                        name: needLogin ? 'Login' : 'Fav'
+                        name: !isLogin() ? 'Login' : 'Fav'
                     });
                 }}>
                     <Icon name="heart" ref="Fav" size={16}></Icon>
@@ -101,5 +101,12 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         flexDirection: 'row',
         opacity: .7,
+    },
+
+    item: {
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 });

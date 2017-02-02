@@ -11,9 +11,8 @@ import {
 import Home from './Home';
 import Fav from './Fav';
 import Discover from './Discover';
-import Profile from './Profile';
 import Chart from './Chart';
-import Player from '../components/Player';
+import Player from './Player';
 import Footer from '../components/Footer';
 import RippleHeader from '../components/RippleHeader';
 import Login from './Login';
@@ -21,7 +20,6 @@ import Login from './Login';
 const components = {
     Home,
     Fav,
-    Profile,
     Player,
     Discover,
     Chart,
@@ -31,7 +29,7 @@ const components = {
 @inject(stores => ({
     route: stores.route.value,
     setRoute: stores.route.setRoute.bind(stores.route),
-    needLogin: !!stores.session.isLogin(),
+    isLogin: stores.session.isLogin,
 }))
 @observer
 export default class Views extends Component {
@@ -39,7 +37,7 @@ export default class Views extends Component {
     static propTypes = {
         route: PropTypes.object.isRequired,
         setRoute: PropTypes.func.isRequired,
-        needLogin: PropTypes.bool.isRequired,
+        isLogin: PropTypes.func.isRequired,
     };
 
     state = {
@@ -79,7 +77,7 @@ export default class Views extends Component {
             inputRange: [0, 50],
             outputRange: [0, 1],
         });
-        var { route, setRoute, needLogin } = this.props;
+        var { route, setRoute, isLogin } = this.props;
 
         return (
             <View style={{
@@ -136,7 +134,7 @@ export default class Views extends Component {
                 show={this.state.showFooter}
                 route={route}
                 setRoute={setRoute}
-                needLogin={needLogin}
+                isLogin={isLogin}
                 style={{
                     opacity,
                     height: this.state.height,
