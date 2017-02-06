@@ -1,6 +1,5 @@
 
 import { toJS, observable, action } from 'mobx';
-import axios from 'axios';
 import Card from './card';
 
 class Chart extends Card {
@@ -50,6 +49,11 @@ class Chart extends Card {
         self.type = target.type;
         self.nextHref = target.nextHref;
         self.hasEnd = false;
+        self.playing = target.playing;
+        self.setPlaying = state => {
+            self.playing = state;
+            target.setPlaying(state);
+        };
     }
 };
 

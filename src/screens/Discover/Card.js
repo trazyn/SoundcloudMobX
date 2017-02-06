@@ -1,5 +1,6 @@
 
 import React, { Component, PropTypes } from 'react';
+import MKIcon from 'react-native-vector-icons/MaterialIcons';
 import { inject, observer } from 'mobx-react/native';
 import {
     View,
@@ -50,11 +51,30 @@ export default class Card extends Component {
 
     renderContent() {
 
+        var playing = this.props.card.playing;
+
         return (
             <View style={styles.inner}>
-                <Text style={styles.genre}>
+                <Text style={[styles.genre, playing && {
+                    color: '#f50',
+                }]}>
                 # {this.props.genre.name}
                 </Text>
+
+                {
+                    playing && (
+                        <View style={{
+                            marginTop: 10,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                            <MKIcon name="equalizer" style={{
+                                fontSize: 18,
+                                color: '#f50',
+                            }}></MKIcon>
+                        </View>
+                    )
+                }
             </View>
         );
     }

@@ -1,7 +1,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import { Animated } from 'react-native';
-import blacklist from '../../utils/backlist';
+import blacklist from '../../utils/blacklist';
 
 export default class FadeImage extends Component {
 

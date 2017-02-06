@@ -20,12 +20,16 @@ import FadeImage from '../../components/FadeImage';
 @inject(stores => ({
     login: stores.session.login,
     loading: stores.session.loading,
+    showError: stores.showError,
+    showMessage: stores.showMessage,
 }))
 export default class Login extends Component {
 
     static propTypes = {
         login: PropTypes.func.isRequired,
         loading: PropTypes.bool.isRequired,
+        showError: PropTypes.func.isRequired,
+        showMessage: PropTypes.func.isRequired,
     };
 
     handleBack() {
@@ -33,7 +37,25 @@ export default class Login extends Component {
     }
 
     handleLogin() {
-        this.props.login('', '').then(this.handleBack.bind(this));
+
+        var { username, password } = this.refs;
+        var backward = this.handleBack.bind(this);
+
+        username = username._lastNativeText;
+        password = password._lastNativeText;
+
+        if (!username || !password) {
+            this.props.showError('Invaild Username or Password!');
+        } else {
+            this.props.login(username, password)
+                .then(() => {
+                    backward();
+                    this.props.showMessage('Login Success!');
+                })
+                .catch(ex => {
+                    this.props.showError('Invaild Username or Password!');
+                });
+        }
     }
 
     render() {
@@ -58,7 +80,7 @@ export default class Login extends Component {
                                 width,
                                 height,
                                 backgroundColor: 'rgba(255,255,255,.7)',
-                                zIndex: 99
+                                zIndex: 9
                             }}>
                                 <Loader {...{
                                     show: true,
@@ -92,8 +114,9 @@ export default class Login extends Component {
                     <View style={styles.form}>
                         <TextInput
                         style={styles.input}
-                        maxLength={20}
+                        maxLength={40}
                         placeholderTextColor='rgba(0,0,0,.45)'
+                        ref="username"
                         placeholder='Email'>
                         </TextInput>
 
@@ -102,6 +125,7 @@ export default class Login extends Component {
                         secureTextEntry={true}
                         maxLength={20}
                         placeholderTextColor='rgba(0,0,0,.45)'
+                        ref="password"
                         placeholder='Password'>
                         </TextInput>
 

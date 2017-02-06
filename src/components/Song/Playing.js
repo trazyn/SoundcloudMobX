@@ -17,6 +17,7 @@ export default class Playing extends Component {
         title: PropTypes.string.isRequired,
         artwork: PropTypes.string.isRequired,
         enter: PropTypes.func.isRequired,
+        user: PropTypes.object.isRequired,
     };
 
     state = {
@@ -50,16 +51,15 @@ export default class Playing extends Component {
         Animated.sequence([
             Animated.timing(line1, {
                 toValue: 20,
-                duration: 200,
+                duration: 100,
             }),
             Animated.timing(line1, {
                 toValue: 10,
-                duration: 200,
+                duration: 100,
             }),
-
             Animated.timing(line2, {
                 toValue: 24,
-                duration: 200,
+                duration: 100,
             }),
             Animated.timing(line2, {
                 toValue: 5,
@@ -68,7 +68,7 @@ export default class Playing extends Component {
 
             Animated.timing(line3, {
                 toValue: 0,
-                duration: 200,
+                duration: 100,
             }),
             Animated.timing(line3, {
                 toValue: 19,
@@ -77,7 +77,7 @@ export default class Playing extends Component {
 
             Animated.timing(line4, {
                 toValue: 18,
-                duration: 200,
+                duration: 100,
             }),
             Animated.timing(line4, {
                 toValue: 5,
@@ -98,7 +98,7 @@ export default class Playing extends Component {
 
     render() {
 
-        var { title, artwork } = this.props;
+        var { title, user, artwork } = this.props;
         var { line1, line2, line3, line4 } = this.state;
         var rotate = this.state.rotate.interpolate({
             inputRange: [0, 360],
@@ -107,18 +107,9 @@ export default class Playing extends Component {
 
         return (
             <View style={styles.container}>
-                <Image {...{
-                    source: {
-                        uri: artwork
-                    },
-
-                    blurRadius: 15,
-
-                    style: {
-                        width: 300,
-                        height: 432.5,
-                        resizeMode: 'cover'
-                    }
+                <View style={{
+                    flex: 1,
+                    backgroundColor: '#f1dfdd',
                 }}>
                     <TouchableOpacity style={styles.shadow} onPress={this.props.enter}>
                         <Animated.View style={[styles.cover, {
@@ -156,10 +147,12 @@ export default class Playing extends Component {
                         }]}></Animated.View>
                     </View>
 
-                    <View style={styles.title}>
-                        <Text numberOfLines={3} ellipsizeMode="tail" style={styles.text}>{title}</Text>
+                    <View style={styles.info}>
+                        <Text numberOfLines={2} ellipsizeMode="tail" style={styles.title}>{title}</Text>
+
+                        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.username}>{user.username}</Text>
                     </View>
-                </Image>
+                </View>
             </View>
         );
     }
@@ -169,6 +162,7 @@ const styles = StyleSheet.create({
     container: {
         width: 300,
         height: 432.5,
+        backgroundColor: '#f1dfdd',
     },
 
     shadow: {
@@ -192,24 +186,28 @@ const styles = StyleSheet.create({
         borderColor: '#fff'
     },
 
-    title: {
+    info: {
         position: 'absolute',
         left: 30,
-        bottom: 40,
+        bottom: 30,
         width: 240,
         paddingTop: 5,
         paddingBottom: 5,
-        borderTopWidth: 2,
-        borderBottomWidth: 2,
-        borderBottomColor: '#000',
-        borderTopColor: '#000',
         backgroundColor: 'transparent',
     },
 
-    text: {
+    title: {
         fontSize: 16,
         fontWeight: '100',
         textAlign: 'center',
+    },
+
+    username: {
+        marginTop: 10,
+        fontSize: 13,
+        fontWeight: '100',
+        textAlign: 'center',
+        color: '#999',
     },
 
     equalizer: {
@@ -226,7 +224,7 @@ const styles = StyleSheet.create({
 
     line: {
         height: 24,
-        width: 4,
+        width: 2,
         margin: 2,
         backgroundColor: '#f50'
     },
@@ -246,4 +244,5 @@ const styles = StyleSheet.create({
     line4: {
         height: 21
     },
+
 });

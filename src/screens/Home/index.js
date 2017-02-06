@@ -12,6 +12,7 @@ import {
 import Songs from './Songs';
 import Nav from './Nav';
 import Loader from '../../components/Loader';
+import { CHART_GENRES_MAP } from '../../config';
 
 @inject(stores => ({
     songs: stores.home.songs,
@@ -64,6 +65,10 @@ export default class Home extends Component {
         this.props.setRoute({
             name: 'Player'
         });
+
+        for (var genre of CHART_GENRES_MAP) {
+            genre.store && genre.store.setPlaying(false);
+        }
     }
 
     render() {

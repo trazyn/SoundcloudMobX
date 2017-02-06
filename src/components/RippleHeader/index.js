@@ -18,7 +18,7 @@ export default class RippleHeader extends Component {
                     left: 0,
                     width,
                     height: 40,
-                    zIndex: 99,
+                    zIndex: 9,
                 }, this.props.style]
             }}></Animated.Image>
     );

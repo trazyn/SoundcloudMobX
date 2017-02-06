@@ -7,14 +7,19 @@ import {
     Dimensions,
 } from 'react-native';
 
-import RippleHeader from '../../components/RippleHeader';
-
+@inject(stores => ({
+    session: stores.session,
+    getProfile: stores.profile.getProfile,
+}))
 export default class Fav extends Component {
+
+    componentDidMount() {
+        this.props.getProfile(this.props.session.auth.access_token);
+    }
 
     render() {
         return (
             <View style={styles.container}>
-                <RippleHeader></RippleHeader>
             </View>
         );
     }
@@ -24,6 +29,5 @@ const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f1dfdd',
     }
 });

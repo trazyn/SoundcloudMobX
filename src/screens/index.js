@@ -16,6 +16,7 @@ import Player from './Player';
 import Footer from '../components/Footer';
 import RippleHeader from '../components/RippleHeader';
 import Login from './Login';
+import Profile from './Profile';
 
 const components = {
     Home,
@@ -24,6 +25,7 @@ const components = {
     Discover,
     Chart,
     Login,
+    Profile,
 };
 
 @inject(stores => ({
@@ -32,7 +34,7 @@ const components = {
     isLogin: stores.session.isLogin,
 }))
 @observer
-export default class Views extends Component {
+export default class Screes extends Component {
 
     static propTypes = {
         route: PropTypes.object.isRequired,
@@ -84,7 +86,7 @@ export default class Views extends Component {
                 flex: 1
             }}>
                 <RippleHeader style={{
-                    opacity
+                    opacity: route.name === 'Fav' ? 0 : opacity
                 }}></RippleHeader>
                 <Navigator {...{
 

@@ -1,6 +1,5 @@
 
 import React, { Component, PropTypes } from 'react';
-import MKIcon from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import { inject, observer } from 'mobx-react/native';
 import {
@@ -13,9 +12,11 @@ import {
     StyleSheet,
 } from 'react-native';
 
+import { CHART_GENRES_MAP } from '../../config';
 import parseTimes from '../../utils/parseTimes';
 import Loader from '../../components/Loader';
 import FadeImage from '../../components/FadeImage';
+import SongCard from './Song';
 
 @inject(stores => ({
     songs: stores.chart.songs,
@@ -25,6 +26,8 @@ import FadeImage from '../../components/FadeImage';
     doLoadmore: stores.chart.doLoadmore,
     showLoadmore: stores.chart.showLoadmore,
     hasEnd: stores.chart.hasEnd,
+    playing: stores.chart.playing,
+    setPlaying: stores.chart.setPlaying,
 
     setRoute: stores.route.setRoute.bind(stores.route),
 
@@ -42,6 +45,8 @@ export default class Chart extends Component {
         showLoadmore: PropTypes.bool.isRequired,
         hasEnd: PropTypes.bool.isRequired,
         setRoute: PropTypes.func.isRequired,
+        playing: PropTypes.bool.isRequired,
+        setPlaying: PropTypes.func.isRequired,
     };
 
     renderCoverWall(start = 0, end = 5) {
@@ -65,34 +70,24 @@ export default class Chart extends Component {
         });
     }
 
-    isPlaying() {
-
-        var { player, songs } = this.props;
-
-        return player.playing
-            && player.playlist.length
-            && player.playlist.length === songs.length
-            && player.playlist.slice().reduce((accumulator, e, index) => accumulator && e.id === songs[index].id);
-    }
-
     showPlaying() {
 
         this.props.player.start();
 
-        this.setState({
-            ...this.state,
-            playing: true
-        });
-
         this.props.setRoute({
             name: 'Player'
         });
+
+        for (var genre of CHART_GENRES_MAP) {
+            genre.store.setPlaying(false);
+        }
+
+        this.props.setPlaying(true);
     }
 
     togglePlayer() {
 
-        var { songs, player } = this.props;
-        var playing = this.state.playing;
+        var { songs, player, playing } = this.props;
 
         if (!playing) {
 
@@ -112,12 +107,11 @@ export default class Chart extends Component {
 
     state = {
         opacity: new Animated.Value(0),
-        playing: this.isPlaying(),
     };
 
     render() {
 
-        var { songs, genre, doRefresh, showRefresh, doLoadmore, showLoadmore, hasEnd, player } = this.props;
+        var { songs, genre, doRefresh, showRefresh, doLoadmore, showLoadmore, hasEnd, player, playing } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
         });
@@ -126,7 +120,6 @@ export default class Chart extends Component {
             inputRange: [-40, -10],
             outputRange: [1, 0],
         });
-        var isPlaying = this.isPlaying();
 
         return (
             <View style={styles.container}>
@@ -157,7 +150,7 @@ export default class Chart extends Component {
                         }
                     </View>
                     <TouchableOpacity onPress={() => this.props.navigator.pop()} style={styles.back}>
-                        <MKIcon name="arrow-back" size={16} color="white"></MKIcon>
+                        <Icon name="arrow-left" color="white" size={14}></Icon>
                     </TouchableOpacity>
 
                     <View style={styles.hero}>
@@ -172,7 +165,7 @@ export default class Chart extends Component {
 
                         <TouchableOpacity onPress={this.togglePlayer.bind(this)}>
                             {
-                                this.state.playing
+                                playing && player.playing
                                     ? (<Icon name="control-pause" size={20} color="red"></Icon>)
                                     : (<Icon name="control-play" size={20} color="red"></Icon>)
                             }
@@ -217,46 +210,41 @@ export default class Chart extends Component {
                 renderRow={(song, sectionId, rowId) => {
 
                     var times = parseTimes(song.duration);
-                    var active = isPlaying && song.id === player.song.id;
+                    var active = playing && song.id === player.song.id;
 
                     return (
                         <View>
-                            <TouchableOpacity onPress={() => {
+                            <SongCard {...{
+                                artwork: song.artwork,
+                                title: song.title,
+                                user: song.user,
+                                active: !!active,
+                                play: () => {
 
-                                var { setRoute } = this.props;
+                                    var { setRoute } = this.props;
 
-                                if (isPlaying) {
-                                    player.setup({
-                                        song,
-                                    });
-                                } else {
-                                    player.setup({
-                                        song,
-                                        playlist: songs
-                                    });
-                                }
+                                    if (playing) {
+                                        player.setup({
+                                            song,
+                                        });
+                                    } else {
+                                        player.setup({
+                                            song,
+                                            playlist: songs
+                                        });
+                                    }
 
-                                this.showPlaying();
-                            }}>
-                                <View style={styles.song}>
-                                    <View>
-                                        <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.title, active && styles.active]}>{song.title}</Text>
-                                        <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.author, active && styles.active]}>{song.user.username}</Text>
-                                    </View>
-
-                                    <Icon name="heart" size={10} style={[styles.fav, song.fav && {
-                                        color: 'red'
-                                    }]}></Icon>
-
-                                    <Text style={styles.times}>{times.minutes}:{times.seconds}</Text>
-                                </View>
-                            </TouchableOpacity>
+                                    this.showPlaying();
+                                },
+                                rank: +rowId + 1,
+                            }}></SongCard>
 
                             {
                                 ++rowId === 50 && (
                                     <View style={{
                                         width,
-                                        marginBottom: 15,
+                                        marginTop: 10,
+                                        marginBottom: 10,
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         flexDirection: 'row',
@@ -335,6 +323,13 @@ const styles = StyleSheet.create({
         height: 75,
         width,
         flexDirection: 'row',
+        shadowColor: "#000000",
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        shadowOffset: {
+            height: 8,
+            width: -2
+        },
     },
 
     hero: {
@@ -349,7 +344,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         flexDirection: 'row',
-        backgroundColor: 'rgba(0,0,0,.4)'
+        backgroundColor: 'rgba(0,0,0,.6)'
     },
 
     genre: {
@@ -365,47 +360,6 @@ const styles = StyleSheet.create({
 
     songs: {
         marginTop: 150,
-        paddingTop: 20,
-    },
-
-    song: {
-        width,
-        paddingLeft: 20,
-        paddingRight: 20,
-        marginBottom: 30,
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexDirection: 'row',
-    },
-
-    title: {
-        color: 'rgba(0,0,0,.7)',
-        fontSize: 13,
-        width: 240,
-        backgroundColor: 'transparent',
-    },
-
-    author: {
-        marginTop: 5,
-        color: 'rgba(0,0,0,.5)',
-        fontSize: 11,
-        width: 240,
-        backgroundColor: 'transparent',
-    },
-
-    active: {
-        color: '#f50',
-    },
-
-    fav: {
-        marginLeft: 18,
-        backgroundColor: 'transparent',
-    },
-
-    times: {
-        color: 'rgba(0,0,0,.5)',
-        fontSize: 11,
-        backgroundColor: 'transparent',
     },
 
     line: {

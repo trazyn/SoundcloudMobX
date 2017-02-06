@@ -12,7 +12,8 @@ import {
     Image,
 } from 'react-native';
 
-import blacklist from '../../utils/backlist';
+import blacklist from '../../utils/blacklist';
+import humanNumber from '../../utils/humanNumber';
 import Playing from './Playing';
 
 export default class Song extends Component {
@@ -46,15 +47,6 @@ export default class Song extends Component {
         playing: PropTypes.bool.isRequired,
     };
 
-    human(number) {
-
-        if (number > 1000) {
-            return (number / 1000).toFixed(2) + 'K';
-        }
-
-        return number;
-    }
-
     render() {
 
         const { title, id, user, artwork, likesCount, commentCount, playbackCount, play, playing } = this.props;
@@ -65,12 +57,12 @@ export default class Song extends Component {
                     playing
                 }
 
-                <View style={styles.inner}>
+                <View style={!playing && styles.shadow}>
 
                     {
                         playing
 
-                        ? <Playing artwork={artwork} title={title} enter={() => play({...blacklist(this.props, 'play')})}></Playing>
+                        ? <Playing artwork={artwork} title={title} user={user} enter={() => play({...blacklist(this.props, 'play')})}></Playing>
                         : (
                             <View>
                                 <View style={[styles.placeholder, {
@@ -90,17 +82,17 @@ export default class Song extends Component {
                                     <View style={styles.meta}>
                                         <TouchableOpacity style={styles.metaItem}>
                                             <Icon name="heart" style={styles.metaIcon}></Icon>
-                                            <Text style={styles.metaText}>{this.human(likesCount)}</Text>
+                                            <Text style={styles.metaText}>{humanNumber(likesCount)}</Text>
                                         </TouchableOpacity>
 
                                         <TouchableOpacity style={styles.metaItem}>
                                             <Icon name="bubble" style={styles.metaIcon}></Icon>
-                                            <Text style={styles.metaText}>{this.human(commentCount)}</Text>
+                                            <Text style={styles.metaText}>{humanNumber(commentCount)}</Text>
                                         </TouchableOpacity>
 
                                         <TouchableOpacity style={styles.metaItem}>
                                             <Icon name="music-tone-alt" style={styles.metaIcon}></Icon>
-                                            <Text style={styles.metaText}>{this.human(playbackCount)}</Text>
+                                            <Text style={styles.metaText}>{humanNumber(playbackCount)}</Text>
                                         </TouchableOpacity>
 
                                             <TouchableHighlight style={styles.play} onPress={() => play({...blacklist(this.props, 'play')})}>
@@ -130,7 +122,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
 
-    inner: {
+    shadow: {
         width: 300,
         shadowColor: "#000000",
         shadowOpacity: 0.3,

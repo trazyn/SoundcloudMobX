@@ -13,7 +13,7 @@ import {
 import { CHART_GENRES_MAP } from '../../config';
 import CardStore from '../../stores/card';
 import Card from './Card';
-import blacklist from '../../utils/backlist';
+import blacklist from '../../utils/blacklist';
 
 @inject(stores => ({
     type: stores.discover.type,
@@ -32,7 +32,7 @@ export default class Discover extends Component {
     componentWillMount() {
 
         for (var genre of CHART_GENRES_MAP) {
-            genre.store = new CardStore();
+            genre.store = genre.store || new CardStore();
         }
     }
 

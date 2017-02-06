@@ -122,13 +122,13 @@ export default class Songs extends Component {
                 renderRow={song => {
 
                     var index = list.findIndex(e => e.id === song.id);
+                    var playing = this.props.current.id === song.id;
 
                     return (
                         <Song {...{
 
                             ...song,
-                            playing: this.props.current.id === song.id,
-
+                            playing,
                             play,
 
                             style: [(index === list.length - 1 && styles.pad), {

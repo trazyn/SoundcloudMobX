@@ -11,10 +11,23 @@ function filter(data) {
         .map(songsFilter);
 }
 
+function retryFailedRequest(err) {
+
+    if (err.response.status === 500 && err.config && !err.config.__isRetryRequest) {
+        err.config.__isRetryRequest = true;
+        return axios(err.config);
+    }
+
+    throw err;
+}
+
+axios.interceptors.response.use(void 0, retryFailedRequest);
+
 export default class Card {
 
     @observable songs = [];
     @observable genre = {};
+    @observable playing = false;
     @observable type;
 
     nextHref = '';
@@ -48,5 +61,9 @@ export default class Card {
 
     @action setType(type) {
         this.type = type;
+    }
+
+    @action setPlaying(state = false) {
+        this.playing = state;
     }
 }
