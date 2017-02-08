@@ -76,10 +76,10 @@ export default class Footer extends Component {
 
                 <TouchableOpacity style={styles.item} onPress={e => {
                     setRoute({
-                        name: !isLogin() ? 'Login' : 'Fav'
+                        name: !isLogin() ? 'Login' : 'Profile'
                     });
                 }}>
-                    <Icon name="heart" ref="Fav" size={16}></Icon>
+                    <Icon name="heart" ref="Profile" size={16}></Icon>
                 </TouchableOpacity>
             </Animated.View>
         );

@@ -20,19 +20,7 @@ class PlayList {
 
         this.nextHref = data['next_href'];
 
-        return data.collection
-            .map(song => song.origin || song)
-            .map(songsFilter)
-            .filter(song => {
-
-                var must = song.duration < 600000 && song.id && song.streamable && song.artwork;
-
-                if (genre in GENRES_MAP) {
-                    return song.kind === 'track' && must;
-                }
-
-                return must;
-            });
+        return songsFilter(data.collection);
     }
 
     request() {

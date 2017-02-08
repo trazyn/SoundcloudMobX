@@ -5,23 +5,8 @@ import songsFilter from '../utils/songsFilter';
 import { CLIENT_ID } from '../config';
 
 function filter(data) {
-
-    return data.collection
-        .map(e => e.track)
-        .map(songsFilter);
+    return songsFilter(data.collection.map(e => e.track));
 }
-
-function retryFailedRequest(err) {
-
-    if (err.response.status === 500 && err.config && !err.config.__isRetryRequest) {
-        err.config.__isRetryRequest = true;
-        return axios(err.config);
-    }
-
-    throw err;
-}
-
-axios.interceptors.response.use(void 0, retryFailedRequest);
 
 export default class Card {
 

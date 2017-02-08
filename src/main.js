@@ -13,6 +13,18 @@ import Toast from './components/Toast';
 import stores from './stores';
 import blacklist from './utils/blacklist';
 
+function retryFailedRequest(err) {
+
+    if (err.response.status === 500 && err.config && !err.config.__isRetryRequest) {
+        err.config.__isRetryRequest = true;
+        return axios(err.config);
+    }
+
+    throw err;
+}
+
+axios.interceptors.response.use(void 0, retryFailedRequest);
+
 @observer
 export default class App extends Component {
 
@@ -24,7 +36,7 @@ export default class App extends Component {
         await stores.player.init();
 
         if (session.isLogin()) {
-            axios.defaults.headers.common['Authorization'] = session.auth.access_token;
+            axios.defaults.headers.common['Authorization'] = `OAuth ${session.auth.access_token}`;
         }
 
         console.ignoredYellowBox = ['Warning: ReactNative.createElement', 'Possible Unhandlerd Promise ', 'Remote debugger', 'View '];

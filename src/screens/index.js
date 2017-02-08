@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 
 import Home from './Home';
-import Fav from './Fav';
 import Discover from './Discover';
 import Chart from './Chart';
 import Player from './Player';
@@ -20,7 +19,6 @@ import Profile from './Profile';
 
 const components = {
     Home,
-    Fav,
     Player,
     Discover,
     Chart,
@@ -86,7 +84,7 @@ export default class Screes extends Component {
                 flex: 1
             }}>
                 <RippleHeader style={{
-                    opacity: route.name === 'Fav' ? 0 : opacity
+                    opacity: route.name === 'Profile' ? 0 : opacity
                 }}></RippleHeader>
                 <Navigator {...{
 
