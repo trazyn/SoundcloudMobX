@@ -1,12 +1,20 @@
 
 import React, { Component, PropTypes } from 'react';
-import { Animated } from 'react-native';
+import { View, Animated } from 'react-native';
 import blacklist from '../../utils/blacklist';
 
 export default class FadeImage extends Component {
 
+    static propTypes = {
+        showLoading: PropTypes.bool,
+    };
+
+    static defaultProps = {
+        showLoading: false,
+    };
+
     state = {
-        opacity: new Animated.Value(0)
+        opacity: new Animated.Value(1)
     };
 
     render() {
@@ -18,22 +26,51 @@ export default class FadeImage extends Component {
         styles = Array.isArray(styles) ? styles : [styles];
 
         return (
-            <Animated.Image {...blacklist(this.props, 'onLoadEnd', 'style')}
+            <View style={[styles, {
+                justifyContent: 'center',
+                alignItems: 'center',
+                opacity: 1,
+            }]}>
+                {
+                    this.props.showLoading && (
+                        <Animated.View style={[styles, {
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            backgroundColor: '#fff',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            opacity: 1,
+                            shadowRadius: 0,
+                            shadowOpacity: 0,
+                            zIndex: 1,
+                            opacity,
+                        }]}>
+                            <Animated.Image {...{
+                                source: require('../../images/loading.gif'),
+                                style: {
+                                    height: 12,
+                                    width: 12,
+                                },
+                            }}></Animated.Image>
+                        </Animated.View>
+                    )
+                }
+                <Animated.Image {...blacklist(this.props, 'onLoadEnd', 'style')}
 
-            style={[...styles, {
-                opacity
-            }]}
+                style={[...styles]}
 
-            onLoadEnd={e => {
+                onLoadEnd={e => {
 
-                Animated.timing(opacity, {
-                    toValue: 1,
-                    duration: 200
-                }).start();
+                    Animated.timing(opacity, {
+                        toValue: 0,
+                        duration: 200
+                    }).start();
 
-                'function' === typeof onLoadEnd && onLoadEnd();
-            }}>
-            </Animated.Image>
+                    'function' === typeof onLoadEnd && onLoadEnd();
+                }}>
+                </Animated.Image>
+            </View>
         );
     }
 }

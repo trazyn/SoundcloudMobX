@@ -31,18 +31,22 @@ export default class Recent extends Component {
 
                         return (
                             <View key={index} style={styles.item}>
-                                <FadeImage {...{
-                                    source: {
-                                        uri: track.artwork,
-                                    },
+                                <TouchableOpacity>
+                                    <FadeImage {...{
+                                        source: {
+                                            uri: track.artwork,
+                                        },
 
-                                    style: {
-                                        height: 100,
-                                        width: 100,
-                                        shadowOpacity: 0.3,
-                                        shadowRadius: 12,
-                                    }
-                                }}></FadeImage>
+                                        showLoading: true,
+
+                                        style: {
+                                            height: 100,
+                                            width: 100,
+                                            shadowOpacity: 0.3,
+                                            shadowRadius: 12,
+                                        }
+                                    }}></FadeImage>
+                                </TouchableOpacity>
                             </View>
                         );
                     })
@@ -54,7 +58,7 @@ export default class Recent extends Component {
                 }}>
                     <TouchableOpacity style={{
                         height: 28,
-                        width: 190,
+                        width: 220,
                         backgroundColor: 'rgba(0,0,0,.8)',
                         alignItems: 'center',
                         justifyContent: 'center',

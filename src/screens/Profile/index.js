@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import {
     View,
     Text,
+    ScrollView,
     TouchableOpacity,
     StyleSheet,
     Dimensions,
@@ -14,6 +15,8 @@ import FadeImage from '../../components/FadeImage';
 import Loader from '../../components/Loader';
 import Followers from './Followers';
 import Recent from './Recent';
+import Liked from './Liked';
+import Suggestion from './Suggestion';
 
 @inject(stores => ({
     session: stores.session,
@@ -25,6 +28,8 @@ import Recent from './Recent';
     getRecent: stores.profile.getRecent,
     likes: stores.profile.likes,
     getLikes: stores.profile.getLikes,
+    suggestions: stores.profile.suggestions,
+    getSuggestion: stores.profile.getSuggestion,
 }))
 @observer
 export default class Profile extends Component {
@@ -32,19 +37,20 @@ export default class Profile extends Component {
     async componentWillMount() {
 
         await this.props.getProfile(this.props.session.auth.access_token);
+        await this.props.getRecent();
 
         this.props.getFollowers(this.props.user.id);
         this.props.getLikes(this.props.user.id);
-        this.props.getRecent();
+        this.props.getSuggestion();
     }
 
     render() {
 
-        var { user, followers, recent } = this.props;
+        var { user, followers, recent, likes, suggestions } = this.props;
 
         return (
             user ? (
-                <View style={styles.container}>
+                <ScrollView style={styles.container}>
                     <FadeImage style={styles.hero} {...{
                         source: {
                             uri: 'https://i1.sndcdn.com/visuals-000211846129-GwVlC8-t1240x260.jpg',
@@ -100,7 +106,19 @@ export default class Profile extends Component {
                     </FadeImage>
 
                     <Recent tracks={recent.slice(0, 3)}></Recent>
-                </View>
+                    <Liked tracks={likes.slice()}></Liked>
+
+                    {
+                        suggestions.map((collection, index) => {
+
+                            return (
+                                <View key={index} style={styles.suggestions}>
+                                    <Suggestion seed={collection.seed_sound} tracks={collection.recommended.slice()}></Suggestion>
+                                </View>
+                            );
+                        })
+                    }
+                </ScrollView>
             ) : (
                 <View style={{
                     position: 'absolute',
@@ -170,5 +188,10 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '100',
         color: '#fff',
+    },
+
+    suggestions: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });

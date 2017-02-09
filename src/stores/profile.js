@@ -36,20 +36,15 @@ class Profile {
 
     @action async getFollowers(userid) {
 
-        try {
+        var response = await axios.get(`https://api-v2.soundcloud.com/users/${userid}/followings?
+            &client_id=${CLIENT_ID}
+            &limit=5
+            &offset=0
+            &linked_partitioning=0
+            `.replace(/\s/g, ''));
 
-            var response = await axios.get(`https://api-v2.soundcloud.com/users/${userid}/followings?
-                &client_id=${CLIENT_ID}
-                &limit=5
-                &offset=0
-                &linked_partitioning=0
-                `.replace(/\s/g, ''));
-
-            self.followers.replace(response.data.collection);
-            self.followersHrefNext = response.data.next_href;
-        } catch(ex) {
-            console.error('FUCK U GFW!', ex);
-        }
+        self.followers.replace(response.data.collection);
+        self.followersHrefNext = response.data.next_href;
     }
 
     @action async loadMoreFollowers() {
@@ -62,9 +57,9 @@ class Profile {
 
     @action async getSuggestion() {
 
-        var response = await axios.get(`https://api-v2.soundcloud.com/users/211846129/followings?
+        var response = await axios.get(`https://api-v2.soundcloud.com/me/personalized-tracks?
             &linked_partitioning=0
-            &limit=6
+            &limit=5
             &offset=0
             &client_id=${CLIENT_ID}
             `.replace(/\s/g, ''));
@@ -81,17 +76,25 @@ class Profile {
         self.suggestionHrefNext = response.data.next_href;
     }
 
-    @action async getRecent() {
+    @action getRecent() {
 
-        var response = await axios.get(`https://api-v2.soundcloud.com/me/play-history/tracks?
-            &client_id=${CLIENT_ID}
-            &limit=20
-            &offset=0
-            &linked_partitioning=0
-            `.replace(/\s/g, ''));
+        return new Promise(async (resolve, reject) => {
 
-        self.recent.replace(songsFilter(response.data.collection.map(e => e.track)));
-        self.recentHrefNext = response.data.next_href;
+            try {
+                var response = await axios.get(`https://api-v2.soundcloud.com/me/play-history/tracks?
+                    &client_id=${CLIENT_ID}
+                    &limit=20
+                    &offset=0
+                    &linked_partitioning=0
+                    `.replace(/\s/g, ''));
+
+                self.recent.replace(songsFilter(response.data.collection.map(e => e.track)));
+                self.recentHrefNext = response.data.next_href;
+                resolve();
+            } catch(ex) {
+                reject();
+            }
+        });
     }
 
     @action async loadMoreRecent() {
@@ -106,12 +109,12 @@ class Profile {
 
         var response = await axios.get(`https://api-v2.soundcloud.com/users/${userid}/track_likes?
             &client_id=${CLIENT_ID}
-            &limit=5
+            &limit=20
             &offset=0
             &linked_partitioning=0
             `.replace(/\s/g, ''));
 
-        self.likes.replace(songsFilter(response.data.collection));
+        self.likes.replace(songsFilter(response.data.collection.map(e => e.track)));
         self.likesHrefNext = response.data.next_href;
     }
 
@@ -119,7 +122,7 @@ class Profile {
 
         var response = await axios.get(self.likesHrefNext);
 
-        self.likes.push(songsFilter(response.data.collection));
+        self.likes.push(songsFilter(response.data.collection.map(e => e.track)));
         self.likes = response.data.next_href;
     }
 }
