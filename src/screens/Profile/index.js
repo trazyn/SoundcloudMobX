@@ -30,6 +30,7 @@ import Suggestion from './Suggestion';
     getLikes: stores.profile.getLikes,
     suggestions: stores.profile.suggestions,
     getSuggestion: stores.profile.getSuggestion,
+    loadMoreSuggestion: stores.profile.loadMoreSuggestion,
 }))
 @observer
 export default class Profile extends Component {
@@ -44,13 +45,26 @@ export default class Profile extends Component {
         this.props.getSuggestion();
     }
 
+    handleScroll(e) {
+
+        var offset = e.nativeEvent.contentOffset;
+
+        if (this.props.suggestions.length
+            && offset.y + height >= e.nativeEvent.contentSize.height) {
+            this.props.loadMoreSuggestion();
+        }
+    }
+
     render() {
 
         var { user, followers, recent, likes, suggestions } = this.props;
 
         return (
             user ? (
-                <ScrollView style={styles.container}>
+                <ScrollView
+                scrollEventThrottle={16}
+                onScroll={this.handleScroll.bind(this)}
+                style={styles.container}>
                     <FadeImage style={styles.hero} {...{
                         source: {
                             uri: 'https://i1.sndcdn.com/visuals-000211846129-GwVlC8-t1240x260.jpg',

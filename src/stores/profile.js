@@ -51,7 +51,7 @@ class Profile {
 
         var response = await axios.get(self.followersHrefNext);
 
-        self.followers.push(response.data.collection);
+        self.followers.push(...response.data.collection);
         self.followersHrefNext = response.data.next_href;
     }
 
@@ -72,7 +72,7 @@ class Profile {
 
         var response = await axios.get(self.suggestionHrefNext);
 
-        self.suggestions.push(self.data.collection);
+        self.suggestions.push(...response.data.collection);
         self.suggestionHrefNext = response.data.next_href;
     }
 
@@ -101,7 +101,7 @@ class Profile {
 
         var response = await axios.get(self.recentHrefNext);
 
-        self.recent.push(songsFilter(response.data.collection));
+        self.recent.push(...songsFilter(response.data.collection));
         self.recentHrefNext = response.data.next_href;
     }
 
@@ -122,7 +122,7 @@ class Profile {
 
         var response = await axios.get(self.likesHrefNext);
 
-        self.likes.push(songsFilter(response.data.collection.map(e => e.track)));
+        self.likes.push(...songsFilter(response.data.collection.map(e => e.track)));
         self.likes = response.data.next_href;
     }
 }
