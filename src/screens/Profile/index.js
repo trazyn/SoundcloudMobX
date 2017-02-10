@@ -8,6 +8,7 @@ import {
     ScrollView,
     TouchableOpacity,
     StyleSheet,
+    StatusBar,
     Dimensions,
 } from 'react-native';
 
@@ -31,6 +32,7 @@ import Suggestion from './Suggestion';
     suggestions: stores.profile.suggestions,
     getSuggestion: stores.profile.getSuggestion,
     loadMoreSuggestion: stores.profile.loadMoreSuggestion,
+    showLoadMoreSuggestion: stores.profile.showLoadMoreSuggestion,
 }))
 @observer
 export default class Profile extends Component {
@@ -53,6 +55,10 @@ export default class Profile extends Component {
             && offset.y + height >= e.nativeEvent.contentSize.height) {
             this.props.loadMoreSuggestion();
         }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        StatusBar.setNetworkActivityIndicatorVisible(nextProps.showLoadMoreSuggestion);
     }
 
     render() {

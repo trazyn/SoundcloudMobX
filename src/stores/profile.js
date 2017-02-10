@@ -12,6 +12,7 @@ class Profile {
     @observable suggestions = [];
     @observable recent = [];
     @observable likes = [];
+    @observable showLoadMoreSuggestion = false;
 
     followersHrefNext;
     suggestionHrefNext;
@@ -70,10 +71,13 @@ class Profile {
 
     @action async loadMoreSuggestion() {
 
+        self.showLoadMoreSuggestion = true;
+
         var response = await axios.get(self.suggestionHrefNext);
 
         self.suggestions.push(...response.data.collection);
         self.suggestionHrefNext = response.data.next_href;
+        self.showLoadMoreSuggestion = false;
     }
 
     @action getRecent() {
