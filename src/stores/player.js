@@ -31,11 +31,6 @@ class Player {
 
             var fromUrl = song.streamUrl;
 
-            if (self.downloading) {
-                await RNFS.stopDownload(self.downloading.jobId);
-                self.downloading = null;
-            }
-
             if (await RNFS.exists(self.filename)) {
                 self.loaded = 1;
                 return resolve();
@@ -67,21 +62,32 @@ class Player {
                 }
             });
 
-            (((filename, promise) => promise.catch(async ex => RNFS.unlink(filename))))(self.filename, self.downloading.promise);
+            (((filename, promise) => promise.catch(async ex => await RNFS.unlink(filename))))(self.filename, self.downloading.promise);
         });
     }
 
     isPaused() {
-        return self.tick && self.quene.slice(-1)[0] === self.song;
+        return !self.playing && self.tick && self.quene.length && self.quene.slice(-1)[0] === self.song;
     }
 
-    stop() {
+    async stop() {
 
         var { whoosh, timer } = self;
 
+        clearTimeout(timer);
+
+        if (self.whoosh) {
+            self.whoosh.stop();
+            self.whoosh.release();
+        }
+
+        if (self.downloading) {
+            await RNFS.stopDownload(self.downloading.jobId);
+            self.downloading = null;
+        }
+
         self.loaded = 0;
         self.tick = 0;
-        self.song = {};
         self.playing = false;
     }
 
@@ -102,18 +108,13 @@ class Player {
             return;
         }
 
+        if (self.isPaused()) {
+            return self.toggle();
+        }
+
         self.playing = true;
 
-        if (self.isPaused()) {
-            return self.whoosh.play();
-        }
-
         await self.loadfile();
-
-        if (self.whoosh) {
-            self.whoosh.stop();
-            self.whoosh.release();
-        }
 
         self.whoosh = new Sound(self.filename, '', async err => {
 
@@ -207,9 +208,8 @@ class Player {
             song = playlist[Math.floor(Math.random() * shuffle.length)];
         }
 
-        self.setup({
-            song
-        });
+        self.tick = 0;
+        self.setup({ song });
         self.start();
     }
 
@@ -223,10 +223,8 @@ class Player {
             self.quene.pop();
         }
 
-        self.setup({
-            song
-        }, false);
-
+        self.tick = 0;
+        self.setup({ song }, false);
         self.start();
     }
 
