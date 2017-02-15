@@ -10,12 +10,17 @@ import {
     Animated,
 } from 'react-native';
 
+@inject(stores => ({
+    playing: stores.player.playing,
+}))
+@observer
 export default class Footer extends Component {
 
     static propTypes = {
         route: PropTypes.object.isRequired,
         setRoute: PropTypes.func.isRequired,
         isLogin: PropTypes.func.isRequired,
+        playing: PropTypes.bool.isRequired,
     };
 
     highlight(props = this.props) {
@@ -81,6 +86,18 @@ export default class Footer extends Component {
                 }}>
                     <Icon name="heart" ref="Profile" size={16}></Icon>
                 </TouchableOpacity>
+
+                {
+                    this.props.playing && (
+                        <TouchableOpacity style={styles.item} onPress={e => {
+                            setRoute({
+                                name: 'Player'
+                            });
+                        }}>
+                            <Icon name="chart" size={16}></Icon>
+                        </TouchableOpacity>
+                    )
+                }
             </Animated.View>
         );
     }
