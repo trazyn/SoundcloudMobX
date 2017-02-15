@@ -15,59 +15,59 @@ class Player {
     @observable tick = 500;
     @observable mode = PLAYER_MODE[0];
 
+    paused = false;
     quene = [];
-    filename;
     whoosh;
     timer;
     downloading;
 
-    loadfile() {
+    async loadfile() {
 
         var song = self.song;
+        var fromUrl = song.streamUrl;
+        var filename = `${Sound.CACHES}/${song.title}.${song.filetype}`;
 
-        self.filename = `${Sound.CACHES}/${song.title}.${song.filetype}`;
+        if (await RNFS.exists(filename)) {
+            self.loaded = 1;
+            return filename;
+        }
 
-        return new Promise(async (resolve, reject) => {
-
-            var fromUrl = song.streamUrl;
-
-            if (await RNFS.exists(self.filename)) {
-                self.loaded = 1;
-                return resolve();
-            }
-
-            if (!fromUrl) {
-                let response = axios.get(song.uri + '/streams', {
-                    params: {
-                        client_id: CLIENT_ID,
-                    }
-                }).catch(ex => console.err(`Failed to get stream: ${song.uri}`));
-                let data = (await response).data;
-
-                fromUrl = data.http_mp3_128_url;
-            } else {
-                fromUrl = `${fromUrl}?client_id=${CLIENT_ID}`;
-            }
-
-            self.downloading = RNFS.downloadFile({
-                fromUrl,
-                toFile: self.filename,
-                progress: (state) => {
-                    self.loaded = state.bytesWritten / state.contentLength;
-
-                    if (self.loaded === 1) {
-                        self.downloading = null;
-                        resolve();
-                    }
+        if (!fromUrl) {
+            let response = axios.get(song.uri + '/streams', {
+                params: {
+                    client_id: CLIENT_ID,
                 }
+            }).catch(ex => console.err(`Failed to get stream: ${song.uri}`));
+            let data = (await response).data;
+
+            fromUrl = data.http_mp3_128_url;
+        } else {
+            fromUrl = `${fromUrl}?client_id=${CLIENT_ID}`;
+        }
+
+        self.downloading = RNFS.downloadFile({
+            fromUrl,
+            toFile: filename,
+            progress: (state) => {
+                self.loaded = self.playing ? state.bytesWritten / state.contentLength : 0;
+            }
+        });
+
+        self.downloading.promise
+            .then(() => {
+                delete self.downloading;
+            })
+            .catch(async ex => {
+                await RNFS.unlink(filename);
             });
 
-            (((filename, promise) => promise.catch(async ex => await RNFS.unlink(filename))))(self.filename, self.downloading.promise);
-        });
-    }
+        try {
+            await self.downloading.promise;
+        } catch(ex) {
+            return;
+        }
 
-    isPaused() {
-        return !self.playing && self.tick && self.quene.length && self.quene.slice(-1)[0] === self.song;
+        return filename;
     }
 
     async stop() {
@@ -76,14 +76,16 @@ class Player {
 
         clearTimeout(timer);
 
+        if (self.downloading) {
+            try {
+                await RNFS.stopDownload(self.downloading.jobId);
+                delete self.downloading;
+            } catch(ex) {}
+        }
+
         if (self.whoosh) {
             self.whoosh.stop();
             self.whoosh.release();
-        }
-
-        if (self.downloading) {
-            await RNFS.stopDownload(self.downloading.jobId);
-            self.downloading = null;
         }
 
         self.loaded = 0;
@@ -100,6 +102,8 @@ class Player {
         } else {
             self.whoosh.pause();
         }
+
+        self.paused = !self.paused;
     }
 
     @action async start() {
@@ -108,20 +112,25 @@ class Player {
             return;
         }
 
-        if (self.isPaused()) {
+        if (self.paused) {
             return self.toggle();
         }
 
         self.playing = true;
+        self.paused = false;
 
-        await self.loadfile();
+        var filename = await self.loadfile();
 
-        self.whoosh = new Sound(self.filename, '', async err => {
+        if (!filename) {
+            return self.next();
+        }
+
+        self.whoosh = new Sound(filename, '', async err => {
 
             var whoosh = self.whoosh;
 
             if (err) {
-                await RNFS.unlink(self.filename);
+                await RNFS.unlink(filename);
                 self.next();
             } else {
 
@@ -146,7 +155,7 @@ class Player {
                         self.next();
                     } else {
                         self.stop();
-                        console.error(`Failed to play: ${self.filename}`);
+                        console.error(`Failed to play: ${filename}`);
                     }
                 });
             }
@@ -163,8 +172,8 @@ class Player {
         }
 
         if (song && song.id !== self.song.id) {
-            self.stop();
             self.song = song;
+            self.stop();
 
             if (needTrack) {
                 self.quene.push(song);
@@ -208,7 +217,6 @@ class Player {
             song = playlist[Math.floor(Math.random() * shuffle.length)];
         }
 
-        self.tick = 0;
         self.setup({ song });
         self.start();
     }
@@ -223,7 +231,6 @@ class Player {
             self.quene.pop();
         }
 
-        self.tick = 0;
         self.setup({ song }, false);
         self.start();
     }
