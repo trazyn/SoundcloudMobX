@@ -7,6 +7,7 @@ import chart from './chart';
 import session from './session';
 import toast from './toast';
 import profile from './profile';
+import list from './list';
 
 export default {
     route,
@@ -17,4 +18,5 @@ export default {
     session,
     toast,
     profile,
+    list,
 };

@@ -7,6 +7,7 @@ import {
     Text,
     Image,
     TextInput,
+    StatusBar,
     TouchableOpacity,
     TouchableHighlight,
     StyleSheet,
@@ -56,6 +57,10 @@ export default class Login extends Component {
                     this.props.showError('Invaild Username or Password!');
                 });
         }
+    }
+
+    componentDidMount() {
+        StatusBar.setBarStyle('light-content', true);
     }
 
     render() {

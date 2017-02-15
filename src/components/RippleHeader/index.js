@@ -21,7 +21,7 @@ export default class RippleHeader extends Component {
                     zIndex: 9,
                 }, this.props.style]
             }}></Animated.Image>
-    );
+        );
     }
 }
 

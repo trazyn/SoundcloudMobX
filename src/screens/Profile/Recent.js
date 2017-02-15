@@ -14,6 +14,7 @@ export default class Recent extends Component {
 
     static propTypes = {
         tracks: PropTypes.array.isRequired,
+        showList: PropTypes.func.isRequired,
     };
 
     render() {
@@ -56,7 +57,7 @@ export default class Recent extends Component {
                 <View style={{
                     alignItems: 'center',
                 }}>
-                    <TouchableOpacity style={{
+                    <TouchableOpacity onPress={this.props.showList} style={{
                         height: 28,
                         width: 220,
                         backgroundColor: 'rgba(0,0,0,.8)',

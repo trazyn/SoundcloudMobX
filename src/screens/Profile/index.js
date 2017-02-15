@@ -33,9 +33,30 @@ import Suggestion from './Suggestion';
     getSuggestion: stores.profile.getSuggestion,
     loadMoreSuggestion: stores.profile.loadMoreSuggestion,
     showLoadMoreSuggestion: stores.profile.showLoadMoreSuggestion,
+
+    setup: stores.list.setup,
+    setRoute: stores.route.setRoute.bind(stores.route),
 }))
 @observer
 export default class Profile extends Component {
+
+    static propTypes = {
+        session: PropTypes.object.isRequired,
+        getProfile: PropTypes.func.isRequired,
+        user: PropTypes.object,
+        followers: PropTypes.object.isRequired,
+        getFollowers: PropTypes.func.isRequired,
+        recent: PropTypes.object.isRequired,
+        getRecent: PropTypes.func.isRequired,
+        likes: PropTypes.object.isRequired,
+        getLikes: PropTypes.func.isRequired,
+        suggestions: PropTypes.object.isRequired,
+        getSuggestion: PropTypes.func.isRequired,
+        loadMoreSuggestion: PropTypes.func.isRequired,
+        showLoadMoreSuggestion: PropTypes.bool.isRequired,
+
+        setRoute: PropTypes.func.isRequired,
+    };
 
     async componentWillMount() {
 
@@ -125,7 +146,14 @@ export default class Profile extends Component {
                         </TouchableOpacity>
                     </FadeImage>
 
-                    <Recent tracks={recent.slice(0, 3)}></Recent>
+                    <Recent tracks={recent.slice(0, 3)} showList={e => {
+                        this.props.setup({
+                            data: recent.slice(),
+                        });
+                        this.props.setRoute({
+                            name: 'List',
+                        });
+                    }}></Recent>
                     <Liked tracks={likes.slice()}></Liked>
 
                     {

@@ -3,6 +3,7 @@ import React, { Component, PropTypes } from 'react';
 import { observer, inject } from 'mobx-react/native';
 import {
     View,
+    StatusBar,
     Navigator,
     StyleSheet,
     Animated,
@@ -11,6 +12,7 @@ import {
 import Home from './Home';
 import Discover from './Discover';
 import Chart from './Chart';
+import List from './List';
 import Player from './Player';
 import Footer from '../components/Footer';
 import RippleHeader from '../components/RippleHeader';
@@ -24,6 +26,7 @@ const components = {
     Chart,
     Login,
     Profile,
+    List,
 };
 
 @inject(stores => ({
@@ -41,12 +44,20 @@ export default class Screes extends Component {
     };
 
     state = {
-        height: new Animated.Value(50),
-        showFooter: true,
+        footerHeight: new Animated.Value(50),
+        headerHeight: new Animated.Value(40),
     };
 
     needHideFooter(route) {
-        return ['Player', 'Chart', 'Login'].includes(route.name);
+        return ['Player', 'Chart', 'Login', 'List'].includes(route.name);
+    }
+
+    needHideHeader(route) {
+        return ['Player', 'Profile', 'Login', 'Chart'].includes(route.name);
+    }
+
+    componentDidMount() {
+        StatusBar.setBarStyle('light-content', true);
     }
 
     componentWillReact() {
@@ -56,25 +67,33 @@ export default class Screes extends Component {
 
         switch (true) {
             case this.needHideFooter(route):
-                Animated.timing(this.state.height, {
+                Animated.timing(this.state.footerHeight, {
                     toValue: 0,
                     duration: 100,
                     delay: 200,
                 }).start();
 
-            case 'Login' === route.name:
-                navigator.push(this.props.route);
-                break;
+            case this.needHideHeader(route):
+                Animated.spring(this.state.headerHeight, {
+                    toValue: 0,
+                }).start();
+        }
 
-            default:
-                navigator.replace(route);
+        if (['Home', 'Discover', 'Profile'].includes(route.name)) {
+            navigator.replace(route);
+        } else {
+            navigator.push(this.props.route);
         }
     }
 
     render() {
 
-        var opacity = this.state.height.interpolate({
+        var footerOpacity = this.state.footerHeight.interpolate({
             inputRange: [0, 50],
+            outputRange: [0, 1],
+        });
+        var headerOpacity = this.state.headerHeight.interpolate({
+            inputRange: [0, 40],
             outputRange: [0, 1],
         });
         var { route, setRoute, isLogin } = this.props;
@@ -84,7 +103,8 @@ export default class Screes extends Component {
                 flex: 1
             }}>
                 <RippleHeader style={{
-                    opacity: route.name === 'Profile' ? 0 : opacity
+                    opacity: headerOpacity,
+                    height: this.state.headerHeight,
                 }}></RippleHeader>
                 <Navigator {...{
 
@@ -95,9 +115,15 @@ export default class Screes extends Component {
                     onDidFocus: (route) => {
 
                         if (!this.needHideFooter(route)) {
-                            Animated.timing(this.state.height, {
+                            Animated.timing(this.state.footerHeight, {
                                 toValue: 50,
                                 duration: 100
+                            }).start();
+                        }
+
+                        if (!this.needHideHeader(route)) {
+                            Animated.spring(this.state.headerHeight, {
+                                toValue: 40,
                             }).start();
                         }
                     },
@@ -131,13 +157,12 @@ export default class Screes extends Component {
                 }}></Navigator>
 
                 <Footer
-                show={this.state.showFooter}
                 route={route}
                 setRoute={setRoute}
                 isLogin={isLogin}
                 style={{
-                    opacity,
-                    height: this.state.height,
+                    opacity: footerOpacity,
+                    height: this.state.footerHeight,
                 }}></Footer>
             </View>
         );
