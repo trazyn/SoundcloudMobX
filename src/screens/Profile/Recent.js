@@ -32,7 +32,7 @@ export default class Recent extends Component {
 
                         return (
                             <View key={index} style={styles.item}>
-                                <TouchableOpacity>
+                                <View>
                                     <FadeImage {...{
                                         source: {
                                             uri: track.artwork,
@@ -47,7 +47,7 @@ export default class Recent extends Component {
                                             shadowRadius: 12,
                                         }
                                     }}></FadeImage>
-                                </TouchableOpacity>
+                                </View>
                             </View>
                         );
                     })

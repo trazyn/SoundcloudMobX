@@ -27,6 +27,7 @@ import Suggestion from './Suggestion';
     getFollowers: stores.profile.getFollowers,
     recent: stores.profile.recent,
     getRecent: stores.profile.getRecent,
+    loadMoreRecent: stores.profile.loadMoreRecent,
     likes: stores.profile.likes,
     getLikes: stores.profile.getLikes,
     suggestions: stores.profile.suggestions,
@@ -48,6 +49,7 @@ export default class Profile extends Component {
         getFollowers: PropTypes.func.isRequired,
         recent: PropTypes.object.isRequired,
         getRecent: PropTypes.func.isRequired,
+        loadMoreRecent: PropTypes.func.isRequired,
         likes: PropTypes.object.isRequired,
         getLikes: PropTypes.func.isRequired,
         suggestions: PropTypes.object.isRequired,
@@ -61,8 +63,8 @@ export default class Profile extends Component {
     async componentWillMount() {
 
         await this.props.getProfile(this.props.session.auth.access_token);
-        await this.props.getRecent();
 
+        this.props.getRecent();
         this.props.getFollowers(this.props.user.id);
         this.props.getLikes(this.props.user.id);
         this.props.getSuggestion();
@@ -87,7 +89,7 @@ export default class Profile extends Component {
         var { user, followers, recent, likes, suggestions } = this.props;
 
         return (
-            user ? (
+            (user && recent.length) ? (
                 <ScrollView
                 scrollEventThrottle={16}
                 onScroll={this.handleScroll.bind(this)}
@@ -142,13 +144,20 @@ export default class Profile extends Component {
                             flexDirection: 'row',
                             justifyContent: 'flex-end',
                         }}>
-                            <Icon name="options-vertical" size={18} color="white"></Icon>
+                            <Icon name="options-vertical" size={18} color="white" style={{
+                                backgroundColor: 'transparent',
+                            }}></Icon>
                         </TouchableOpacity>
                     </FadeImage>
 
                     <Recent tracks={recent.slice(0, 3)} showList={e => {
                         this.props.setup({
-                            data: recent.slice(),
+                            data: recent,
+                            title: 'RECENTLY PLAYED',
+                            actions: {
+                                refresh: this.props.getRecent,
+                                loadmore: this.props.loadMoreRecent,
+                            }
                         });
                         this.props.setRoute({
                             name: 'List',

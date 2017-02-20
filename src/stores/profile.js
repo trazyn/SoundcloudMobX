@@ -80,33 +80,32 @@ class Profile {
         self.showLoadMoreSuggestion = false;
     }
 
-    @action getRecent() {
+    @action async getRecent() {
 
-        return new Promise(async (resolve, reject) => {
+        var response = await axios.get(`https://api-v2.soundcloud.com/me/play-history/tracks?
+            &client_id=${CLIENT_ID}
+            &limit=20
+            &offset=0
+            &linked_partitioning=0
+            `.replace(/\s/g, ''));
 
-            try {
-                var response = await axios.get(`https://api-v2.soundcloud.com/me/play-history/tracks?
-                    &client_id=${CLIENT_ID}
-                    &limit=20
-                    &offset=0
-                    &linked_partitioning=0
-                    `.replace(/\s/g, ''));
+        var songs = songsFilter(response.data.collection.map(e => e.track));
 
-                self.recent.replace(songsFilter(response.data.collection.map(e => e.track)));
-                self.recentHrefNext = response.data.next_href;
-                resolve();
-            } catch(ex) {
-                reject();
-            }
-        });
+        self.recent.replace(songs);
+        self.recentHrefNext = response.data.next_href;
+
+        return songs;
     }
 
     @action async loadMoreRecent() {
 
         var response = await axios.get(self.recentHrefNext);
+        var songs = songsFilter(response.data.collection.map(e => e.track));
 
-        self.recent.push(...songsFilter(response.data.collection));
+        self.recent.push(...songs);
         self.recentHrefNext = response.data.next_href;
+
+        return songs;
     }
 
     @action async getLikes(userid) {

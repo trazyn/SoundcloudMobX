@@ -114,18 +114,14 @@ export default class Screes extends Component {
 
                     onDidFocus: (route) => {
 
-                        if (!this.needHideFooter(route)) {
-                            Animated.timing(this.state.footerHeight, {
-                                toValue: 50,
-                                duration: 100
-                            }).start();
-                        }
+                        Animated.timing(this.state.footerHeight, {
+                            toValue: this.needHideFooter(route) ? 0 : 50,
+                            duration: 100
+                        }).start();
 
-                        if (!this.needHideHeader(route)) {
-                            Animated.spring(this.state.headerHeight, {
-                                toValue: 40,
-                            }).start();
-                        }
+                        Animated.spring(this.state.headerHeight, {
+                            toValue: this.needHideHeader(route) ? 0 : 40,
+                        }).start();
                     },
 
                     configureScene: (route, routeStack) => {

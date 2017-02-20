@@ -7,30 +7,56 @@ import {
     Text,
     TouchableOpacity,
     Dimensions,
+    Animated,
     ListView,
     StyleSheet,
 } from 'react-native';
 
 import RippleHeader from '../../components/RippleHeader';
 import FadeImage from '../../components/FadeImage';
+import Loader from '../../components/Loader';
 
 @inject(stores => ({
     data: stores.list.data,
+    title: stores.list.title,
+    showRefresh: stores.list.showRefresh,
+    showLoadmore: stores.list.showLoadmore,
+    doRefresh: stores.list.doRefresh,
+    doLoadmore: stores.list.doLoadmore,
 }))
 @observer
 export default class List extends Component {
 
     static propTypes = {
-        title: PropTypes.string,
+        title: PropTypes.string.isRequired,
         data: PropTypes.object.isRequired,
+        doRefresh: PropTypes.func.isRequired,
+        doLoadmore: PropTypes.func.isRequired,
+        showRefresh: PropTypes.bool.isRequired,
+        showLoadmore: PropTypes.bool.isRequired,
     };
+
+    state = {
+        opacity: new Animated.Value(0),
+    };
+
+    componentDidMount() {
+        this.refs.list.scrollTo({
+            y: 0,
+        });
+    }
 
     render() {
 
+        var { title, showRefresh, doRefresh, doLoadmore, showLoadmore } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
         });
         var dataSource = ds.cloneWithRows(this.props.data.slice());
+        var opacity = this.state.opacity.interpolate({
+            inputRange: [-40, -10],
+            outputRange: [1, 0],
+        });
 
         return (
             <View style={styles.container}>
@@ -39,14 +65,47 @@ export default class List extends Component {
                         <Icon name="arrow-left" color="black" size={14}></Icon>
                     </TouchableOpacity>
 
-                    <Text style={styles.title}>RECENTLY PLAYED</Text>
+                    <Text style={styles.title}>{title}</Text>
                 </View>
 
-                <ListView
-                scrollEventThrottle={16}
-                onScroll={e => {
+                <Loader {...{
+                    show: true,
+                    animate: showRefresh,
+                    text: 'REFRESH',
+                    style4container: {
+                        top: 75,
+                        width,
+                        opacity: showRefresh ? 1 : opacity,
+                        transform: [{
+                            rotate: '0deg'
+                        }],
+                    }
+                }}></Loader>
 
+                <ListView
+
+                ref="list"
+
+                scrollEventThrottle={16}
+                onScroll={Animated.event(
+                    [{
+                        nativeEvent: {
+                            contentOffset: {
+                                y: this.state.opacity
+                            }
+                        }
+                    }]
+                )}
+
+                onScrollEndDrag={e => {
+
+                    if (e.nativeEvent.contentOffset.y < -40) {
+                        doRefresh();
+                    }
                 }}
+
+                onEndReachedThreshold={1}
+                onEndReached={doLoadmore}
 
                 enableEmptySections={true}
                 dataSource={dataSource}
@@ -76,14 +135,46 @@ export default class List extends Component {
                             </View>
 
                             <TouchableOpacity>
-                                <Icon name="options" size={12} color="#f50"></Icon>
+                                <Icon name="options" size={12} color="#f50" style={{
+                                    backgroundColor: 'transparent',
+                                }}></Icon>
                             </TouchableOpacity>
                         </TouchableOpacity>
                     );
                 }}
 
-                style={styles.list}>
+                style={[styles.list, showRefresh && {
+                    paddingTop: 25,
+                }]}>
                 </ListView>
+
+                {
+                    showLoadmore && (
+
+                        <View style={{
+                            position: 'absolute',
+                            top: 70,
+                            left: 0,
+                            width,
+                            height: height - 70,
+                            backgroundColor: 'rgba(255,255,255,.9)',
+                            zIndex: 99
+                        }}>
+                            <Loader {...{
+                                show: true,
+                                animate: true,
+                                text: 'LOAD MORE',
+                                style4container: {
+                                    marginTop: 53,
+                                    width,
+                                    transform: [{
+                                        rotate: '0deg'
+                                    }]
+                                }
+                            }}></Loader>
+                        </View>
+                    )
+                }
             </View>
         );
     }
@@ -118,11 +209,6 @@ const styles = StyleSheet.create({
         bottom: 15,
     },
 
-    title: {
-        fontWeight: '100',
-        letterSpacing: 1,
-    },
-
     list: {
         paddingTop: 10,
         paddingLeft: 20,
@@ -147,6 +233,8 @@ const styles = StyleSheet.create({
     title: {
         fontWeight: '100',
         maxWidth: 220,
+        letterSpacing: 1,
+        backgroundColor: 'transparent',
     },
 
     username: {
@@ -154,5 +242,6 @@ const styles = StyleSheet.create({
         fontWeight: '100',
         color: '#9B9B9B',
         maxWidth: 220,
+        backgroundColor: 'transparent',
     },
 });
