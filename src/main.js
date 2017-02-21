@@ -6,6 +6,7 @@ import axios from 'axios';
 import {
     View,
     StyleSheet,
+    NativeModules,
 } from 'react-native';
 
 import Screens from './screens';
@@ -34,6 +35,8 @@ export default class App extends Component {
 
         await stores.session.init();
         await stores.player.init();
+
+        NativeModules.SplashScreen.hide();
 
         if (session.isLogin()) {
             axios.defaults.headers.common['Authorization'] = `OAuth ${session.auth.access_token}`;
