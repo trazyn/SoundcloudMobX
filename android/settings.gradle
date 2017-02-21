@@ -1,4 +1,6 @@
 rootProject.name = 'SoundcloudMboX'
+include ':@remobile/react-native-splashscreen'
+project(':@remobile/react-native-splashscreen').projectDir = new File(rootProject.projectDir, '../node_modules/@remobile/react-native-splashscreen/android')
 include ':react-native-blur'
 project(':react-native-blur').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-blur/android')
 include ':react-native-audio'

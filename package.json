@@ -6,6 +6,7 @@
     "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependencies": {
+    "@remobile/react-native-splashscreen": "remobile/react-native-splashscreen",
     "axios": "^0.15.3",
     "mobx": "^2.7.0",
     "mobx-react": "^4.0.3",
