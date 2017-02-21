@@ -2,10 +2,6 @@
 # yarn lockfile v1
 
 
-"@remobile/react-native-splashscreen@remobile/react-native-splashscreen":
-  version "1.0.4"
-  resolved "https://codeload.github.com/remobile/react-native-splashscreen/tar.gz/612f88584474b31873b71b3854487796d6bd5c82"
-
 absolute-path@^0.0.0:
   version "0.0.0"
   resolved "http://registry.npm.taobao.org/absolute-path/download/absolute-path-0.0.0.tgz#a78762fbdadfb5297be99b15d35a785b2f095bf7"
