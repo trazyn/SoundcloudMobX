@@ -20,9 +20,7 @@ import Liked from './Liked';
 import Suggestion from './Suggestion';
 
 @inject(stores => ({
-    session: stores.session,
-    getProfile: stores.profile.getProfile,
-    user: stores.profile.user,
+    user: stores.session.user,
     followers: stores.profile.followers,
     getFollowers: stores.profile.getFollowers,
     recent: stores.profile.recent,
@@ -42,8 +40,6 @@ import Suggestion from './Suggestion';
 export default class Profile extends Component {
 
     static propTypes = {
-        session: PropTypes.object.isRequired,
-        getProfile: PropTypes.func.isRequired,
         user: PropTypes.object,
         followers: PropTypes.object.isRequired,
         getFollowers: PropTypes.func.isRequired,
@@ -61,8 +57,6 @@ export default class Profile extends Component {
     };
 
     async componentWillMount() {
-
-        await this.props.getProfile(this.props.session.auth.access_token);
 
         this.props.getRecent();
         this.props.getFollowers(this.props.user.id);

@@ -6,7 +6,6 @@ import songsFilter from '../utils/songsFilter';
 
 class Profile {
 
-    @observable user;
     @observable loading = false;
     @observable followers = [];
     @observable suggestions = [];
@@ -18,22 +17,6 @@ class Profile {
     suggestionHrefNext;
     recentHrefNext;
     likesHrefNext;
-
-    @action getProfile(token) {
-
-        return new Promise(async (resolve, reject) => {
-
-            self.loading = true;
-            try {
-                var response = await axios.get(`https://api.soundcloud.com/me?oauth_token=${token}`);
-                self.user = response.data;
-                resolve();
-            } catch(ex) {
-                reject(ex);
-            }
-            self.loading = false;
-        });
-    }
 
     @action async getFollowers(userid) {
 
