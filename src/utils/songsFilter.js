@@ -27,7 +27,7 @@ export default (collection) => {
                 streamUrl: song['stream_url'],
                 taglist: song['tag_list'],
                 uri: song['uri'],
-                fav: song['user_favorite'] || false,
+                fav: song['user_favorite'],
                 user: song['user'],
                 filetype: song['original_format'] || 'mp3',
                 waveform: song['waveform_url'],

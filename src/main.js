@@ -29,6 +29,12 @@ axios.interceptors.response.use(void 0, retryFailedRequest);
 @observer
 export default class App extends Component {
 
+    componentWillMount() {
+
+        /** Debug network in chrome devtools network tab */
+        GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
+    }
+
     async componentDidMount() {
 
         var session = stores.session;

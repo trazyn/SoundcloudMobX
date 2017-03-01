@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 
 import { PLAYER_MODE } from '../../config';
+import { isFavorited, addFavorited, removeFavorited } from '../../utils/songUtil';
 
 export default class Controller extends Component {
 
@@ -20,10 +21,43 @@ export default class Controller extends Component {
         prev: PropTypes.func.isRequired,
         mode: PropTypes.string.isRequired,
         changeMode: PropTypes.func.isRequired,
-        fav: PropTypes.bool.isRequired,
+        fav: PropTypes.bool,
     };
 
+    state = {
+        isFavorited: false,
+    };
+
+    async componentWillMount() {
+
+        var { songid, userid, fav } = this.props;
+
+        if (undefined === fav) {
+            this.setState({
+                isFavorited: await isFavorited(userid, songid),
+            });
+        }
+    }
+
+    handleFavorited() {
+
+        var { userid, songid, fav } = this.props;
+        var isFavorited = this.state.isFavorited || fav;
+
+        if (isFavorited) {
+            removeFavorited(userid, songid);
+        } else {
+            addFavorited(userid, songid);
+        }
+
+        this.setState({
+            isFavorited: !isFavorited,
+        });
+    }
+
     render() {
+
+        var isFavorited = this.state.isFavorited || this.props.fav;
 
         return (
             <View>
@@ -58,8 +92,8 @@ export default class Controller extends Component {
                             <Icon name="control-end" size={15} color="black"></Icon>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.transparent}>
-                            <Icon name="heart" size={15} style={this.props.fav && {
+                        <TouchableOpacity style={styles.transparent} onPress={this.handleFavorited.bind(this)}>
+                            <Icon name="heart" size={15} style={isFavorited && {
                                 color: 'red'
                             }}></Icon>
                         </TouchableOpacity>

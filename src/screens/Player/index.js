@@ -19,6 +19,7 @@ import Controller from './Controller';
 import parseTimes from '../../utils/parseTimes';
 
 @inject(stores => ({
+    user: stores.session.user,
     playing: stores.player.playing,
     playlist: stores.player.playlist,
     song: stores.player.song,
@@ -36,6 +37,7 @@ import parseTimes from '../../utils/parseTimes';
 export default class Player extends Component {
 
     static propTypes = {
+        user: PropTypes.object,
         playing: PropTypes.bool.isRequired,
         playlist: PropTypes.object.isRequired,
         song: PropTypes.object.isRequired,
@@ -72,7 +74,7 @@ export default class Player extends Component {
 
     render() {
 
-        var { playing, toggle, next, prev, song, playlist, loaded, tick, mode, changeMode } = this.props;
+        var { playing, toggle, next, prev, song, playlist, loaded, tick, mode, changeMode, user } = this.props;
         var cover = song.artwork.replace(/large\./, 't500x500.');
         var times = parseTimes(song.duration);
         var current = parseTimes(tick);
@@ -194,6 +196,8 @@ export default class Player extends Component {
                 </Image>
 
                 <Controller
+                userid={user.id}
+                songid={song.id}
                 toggle={toggle}
                 next={next}
                 prev={prev}
