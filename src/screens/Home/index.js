@@ -4,14 +4,17 @@ import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Text,
+    Animated,
     Dimensions,
     StatusBar,
+    InteractionManager,
     StyleSheet,
 } from 'react-native';
 
 import Songs from './Songs';
 import Nav from './Nav';
 import Loader from '../../components/Loader';
+import RippleHeader from '../../components/RippleHeader';
 import { CHART_GENRES_MAP } from '../../config';
 
 @inject(stores => ({
@@ -73,12 +76,14 @@ export default class Home extends Component {
 
     render() {
 
-        const { songs, loading, genre, changeGenre, doRefresh, showRefresh, doLoadmore, showLoadmore, player } = this.props;
+        var { songs, loading, genre, changeGenre, doRefresh, showRefresh, doLoadmore, showLoadmore, player } = this.props;
 
         StatusBar.setNetworkActivityIndicatorVisible(loading);
 
         return (
             <View style={styles.container}>
+
+                <RippleHeader></RippleHeader>
 
                 <Nav {...{
                     genre,

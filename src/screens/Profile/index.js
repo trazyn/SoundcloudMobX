@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import {
     View,
     Text,
+    ListView,
     ScrollView,
     TouchableOpacity,
     StyleSheet,
@@ -28,6 +29,7 @@ import Suggestion from './Suggestion';
     loadMoreRecent: stores.profile.loadMoreRecent,
     likes: stores.profile.likes,
     getLikes: stores.profile.getLikes,
+    loadMoreLikes: stores.profile.loadMoreLikes,
     suggestions: stores.profile.suggestions,
     getSuggestion: stores.profile.getSuggestion,
     loadMoreSuggestion: stores.profile.loadMoreSuggestion,
@@ -48,6 +50,7 @@ export default class Profile extends Component {
         loadMoreRecent: PropTypes.func.isRequired,
         likes: PropTypes.object.isRequired,
         getLikes: PropTypes.func.isRequired,
+        loadMoreLikes: PropTypes.func.isRequired,
         suggestions: PropTypes.object.isRequired,
         getSuggestion: PropTypes.func.isRequired,
         loadMoreSuggestion: PropTypes.func.isRequired,
@@ -64,112 +67,143 @@ export default class Profile extends Component {
         this.props.getSuggestion();
     }
 
-    handleScroll(e) {
-
-        var offset = e.nativeEvent.contentOffset;
-
-        if (this.props.suggestions.length
-            && offset.y + height >= e.nativeEvent.contentSize.height) {
-            this.props.loadMoreSuggestion();
-        }
-    }
-
     componentWillReceiveProps(nextProps) {
         StatusBar.setNetworkActivityIndicatorVisible(nextProps.showLoadMoreSuggestion);
     }
 
-    render() {
+    renderHeader() {
 
-        var { user, followers, recent, likes, suggestions } = this.props;
+        var { user, followers, recent, likes } = this.props;
+
+        return (
+
+            <View style={{
+                flex: 1,
+            }}>
+                <FadeImage style={styles.hero} {...{
+                    source: {
+                        uri: 'https://i1.sndcdn.com/visuals-000211846129-GwVlC8-t1240x260.jpg',
+                    },
+                    resizeMode: 'cover',
+                }}>
+                    <View style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width,
+                        height: 210,
+                        backgroundColor: 'rgba(0,0,0,.4)',
+                    }}></View>
+
+                    <View style={{
+                        justifyContent: 'space-between',
+                        flexDirection: 'row',
+                    }}>
+                        <View style={styles.avatar}>
+                            <FadeImage {...{
+                                source: {
+                                    uri: user.avatar_url.replace(/-large\./, '-t300x300.')
+                                },
+                                style: {
+                                    height: 100,
+                                    width: 100,
+                                }
+                            }}></FadeImage>
+                        </View>
+
+                        <View style={{
+                            height: 100,
+                            justifyContent: 'space-between',
+                        }}>
+                            <View>
+                                <Text style={styles.username}>{user.username}</Text>
+                                <Text style={styles.desc} numberOfLines={1} ellipsizeMode="tail">{user.description}</Text>
+                            </View>
+
+                            <Followers users={followers.slice()} count={user.followers_count}></Followers>
+                        </View>
+                    </View>
+
+                    <TouchableOpacity style={{
+                        height: 24,
+                        width: 24,
+                        flexDirection: 'row',
+                        justifyContent: 'flex-end',
+                    }}>
+                        <Icon name="options-vertical" size={18} color="white" style={{
+                            backgroundColor: 'transparent',
+                        }}></Icon>
+                    </TouchableOpacity>
+                </FadeImage>
+
+                <Recent tracks={recent.slice(0, 3)} showList={e => {
+
+                    var { getRecent, loadMoreRecent } = this.props;
+
+                    this.props.setup({
+                        data: recent,
+                        title: 'RECENTLY PLAYED',
+                        actions: {
+                            refresh: getRecent,
+                            loadmore: loadMoreRecent,
+                        }
+                    });
+                    this.props.setRoute({
+                        name: 'List',
+                    });
+                }}></Recent>
+                <Liked tracks={likes.slice()} showList={e => {
+
+                    var { getLikes, user, loadMoreLikes } = this.props;
+
+                    this.props.setup({
+                        data: likes,
+                        title: 'YOU\'VE LIKED',
+                        actions: {
+                            refresh: () => this.props.getLikes(user.id),
+                            loadmore: this.props.loadMoreLikes,
+                        }
+                    });
+                    this.props.setRoute({
+                        name: 'List',
+                    });
+                }}></Liked>
+            </View>
+        );
+    }
+
+    render() {
+        var { user, recent, suggestions } = this.props;
+        var ds = new ListView.DataSource({
+            rowHasChanged: (r1, r2) => r1.seed_sound.id !== r2.seed_sound.id
+        });
+        var dataSource = ds.cloneWithRows(suggestions.slice());
 
         return (
             (user && recent.length) ? (
-                <ScrollView
-                scrollEventThrottle={16}
-                onScroll={this.handleScroll.bind(this)}
-                style={styles.container}>
-                    <FadeImage style={styles.hero} {...{
-                        source: {
-                            uri: 'https://i1.sndcdn.com/visuals-000211846129-GwVlC8-t1240x260.jpg',
-                        },
-                        resizeMode: 'cover',
-                    }}>
-                        <View style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width,
-                            height: 210,
-                            backgroundColor: 'rgba(0,0,0,.4)',
-                        }}></View>
+                <ListView
 
-                        <View style={{
-                            justifyContent: 'space-between',
-                            flexDirection: 'row',
-                        }}>
-                            <View style={styles.avatar}>
-                                <FadeImage {...{
-                                    source: {
-                                        uri: user.avatar_url.replace(/-large\./, '-t300x300.')
-                                    },
-                                    style: {
-                                        height: 100,
-                                        width: 100,
-                                    }
-                                }}></FadeImage>
-                            </View>
+                renderHeader={this.renderHeader.bind(this)}
 
-                            <View style={{
-                                height: 100,
-                                justifyContent: 'space-between',
-                            }}>
-                                <View>
-                                    <Text style={styles.username}>{user.username}</Text>
-                                    <Text style={styles.desc} numberOfLines={1} ellipsizeMode="tail">{user.description}</Text>
-                                </View>
+                initialListSize={1}
+                onEndReachedThreshold={1}
+                pageSize={1}
+                onEndReached={() => {
+                    suggestions.length && this.props.loadMoreSuggestion();
+                }}
 
-                                <Followers users={followers.slice()} count={user.followers_count}></Followers>
-                            </View>
+                enableEmptySections={true}
+                dataSource={dataSource}
+                renderRow={(collection, sectionId, rowId) => {
+
+                    return (
+                        <View style={styles.suggestions}>
+                            <Suggestion seed={collection.seed_sound} tracks={collection.recommended.slice()}></Suggestion>
                         </View>
-
-                        <TouchableOpacity style={{
-                            height: 24,
-                            width: 24,
-                            flexDirection: 'row',
-                            justifyContent: 'flex-end',
-                        }}>
-                            <Icon name="options-vertical" size={18} color="white" style={{
-                                backgroundColor: 'transparent',
-                            }}></Icon>
-                        </TouchableOpacity>
-                    </FadeImage>
-
-                    <Recent tracks={recent.slice(0, 3)} showList={e => {
-                        this.props.setup({
-                            data: recent,
-                            title: 'RECENTLY PLAYED',
-                            actions: {
-                                refresh: this.props.getRecent,
-                                loadmore: this.props.loadMoreRecent,
-                            }
-                        });
-                        this.props.setRoute({
-                            name: 'List',
-                        });
-                    }}></Recent>
-                    <Liked tracks={likes.slice()}></Liked>
-
-                    {
-                        suggestions.map((collection, index) => {
-
-                            return (
-                                <View key={index} style={styles.suggestions}>
-                                    <Suggestion seed={collection.seed_sound} tracks={collection.recommended.slice()}></Suggestion>
-                                </View>
-                            );
-                        })
-                    }
-                </ScrollView>
+                    );
+                }}
+                style={styles.container}>
+                </ListView>
             ) : (
                 <View style={{
                     position: 'absolute',

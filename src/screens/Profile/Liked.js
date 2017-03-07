@@ -14,6 +14,7 @@ export default class Liked extends Component {
 
     static propTypes = {
         tracks: PropTypes.array.isRequired,
+        showList: PropTypes.func.isRequired,
     };
 
     covers(tracks) {
@@ -39,7 +40,7 @@ export default class Liked extends Component {
         var { tracks } = this.props;
 
         return (
-            <View style={styles.container}>
+            <TouchableOpacity style={styles.container} onPress={this.props.showList}>
                 <View style={{
                     height: 83.75,
                     width: 335,
@@ -89,7 +90,7 @@ export default class Liked extends Component {
                         </View>
                     </View>
                 </View>
-            </View>
+            </TouchableOpacity>
         );
     }
 }

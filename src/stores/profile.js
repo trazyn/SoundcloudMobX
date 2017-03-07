@@ -20,7 +20,7 @@ class Profile {
 
     @action async getFollowers(userid) {
 
-        var response = await axios.get(`https://api-v2.soundcloud.com/users/${userid}/followings?
+        var response = await axios.get(`https://api.soundcloud.com/users/${userid}/followings?
             &client_id=${CLIENT_ID}
             &limit=5
             &offset=0
@@ -100,16 +100,27 @@ class Profile {
             &linked_partitioning=0
             `.replace(/\s/g, ''));
 
-        self.likes.replace(songsFilter(response.data.collection.map(e => e.track)));
+        var songs = songsFilter(response.data.collection.map(e => e.track));
+
+        self.likes.replace(songs);
         self.likesHrefNext = response.data.next_href;
+
+        return songs;
     }
 
     @action async loadMoreLikes() {
 
-        var response = await axios.get(self.likesHrefNext);
+        if (!self.likesHrefNext) {
+            return [];
+        }
 
-        self.likes.push(...songsFilter(response.data.collection.map(e => e.track)));
-        self.likes = response.data.next_href;
+        var response = await axios.get(self.likesHrefNext);
+        var songs = songsFilter(response.data.collection.map(e => e.track));
+
+        self.likes.push(...songs);
+        self.likesHrefNext = response.data.next_href;
+
+        return songs;
     }
 }
 

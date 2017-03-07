@@ -15,7 +15,6 @@ import Chart from './Chart';
 import List from './List';
 import Player from './Player';
 import Footer from '../components/Footer';
-import RippleHeader from '../components/RippleHeader';
 import Login from './Login';
 import Profile from './Profile';
 
@@ -52,10 +51,6 @@ export default class Screes extends Component {
         return ['Player', 'Chart', 'Login', 'List'].includes(route.name);
     }
 
-    needHideHeader(route) {
-        return ['Player', 'Profile', 'Login', 'Chart'].includes(route.name);
-    }
-
     componentDidMount() {
         StatusBar.setBarStyle('light-content', true);
     }
@@ -71,11 +66,6 @@ export default class Screes extends Component {
                     toValue: 0,
                     duration: 100,
                     delay: 200,
-                }).start();
-
-            case this.needHideHeader(route):
-                Animated.spring(this.state.headerHeight, {
-                    toValue: 0,
                 }).start();
         }
 
@@ -102,10 +92,6 @@ export default class Screes extends Component {
             <View style={{
                 flex: 1
             }}>
-                <RippleHeader style={{
-                    opacity: headerOpacity,
-                    height: this.state.headerHeight,
-                }}></RippleHeader>
                 <Navigator {...{
 
                     style: styles.container,
@@ -117,10 +103,6 @@ export default class Screes extends Component {
                         Animated.timing(this.state.footerHeight, {
                             toValue: this.needHideFooter(route) ? 0 : 50,
                             duration: 100
-                        }).start();
-
-                        Animated.spring(this.state.headerHeight, {
-                            toValue: this.needHideHeader(route) ? 0 : 40,
                         }).start();
                     },
 

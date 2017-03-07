@@ -60,6 +60,9 @@ export default class List extends Component {
 
         return (
             <View style={styles.container}>
+
+                <RippleHeader></RippleHeader>
+
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => this.props.navigator.pop()} style={styles.backward}>
                         <Icon name="arrow-left" color="black" size={14}></Icon>
@@ -105,6 +108,7 @@ export default class List extends Component {
                 }}
 
                 onEndReachedThreshold={1}
+                pageSize={20}
                 onEndReached={doLoadmore}
 
                 enableEmptySections={true}
