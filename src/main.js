@@ -16,7 +16,7 @@ import blacklist from './utils/blacklist';
 
 function retryFailedRequest(err) {
 
-    if (err.response.status === 500 && err.config && !err.config.__isRetryRequest) {
+    if (err && err.response.status === 500 && err.config && !err.config.__isRetryRequest) {
         err.config.__isRetryRequest = true;
         return axios(err.config);
     }
