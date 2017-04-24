@@ -1,6 +1,5 @@
 
 import { observable, action } from 'mobx';
-import RNFS from 'react-native-fs';
 import Sound from 'react-native-sound';
 import axios from 'axios';
 import { AsyncStorage } from 'react-native';
@@ -11,7 +10,6 @@ class Player {
     @observable playing = false;
     @observable song = {};
     @observable playlist = {};
-    @observable loaded = 0;
     @observable tick = 500;
     @observable mode = PLAYER_MODE[0];
 
@@ -19,56 +17,6 @@ class Player {
     quene = [];
     whoosh;
     timer;
-    downloading;
-
-    async loadfile() {
-
-        var song = self.song;
-        var fromUrl = song.streamUrl;
-        var filename = `${Sound.CACHES}/${song.title}.${song.filetype}`;
-
-        if (await RNFS.exists(filename)) {
-            self.loaded = 1;
-            return filename;
-        }
-
-        if (!fromUrl) {
-            let response = axios.get(song.uri + '/streams', {
-                params: {
-                    client_id: CLIENT_ID,
-                }
-            }).catch(ex => console.err(`Failed to get stream: ${song.uri}`));
-            let data = (await response).data;
-
-            fromUrl = data.http_mp3_128_url;
-        } else {
-            fromUrl = `${fromUrl}?client_id=${CLIENT_ID}`;
-        }
-
-        self.downloading = RNFS.downloadFile({
-            fromUrl,
-            toFile: filename,
-            progress: (state) => {
-                self.loaded = self.playing ? state.bytesWritten / state.contentLength : 0;
-            }
-        });
-
-        self.downloading.promise
-            .then(() => {
-                delete self.downloading;
-            })
-            .catch(async ex => {
-                await RNFS.unlink(filename);
-            });
-
-        try {
-            await self.downloading.promise;
-        } catch(ex) {
-            return;
-        }
-
-        return filename;
-    }
 
     async stop() {
 
@@ -76,19 +24,11 @@ class Player {
 
         clearTimeout(timer);
 
-        if (self.downloading) {
-            try {
-                await RNFS.stopDownload(self.downloading.jobId);
-                delete self.downloading;
-            } catch(ex) {}
-        }
-
         if (self.whoosh) {
             self.whoosh.stop();
             self.whoosh.release();
         }
 
-        self.loaded = 0;
         self.tick = 0;
         self.playing = false;
     }
@@ -119,18 +59,21 @@ class Player {
         self.playing = true;
         self.paused = false;
 
-        var filename = await self.loadfile();
+        var song = self.song;
+        var response = axios.get(song.uri + '/streams', {
+            params: {
+                client_id: CLIENT_ID,
+            }
+        }).catch(ex => {
+            self.next();
+        });
+        var fromUrl = (await response).data.http_mp3_128_url;
 
-        if (!filename) {
-            return self.next();
-        }
-
-        self.whoosh = new Sound(filename, '', async err => {
+        self.whoosh = new Sound(fromUrl, '', async err => {
 
             var whoosh = self.whoosh;
 
             if (err) {
-                await RNFS.unlink(filename);
                 self.next();
             } else {
 
@@ -155,7 +98,6 @@ class Player {
                         self.next();
                     } else {
                         self.stop();
-                        console.error(`Failed to play: ${filename}`);
                     }
                 });
             }

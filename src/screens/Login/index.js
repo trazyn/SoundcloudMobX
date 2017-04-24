@@ -119,6 +119,8 @@ export default class Login extends Component {
                     <View style={styles.form}>
                         <TextInput
                         style={styles.input}
+                        autoCapitalize='none'
+                        autoCorrect={false}
                         maxLength={40}
                         placeholderTextColor='rgba(0,0,0,.45)'
                         ref="username"

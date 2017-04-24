@@ -27,7 +27,6 @@ import parseTimes from '../../utils/parseTimes';
     start: stores.player.start,
     next: stores.player.next,
     prev: stores.player.prev,
-    loaded: stores.player.loaded,
     tick: stores.player.tick,
     mode: stores.player.mode,
     changeMode: stores.player.changeMode,
@@ -45,7 +44,6 @@ export default class Player extends Component {
         start: PropTypes.func.isRequired,
         next: PropTypes.func.isRequired,
         prev: PropTypes.func.isRequired,
-        loaded: PropTypes.number.isRequired,
         tick: PropTypes.number.isRequired,
         mode: PropTypes.string.isRequired,
         changeMode: PropTypes.func.isRequired,
@@ -74,7 +72,7 @@ export default class Player extends Component {
 
     render() {
 
-        var { playing, toggle, next, prev, song, playlist, loaded, tick, mode, changeMode, user } = this.props;
+        var { playing, toggle, next, prev, song, playlist, tick, mode, changeMode, user } = this.props;
         var cover = song.artwork.replace(/large\./, 't500x500.');
         var times = parseTimes(song.duration);
         var current = parseTimes(tick);
@@ -189,7 +187,6 @@ export default class Player extends Component {
 
                             <Bar {...{
                                 passed: tick / song.duration,
-                                loaded
                             }}></Bar>
                         </View>
                     </ScrollView>

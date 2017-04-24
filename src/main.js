@@ -45,6 +45,8 @@ export default class App extends Component {
         NativeModules.SplashScreen.hide();
 
         if (session.isLogin()) {
+
+            console.log(`Set Authorization: ${session.auth.access_token}`);
             axios.defaults.headers.common['Authorization'] = `OAuth ${session.auth.access_token}`;
         }
 

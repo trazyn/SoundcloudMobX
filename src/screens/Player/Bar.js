@@ -14,20 +14,13 @@ export default class Bar extends Component {
 
     static propTypes = {
         passed: PropTypes.number.isRequired,
-        loaded: PropTypes.number.isRequired,
     };
 
     state = {
-        loaded: new Animated.Value(0),
         passed: new Animated.Value(0),
     };
 
     componentWillReceiveProps(nextProps) {
-
-        Animated.timing(this.state.loaded, {
-            toValue: width * nextProps.loaded,
-            duration: 50
-        }).start();
 
         Animated.timing(this.state.passed, {
             toValue: width * nextProps.passed,
@@ -47,9 +40,6 @@ export default class Bar extends Component {
                 <Animated.View style={[styles.passed, {
                     width: this.state.passed
                 }]}>
-                    <Animated.View style={[styles.loaded, {
-                        width: this.state.loaded
-                    }]}></Animated.View>
                     <Animated.View style={[styles.indicator, {
                         left
                     }]}>
@@ -81,15 +71,6 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
         justifyContent: 'flex-end',
         zIndex: 1
-    },
-
-    loaded: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        height: 2,
-        width: 0,
-        backgroundColor: 'rgba(0,0,0,.3)',
     },
 
     indicator: {
