@@ -1,148 +1,70 @@
 
 import React, { Component, PropTypes } from 'react';
-import { observer, inject } from 'mobx-react/native';
+import { observer } from 'mobx-react/native';
+import { Provider } from 'mobx-react/native';
+import axios from 'axios';
 import {
     View,
-    StatusBar,
-    Navigator,
     StyleSheet,
-    Animated,
+    NativeModules,
 } from 'react-native';
 
-import Home from './Home';
-import Discover from './Discover';
-import Chart from './Chart';
-import List from './List';
-import Player from './Player';
+import blacklist from '../utils/blacklist';
+import stores from '../stores';
+import Toast from '../components/Toast';
 import Footer from '../components/Footer';
-import Login from './Login';
-import Profile from './Profile';
 
-const components = {
-    Home,
-    Player,
-    Discover,
-    Chart,
-    Login,
-    Profile,
-    List,
-};
-
-@inject(stores => ({
-    route: stores.route.value,
-    setRoute: stores.route.setRoute.bind(stores.route),
-    isLogin: stores.session.isLogin,
-}))
-@observer
-export default class Screes extends Component {
+export default class Screen extends Component {
 
     static propTypes = {
-        route: PropTypes.object.isRequired,
-        setRoute: PropTypes.func.isRequired,
-        isLogin: PropTypes.func.isRequired,
+        showFooter: PropTypes.bool,
     };
 
-    state = {
-        footerHeight: new Animated.Value(50),
-        headerHeight: new Animated.Value(40),
+    static defaultProps = {
+        showFooter: true,
     };
 
-    needHideFooter(route) {
-        return ['Player', 'Chart', 'Login', 'List'].includes(route.name);
+    componentWillMount() {
+
+        /** Debug network in chrome devtools network tab */
+        GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
     }
 
-    componentDidMount() {
-        StatusBar.setBarStyle('light-content', true);
-    }
+    async componentDidMount() {
 
-    componentWillReact() {
-
-        var navigator = this.refs.nav;
-        var route = this.props.route;
-
-        switch (true) {
-            case this.needHideFooter(route):
-                Animated.timing(this.state.footerHeight, {
-                    toValue: 0,
-                    duration: 100,
-                    delay: 200,
-                }).start();
-        }
-
-        if (['Home', 'Discover', 'Profile'].includes(route.name)) {
-            navigator.replace(route);
-        } else {
-            navigator.push(this.props.route);
-        }
+        await stores.session.init();
+        await stores.player.init();
     }
 
     render() {
 
-        var footerOpacity = this.state.footerHeight.interpolate({
-            inputRange: [0, 50],
-            outputRange: [0, 1],
-        });
-        var headerOpacity = this.state.headerHeight.interpolate({
-            inputRange: [0, 40],
-            outputRange: [0, 1],
-        });
-        var { route, setRoute, isLogin } = this.props;
+        var toast = stores.toast;
+        var { navigation, showFooter } = this.props;
 
         return (
-            <View style={{
-                flex: 1
+            <Provider {...{
+                ...blacklist(stores, 'toast'),
+                navigation,
+                showMessage: toast.showMessage,
+                showError: toast.showError,
             }}>
-                <Navigator {...{
-
-                    style: styles.container,
-
-                    initialRoute: this.props.route,
-
-                    onDidFocus: (route) => {
-
-                        Animated.timing(this.state.footerHeight, {
-                            toValue: this.needHideFooter(route) ? 0 : 50,
-                            duration: 100
-                        }).start();
-                    },
-
-                    configureScene: (route, routeStack) => {
-
-                        if (['Player', 'Login'].includes(route.name)) {
-                            return Navigator.SceneConfigs.FloatFromBottom;
-                        } else {
-                            return Navigator.SceneConfigs.PushFromRight;
-                        }
-                    },
-
-                    renderScene: (route, navigator) => {
-
-                        const name = route.name;
-                        const component = components[name];
-
-                        if (!component) {
-                            return console.error(`No such view name: '${name}'`);
-                        }
-
-                        return React.createElement(component, {
-                            ...this.props,
-                            route,
-                            navigator,
-                        });
-                    },
-
-                    ref: 'nav'
-                }}></Navigator>
-
-                <Footer
-                route={route}
-                setRoute={setRoute}
-                isLogin={isLogin}
-                style={{
-                    opacity: footerOpacity,
-                    height: this.state.footerHeight,
-                }}></Footer>
-            </View>
+                <View style={{
+                    flex: 1,
+                }}>
+                    <View style={styles.container}>
+                        <Toast {...{
+                            message: toast.message,
+                            show: toast.show,
+                            color: toast.color,
+                            close: () => toast.toggle(false),
+                        }}></Toast>
+                        {this.props.children}
+                    </View>
+                    {
+                        showFooter && <Footer navigation={navigation}></Footer>
+                    }
+                </View>
+            </Provider>
         );
     }
 }

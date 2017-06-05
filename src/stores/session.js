@@ -78,6 +78,8 @@ class Session {
         self.auth = auth;
         self.loading = false;
 
+        axios.defaults.headers.common['Authorization'] = `OAuth ${auth.access_token}`;
+
         return auth;
     }
 

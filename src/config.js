@@ -120,3 +120,5 @@ export const IMAGE_SIZES = {
     LARGE: 't300x300',
     XLARGE: 't500x500',
 };
+
+console.ignoredYellowBox = ['Warning: ReactNative.createElement', 'Possible Unhandlerd Promise ', 'Remote debugger', 'View '];

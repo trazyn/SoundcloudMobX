@@ -1,46 +1,36 @@
 
 import { observable, action } from 'mobx';
-import Sound from 'react-native-sound';
+import Sound from 'react-native-audio-streaming';
+import { ReactNativeAudioStreaming } from "react-native-audio-streaming";
 import axios from 'axios';
 import { AsyncStorage } from 'react-native';
 import { CLIENT_ID, PLAYER_MODE } from '../config';
+import { DeviceEventEmitter } from 'react-native';
 
 class Player {
 
     @observable playing = false;
     @observable song = {};
-    @observable playlist = {};
-    @observable tick = 500;
+    @observable playlist = [];
+    @observable progress = 0;
     @observable mode = PLAYER_MODE[0];
 
     paused = false;
     quene = [];
-    whoosh;
-    timer;
 
     async stop() {
 
-        var { whoosh, timer } = self;
-
-        clearTimeout(timer);
-
-        if (self.whoosh) {
-            self.whoosh.stop();
-            self.whoosh.release();
-        }
-
-        self.tick = 0;
+        ReactNativeAudioStreaming.stop();
         self.playing = false;
     }
-
 
     @action toggle() {
         var playing = self.playing = !self.playing;
 
         if (playing) {
-            self.whoosh.play();
+            ReactNativeAudioStreaming.resume();
         } else {
-            self.whoosh.pause();
+            ReactNativeAudioStreaming.pause();
         }
 
         self.paused = !self.paused;
@@ -69,39 +59,7 @@ class Player {
         });
         var fromUrl = (await response).data.http_mp3_128_url;
 
-        self.whoosh = new Sound(fromUrl, '', async err => {
-
-            var whoosh = self.whoosh;
-
-            if (err) {
-                self.next();
-            } else {
-
-                var tick = 0;
-                clearTimeout(self.timer);
-                self.timer = setTimeout(function playing() {
-                    whoosh.getCurrentTime(seconds => {
-                        tick = seconds * 1000;
-
-                        /** Sometimes the play callback is not invoked by 'react-native-sound', we need check current time */
-                        if (seconds === 0) {
-                            return self.next();
-                        }
-                    });
-                    self.tick = tick;
-                    self.timer = setTimeout(playing, 500);
-                }, 500);
-
-                whoosh.play(success => {
-
-                    if (success) {
-                        self.next();
-                    } else {
-                        self.stop();
-                    }
-                });
-            }
-        });
+        ReactNativeAudioStreaming.play(fromUrl, { showIniOSMediaCenter: true });
     }
 
     @action setup(data, needTrack = true) {
@@ -187,6 +145,28 @@ class Player {
         if (PLAYER_MODE.includes(mode)) {
             self.mode = mode;
         }
+
+        DeviceEventEmitter.addListener('AudioBridgeEvent', e => {
+
+            var { status, duration, progress, url } = e;
+
+            if ('ERROR' === status) {
+                self.stop();
+                throw e;
+            }
+
+            if ('STREAMING' === status) {
+                return self.progress = progress / duration;
+            }
+
+            if (['BUFFERING', 'STOPPED'].includes(status)) {
+                self.progress = 0;
+
+                if ('STOPPED' === status && url) {
+                    //self.next();
+                }
+            }
+        });
     }
 }
 

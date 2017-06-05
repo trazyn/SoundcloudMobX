@@ -28,9 +28,9 @@ import { CHART_GENRES_MAP } from '../../config';
     showLoadmore: stores.home.showLoadmore,
     doLoadmore: stores.home.doLoadmore,
 
-    setRoute: stores.route.setRoute.bind(stores.route),
-
     player: stores.player,
+
+    navigation: stores.navigation,
 }))
 @observer
 export default class Home extends Component {
@@ -46,9 +46,9 @@ export default class Home extends Component {
         showLoadmore: PropTypes.bool.isRequired,
         doLoadmore: PropTypes.func.isRequired,
 
-        setRoute: PropTypes.func.isRequired,
-
         player: PropTypes.object.isRequired,
+
+        navigation: PropTypes.object.isRequired,
     };
 
     async componentDidMount() {
@@ -60,14 +60,14 @@ export default class Home extends Component {
 
     play(song) {
 
+        this.props.navigation.navigate('Player');
+
         this.props.player.setup({
-            playlist: this.props.songs,
+            playlist: this.props.songs.slice(),
             song,
         });
 
-        this.props.setRoute({
-            name: 'Player'
-        });
+        this.props.player.start();
 
         for (var genre of CHART_GENRES_MAP) {
             genre.store && genre.store.setPlaying(false);

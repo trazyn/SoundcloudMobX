@@ -32,7 +32,7 @@ export default class Controller extends Component {
 
         var { songid, userid, fav } = this.props;
 
-        if (undefined === fav) {
+        if (userid && undefined === fav) {
             this.setState({
                 isFavorited: await isFavorited(userid, songid),
             });
@@ -43,6 +43,11 @@ export default class Controller extends Component {
 
         var { userid, songid, fav } = this.props;
         var isFavorited = this.state.isFavorited || fav;
+
+        if (!userid) {
+
+            return false;
+        }
 
         if (isFavorited) {
             removeFavorited(userid, songid);

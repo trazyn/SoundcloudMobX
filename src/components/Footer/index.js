@@ -13,14 +13,15 @@ import {
 export default class Footer extends Component {
 
     static propTypes = {
-        route: PropTypes.object.isRequired,
-        setRoute: PropTypes.func.isRequired,
-        isLogin: PropTypes.func.isRequired,
+        navigation: PropTypes.object.isRequired,
     };
 
     highlight(props = this.props) {
 
-        var name = props.route.name;
+        var { navigation } = props;
+        var { index, routes } = navigation.state;
+        var current = routes[index];
+        var name = current.key;
         var ele = this.refs[name];
 
         if (ele) {
@@ -54,32 +55,26 @@ export default class Footer extends Component {
 
     render() {
 
-        var { setRoute, route, isLogin } = this.props;
+        var { navigation } = this.props;
 
         return (
             <Animated.View style={[styles.container, this.props.style]}>
                 <TouchableOpacity style={styles.item} onPress={e => {
-                    setRoute({
-                        name: 'Home'
-                    });
+                    navigation.navigate('Home');
                 }}>
                     <Icon name="playlist" ref="Home" size={16}></Icon>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.item} onPress={e => {
-                    setRoute({
-                        name: 'Discover'
-                    });
+                    navigation.navigate('Discover');
                 }}>
                     <Icon name="magnifier" ref="Discover" size={16}></Icon>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.item} onPress={e => {
-                    setRoute({
-                        name: !isLogin() ? 'Login' : 'Profile'
-                    });
+                    navigation.navigate('Fav');
                 }}>
-                    <Icon name="heart" ref="Profile" size={16}></Icon>
+                    <Icon name="heart" ref="Fav" size={16}></Icon>
                 </TouchableOpacity>
             </Animated.View>
         );

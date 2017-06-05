@@ -53,10 +53,6 @@ export default class Song extends Component {
 
         return (
             <View style={[styles.container, this.props.style]}>
-                {
-                    playing
-                }
-
                 <View style={!playing && styles.shadow}>
 
                     {
@@ -64,7 +60,9 @@ export default class Song extends Component {
 
                         ? <Playing artwork={artwork} title={title} user={user} enter={() => play({...blacklist(this.props, 'play')})}></Playing>
                         : (
-                            <View>
+                            <View style={{
+                                overflow: 'hidden'
+                            }}>
                                 <View style={[styles.placeholder, {
                                     backgroundColor: `#${('00' + (Math.random() * 1000 | 0)).slice(-3)}`
                                 }]}>
