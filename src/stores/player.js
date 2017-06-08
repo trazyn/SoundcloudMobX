@@ -76,7 +76,8 @@ class Player {
         });
         var streamurl = (await response).data.http_mp3_128_url;
 
-        console.log('PLAY: ' + streamurl);
+        self.paused = false;
+        self.paying = true;
         ReactNativeAudioStreaming.play(streamurl, { showIniOSMediaCenter: true });
     }
 
