@@ -51,7 +51,7 @@ export default class Player extends Component {
 
     render() {
 
-        var { song, playlist, progress } = this.props.player;
+        var { song, playlist, playing, progress, paused, toggle, next, prev, mode, changeMode } = this.props.player;
         var cover = song.artwork.replace(/large\./, 't500x500.');
         var times = parseTimes(song.duration);
         var current = parseTimes(song.duration * progress);
@@ -114,13 +114,7 @@ export default class Player extends Component {
                             ref="playList"
                             list={playlist.slice()}
                             play={song => {
-
-                                var { setup, start } = this.props.player;
-
-                                setup({
-                                    song,
-                                });
-                                start();
+                                this.props.player.start({ song });
                             }}
                             current={song}>
                             </PlayList>
@@ -172,7 +166,18 @@ export default class Player extends Component {
                     </ScrollView>
                 </Image>
 
-                <Controller { ...this.props }></Controller>
+                <Controller {...{
+                    userid: this.props.userid,
+                    message: this.props.message,
+                    song,
+                    playlist,
+                    paused,
+                    toggle,
+                    next,
+                    prev,
+                    mode,
+                    changeMode,
+                }}></Controller>
 
                 <View style={styles.dots}>
                     <View style={[styles.dot, this.state.index === 0 && styles.active]}></View>

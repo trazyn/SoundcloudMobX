@@ -91,7 +91,9 @@ const styles = StyleSheet.create({
     },
 
     message: {
+        fontFamily: 'HelveticaNeue-Light',
         marginLeft: 5,
+        width: width - 60,
         fontSize: 12,
         fontWeight: '100',
     },
