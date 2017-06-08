@@ -29,8 +29,6 @@ import SongCard from './Song';
     playing: stores.chart.playing,
     setPlaying: stores.chart.setPlaying,
 
-    setRoute: stores.route.setRoute.bind(stores.route),
-
     player: stores.player,
 }))
 @observer
@@ -44,7 +42,6 @@ export default class Chart extends Component {
         doLoadmore: PropTypes.func.isRequired,
         showLoadmore: PropTypes.bool.isRequired,
         hasEnd: PropTypes.bool.isRequired,
-        setRoute: PropTypes.func.isRequired,
         playing: PropTypes.bool.isRequired,
         setPlaying: PropTypes.func.isRequired,
     };

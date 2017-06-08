@@ -9,25 +9,29 @@ import { DeviceEventEmitter } from 'react-native';
 
 class Player {
 
-    @observable playing = false;
     @observable song = {};
     @observable playlist = [];
     @observable progress = 0;
     @observable mode = PLAYER_MODE[0];
+    @observable playing = false;
+    @observable paused = false;
 
-    paused = false;
-    quene = [];
+    history = [];
 
     async stop() {
-
         ReactNativeAudioStreaming.stop();
+    }
+
+    @action reset() {
+
+        self.stop();
+        self.paused = false;
         self.playing = false;
     }
 
     @action toggle() {
-        var playing = self.playing = !self.playing;
 
-        if (playing) {
+        if (self.paused) {
             ReactNativeAudioStreaming.resume();
         } else {
             ReactNativeAudioStreaming.pause();
@@ -36,20 +40,33 @@ class Player {
         self.paused = !self.paused;
     }
 
-    @action async start() {
+    @action async start({ song, playlist = self.playlist, needTrack = true }) {
 
-        if (self.playing) {
-            return;
+        if (self.song.id === song.id
+            && self.playlist.uuid === playlist.uuid) {
+
+            if (self.paused) {
+                self.toggle();
+            }
+
+            if (self.playing) {
+                return;
+            }
         }
 
-        if (self.paused) {
-            return self.toggle();
+        if (self.song.id !== song.id) {
+
+            self.stop();
+            self.song = song;
         }
 
-        self.playing = true;
-        self.paused = false;
+        if (self.playlist.uuid !== playlist.uuid) {
+            self.history = [];
+            self.playlist = playlist;
+        }
 
-        var song = self.song;
+        needTrack && self.history.push(song);
+
         var response = axios.get(song.uri + '/streams', {
             params: {
                 client_id: CLIENT_ID,
@@ -57,28 +74,10 @@ class Player {
         }).catch(ex => {
             self.next();
         });
-        var fromUrl = (await response).data.http_mp3_128_url;
+        var streamurl = (await response).data.http_mp3_128_url;
 
-        ReactNativeAudioStreaming.play(fromUrl, { showIniOSMediaCenter: true });
-    }
-
-    @action setup(data, needTrack = true) {
-
-        var { song, playlist } = data;
-
-        if (playlist) {
-            self.quene = [];
-            self.playlist = playlist;
-        }
-
-        if (song && song.id !== self.song.id) {
-            self.song = song;
-            self.stop();
-
-            if (needTrack) {
-                self.quene.push(song);
-            }
-        }
+        console.log('PLAY: ' + streamurl);
+        ReactNativeAudioStreaming.play(streamurl, { showIniOSMediaCenter: true });
     }
 
     @action async changeMode() {
@@ -117,22 +116,22 @@ class Player {
             song = playlist[Math.floor(Math.random() * shuffle.length)];
         }
 
-        self.setup({ song });
-        self.start();
+        self.reset();
+        self.start({ song });
     }
 
     @action prev() {
 
-        var song = self.quene[self.quene.length - 2];
+        var song = self.history[self.history.length - 2];
 
         if (!song) {
-            song = self.quene[0];
+            song = self.history[0];
         } else {
-            self.quene.pop();
+            self.history.pop();
         }
 
-        self.setup({ song }, false);
-        self.start();
+        self.reset();
+        self.start({ song, needTrack: false });
     }
 
     @action appendPlaylist(songs) {
@@ -149,6 +148,8 @@ class Player {
         DeviceEventEmitter.addListener('AudioBridgeEvent', e => {
 
             var { status, duration, progress, url } = e;
+
+            self.playing = ['PLAYING', 'BUFFERING', 'PAUSED', 'STREAMING'].includes(status);
 
             if ('ERROR' === status) {
                 self.stop();

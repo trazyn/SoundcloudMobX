@@ -23,6 +23,7 @@ import FadeImage from '../../components/FadeImage';
     loading: stores.session.loading,
     showError: stores.showError,
     showMessage: stores.showMessage,
+    navigation: stores.navigation,
 }))
 export default class Login extends Component {
 
@@ -31,10 +32,11 @@ export default class Login extends Component {
         loading: PropTypes.bool.isRequired,
         showError: PropTypes.func.isRequired,
         showMessage: PropTypes.func.isRequired,
+        navigation: PropTypes.object.isRequired,
     };
 
     handleBack() {
-        this.props.navigator.pop();
+        this.props.navigation.goBack();
     }
 
     handleLogin() {
@@ -170,7 +172,7 @@ const styles = StyleSheet.create({
         height,
         width,
         paddingLeft: 35,
-        backgroundColor: 'rgba(255,255,255,.9)',
+        backgroundColor: 'rgba(255,255,255,.7)',
         zIndex: 99
     },
 

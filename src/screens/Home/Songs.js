@@ -17,13 +17,14 @@ import Loader from '../../components/Loader';
 export default class Songs extends Component {
 
     static propTypes = {
-        list: PropTypes.object.isRequired,
+        playlist: PropTypes.array.isRequired,
         showRefresh: PropTypes.bool.isRequired,
         doRefresh: PropTypes.func.isRequired,
         showLoadmore: PropTypes.bool.isRequired,
         doLoadmore: PropTypes.func.isRequired,
         play: PropTypes.func.isRequired,
         current: PropTypes.object.isRequired,
+        playing: PropTypes.bool.isRequired,
     };
 
     state = {
@@ -32,11 +33,11 @@ export default class Songs extends Component {
 
     render() {
 
-        var { list, doRefresh, showRefresh, doLoadmore, showLoadmore, play } = this.props;
+        var { playlist, doRefresh, showRefresh, doLoadmore, showLoadmore, play } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
         });
-        var dataSource = ds.cloneWithRows(list.slice());
+        var dataSource = ds.cloneWithRows(playlist);
         var opacity = this.state.opacity.interpolate({
             inputRange: [-30, -5],
             outputRange: [1, 0],
@@ -121,8 +122,8 @@ export default class Songs extends Component {
                 dataSource={dataSource}
                 renderRow={song => {
 
-                    var index = list.findIndex(e => e.id === song.id);
-                    var playing = this.props.current.id === song.id;
+                    var index = playlist.findIndex(e => e.id === song.id);
+                    var playing = this.props.current.id === song.id && this.props.playing;
 
                     return (
                         <Song {...{
@@ -131,7 +132,7 @@ export default class Songs extends Component {
                             playing,
                             play,
 
-                            style: [(index === list.length - 1 && styles.pad), {
+                            style: [(index === playlist.length - 1 && styles.pad), {
                                 left: -index * .5 - .5
                             }]
                         }}></Song>

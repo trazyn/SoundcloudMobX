@@ -1,5 +1,4 @@
 
-import route from './route';
 import player from './player';
 import home from './home';
 import discover from './discover';
@@ -9,8 +8,9 @@ import toast from './toast';
 import profile from './profile';
 import list from './list';
 
+import { observable, action } from 'mobx';
+
 export default {
-    route,
     home,
     player,
     discover,

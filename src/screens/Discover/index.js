@@ -20,14 +20,12 @@ import RippleHeader from '../../components/RippleHeader';
     type: stores.discover.type,
     changeType: stores.discover.changeType,
     chart: stores.chart,
-    setRoute: stores.route.setRoute.bind(stores.route),
 }))
 export default class Discover extends Component {
 
     static propTypes = {
         type: PropTypes.oneOf(['top', 'trending']).isRequired,
         changeType: PropTypes.func.isRequired,
-        setRoute: PropTypes.func.isRequired,
     };
 
     componentWillMount() {

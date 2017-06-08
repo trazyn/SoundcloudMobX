@@ -8,7 +8,6 @@ import {
     StatusBar,
     TouchableOpacity,
     Dimensions,
-    InteractionManager,
     StyleSheet,
 } from 'react-native';
 
@@ -34,13 +33,11 @@ export default class Toast extends Component {
 
         if (nextProps.show) {
 
-            InteractionManager.runAfterInteractions(() => {
-                Animated.timing(this.state.height, {
-                    toValue: 40,
-                    duration: 200,
-                    delay: 200,
-                }).start();
-            });
+            Animated.timing(this.state.height, {
+                toValue: 40,
+                duration: 200,
+                delay: 200,
+            }).start();
         } else {
             Animated.timing(this.state.height, {
                 toValue: 0,

@@ -7,7 +7,6 @@ import {
     Animated,
     Dimensions,
     StatusBar,
-    InteractionManager,
     StyleSheet,
 } from 'react-native';
 
@@ -18,56 +17,33 @@ import RippleHeader from '../../components/RippleHeader';
 import { CHART_GENRES_MAP } from '../../config';
 
 @inject(stores => ({
-    songs: stores.home.songs,
-    getSongs: stores.home.getSongs,
-    loading: stores.home.loading,
-    genre: stores.home.genre,
-    changeGenre: stores.home.changeGenre,
-    showRefresh: stores.home.showRefresh,
-    doRefresh: stores.home.doRefresh,
-    showLoadmore: stores.home.showLoadmore,
-    doLoadmore: stores.home.doLoadmore,
-
+    home: stores.home,
     player: stores.player,
-
-    navigation: stores.navigation,
 }))
 @observer
 export default class Home extends Component {
 
     static propTypes = {
-        songs: PropTypes.object.isRequired,
-        getSongs: PropTypes.func.isRequired,
-        loading: PropTypes.bool.isRequired,
-        genre: PropTypes.string.isRequired,
-        changeGenre: PropTypes.func.isRequired,
-        showRefresh: PropTypes.bool.isRequired,
-        doRefresh: PropTypes.func.isRequired,
-        showLoadmore: PropTypes.bool.isRequired,
-        doLoadmore: PropTypes.func.isRequired,
-
+        home: PropTypes.object.isRequired,
         player: PropTypes.object.isRequired,
-
-        navigation: PropTypes.object.isRequired,
     };
 
     async componentDidMount() {
 
-        if (!this.props.songs.length) {
-            await this.props.getSongs();
+        var { playlist, getPlaylist } = this.props.home;
+
+        if (!playlist.length) {
+            await getPlaylist();
         }
     }
 
     play(song) {
 
         this.props.navigation.navigate('Player');
-
-        this.props.player.setup({
-            playlist: this.props.songs.slice(),
+        this.props.player.start({
+            playlist: this.props.home.playlist,
             song,
         });
-
-        this.props.player.start();
 
         for (var genre of CHART_GENRES_MAP) {
             genre.store && genre.store.setPlaying(false);
@@ -76,7 +52,8 @@ export default class Home extends Component {
 
     render() {
 
-        var { songs, loading, genre, changeGenre, doRefresh, showRefresh, doLoadmore, showLoadmore, player } = this.props;
+        var player = this.props.player;
+        var { playlist, loading, genre, changeGenre, doRefresh, showRefresh, doLoadmore, showLoadmore } = this.props.home;
 
         StatusBar.setNetworkActivityIndicatorVisible(loading);
 
@@ -107,7 +84,7 @@ export default class Home extends Component {
                             }}>
                                 <View style={styles.title}>
                                     <Text>
-                                        {songs.length} &nbsp;
+                                        {playlist.length} &nbsp;
                                     </Text>
 
                                     <Text style={{
@@ -115,13 +92,13 @@ export default class Home extends Component {
                                     }}>Tracks in Quene</Text>
                                 </View>
                                 <Songs {...{
-                                    list: songs,
+                                    playlist: playlist.slice(),
                                     current: player.song,
                                     doRefresh,
                                     showRefresh,
                                     doLoadmore,
                                     showLoadmore,
-
+                                    playing: player.playing,
                                     play: this.play.bind(this)
                                 }}></Songs>
                             </View>

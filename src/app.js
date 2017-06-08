@@ -33,7 +33,6 @@ const router = TabRouter({
 
 const view = ({ router, navigation }) => {
 
-    const { routes, index } = navigation.state;
     const ActiveScreen = router.getComponentForState(navigation.state);
 
     return (
@@ -43,10 +42,12 @@ const view = ({ router, navigation }) => {
     );
 };
 
-export default StackNavigator({
+const MainScreen = createNavigationContainer(createNavigator(router)(view));
+
+const App = StackNavigator({
 
     Root: {
-        screen: createNavigationContainer(createNavigator(router)(view)),
+        screen: MainScreen,
     },
 
     Player: {
@@ -55,6 +56,18 @@ export default StackNavigator({
             return (
                 <Layout showFooter={false} navigation={navigation}>
                     <Player></Player>
+                </Layout>
+            );
+        },
+    },
+
+    Login: {
+
+        screen: ({ navigation }) => {
+
+            return (
+                <Layout showFooter={false} navigation={navigation}>
+                    <Login></Login>
                 </Layout>
             );
         },
@@ -68,3 +81,5 @@ export default StackNavigator({
         };
     }
 });
+
+export default App;

@@ -14,6 +14,7 @@ import stores from '../stores';
 import Toast from '../components/Toast';
 import Footer from '../components/Footer';
 
+@observer
 export default class Screen extends Component {
 
     static propTypes = {
@@ -44,24 +45,31 @@ export default class Screen extends Component {
         return (
             <Provider {...{
                 ...blacklist(stores, 'toast'),
-                navigation,
-                showMessage: toast.showMessage,
-                showError: toast.showError,
             }}>
                 <View style={{
                     flex: 1,
                 }}>
+                    <Toast {...{
+                        message: toast.message,
+                        show: toast.show,
+                        color: toast.color,
+                        close: () => toast.toggle(false),
+                    }}></Toast>
                     <View style={styles.container}>
-                        <Toast {...{
-                            message: toast.message,
-                            show: toast.show,
-                            color: toast.color,
-                            close: () => toast.toggle(false),
-                        }}></Toast>
-                        {this.props.children}
+                        {
+                            React.cloneElement(this.props.children, {
+
+                                /** Avoid mobx warning: replace 'navigation' in store */
+                                navigation,
+                                message: {
+                                    info: toast.showMessage,
+                                    error: toast.showError,
+                                },
+                            })
+                        }
                     </View>
                     {
-                        showFooter && <Footer navigation={navigation}></Footer>
+                        showFooter && <Footer isLogin={stores.session.isLogin} navigation={navigation}></Footer>
                     }
                 </View>
             </Provider>

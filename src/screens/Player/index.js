@@ -19,38 +19,15 @@ import Controller from './Controller';
 import parseTimes from '../../utils/parseTimes';
 
 @inject(stores => ({
-    user: stores.session.user,
-    playing: stores.player.playing,
-    toggle: stores.player.toggle,
-    start: stores.player.start,
-    next: stores.player.next,
-    prev: stores.player.prev,
-    progress: stores.player.progress,
-    mode: stores.player.mode,
-    changeMode: stores.player.changeMode,
-    setup: stores.player.setup,
-    song: stores.player.song,
-    playlist: stores.player.playlist,
-
-    navigation: stores.navigation,
+    player: stores.player,
+    userid: stores.session.user.id,
 }))
 @observer
 export default class Player extends Component {
 
     static propTypes = {
-        user: PropTypes.object,
-        playing: PropTypes.bool.isRequired,
-        toggle: PropTypes.func.isRequired,
-        start: PropTypes.func.isRequired,
-        next: PropTypes.func.isRequired,
-        prev: PropTypes.func.isRequired,
-        progress: PropTypes.number.isRequired,
-        mode: PropTypes.string.isRequired,
-        changeMode: PropTypes.func.isRequired,
-        setup: PropTypes.func.isRequired,
-
-        song: PropTypes.object.isRequired,
-        playlist: PropTypes.object.isRequired,
+        player: PropTypes.object.isRequired,
+        userid: PropTypes.number,
     };
 
     state = {
@@ -67,17 +44,18 @@ export default class Player extends Component {
 
     componentWillReceiveProps(nextProps) {
 
-        if (this.props.song.id !== nextProps.song.id && this.state.index !== 0) {
+        if (this.props.player.song.id !== nextProps.player.song.id && this.state.index !== 0) {
             this.refs.playList.highlight();
         }
     }
 
     render() {
 
-        var { playing, toggle, next, prev, progress, mode, changeMode, user = {}, song, playlist } = this.props;
+        var { song, playlist, progress } = this.props.player;
         var cover = song.artwork.replace(/large\./, 't500x500.');
         var times = parseTimes(song.duration);
         var current = parseTimes(song.duration * progress);
+        var playing = this.props.player.playing;
 
         return (
             <View style={styles.container}>
@@ -135,14 +113,14 @@ export default class Player extends Component {
                             <PlayList
                             ref="playList"
                             list={playlist.slice()}
-                            play={async song => {
+                            play={song => {
 
-                                var { setup, start } = this.props;
+                                var { setup, start } = this.props.player;
 
                                 setup({
                                     song,
                                 });
-                                await start();
+                                start();
                             }}
                             current={song}>
                             </PlayList>
@@ -194,17 +172,7 @@ export default class Player extends Component {
                     </ScrollView>
                 </Image>
 
-                <Controller
-                userid={user.id}
-                songid={song.id}
-                toggle={toggle}
-                next={next}
-                prev={prev}
-                mode={mode}
-                changeMode={changeMode}
-                fav={song.fav}
-                playing={playing}>
-                </Controller>
+                <Controller { ...this.props }></Controller>
 
                 <View style={styles.dots}>
                     <View style={[styles.dot, this.state.index === 0 && styles.active]}></View>

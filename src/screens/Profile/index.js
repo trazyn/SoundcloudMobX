@@ -36,7 +36,6 @@ import Suggestion from './Suggestion';
     showLoadMoreSuggestion: stores.profile.showLoadMoreSuggestion,
 
     setup: stores.list.setup,
-    setRoute: stores.route.setRoute.bind(stores.route),
 }))
 @observer
 export default class Profile extends Component {
@@ -55,8 +54,6 @@ export default class Profile extends Component {
         getSuggestion: PropTypes.func.isRequired,
         loadMoreSuggestion: PropTypes.func.isRequired,
         showLoadMoreSuggestion: PropTypes.bool.isRequired,
-
-        setRoute: PropTypes.func.isRequired,
     };
 
     async componentWillMount() {

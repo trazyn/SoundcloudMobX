@@ -26,8 +26,8 @@ const axios = _axios.create({
 
 class Session {
 
-    auth;
-    user;
+    auth = '';
+    user = {};
 
     @observable loading = false;
 
@@ -58,6 +58,9 @@ class Session {
                     self.auth = 0;
                 }
             }
+
+            console.log(`SET AUTH: ${self.auth.access_token}`);
+            axios.defaults.headers.common['Authorization'] = `OAuth ${self.auth.access_token}`;
         }
     }
 
@@ -78,8 +81,6 @@ class Session {
         self.auth = auth;
         self.loading = false;
 
-        axios.defaults.headers.common['Authorization'] = `OAuth ${auth.access_token}`;
-
         return auth;
     }
 
@@ -99,7 +100,7 @@ class Session {
     }
 
     isLogin() {
-        return !!self.auth;
+        return !!self.auth && false;
     }
 }
 
