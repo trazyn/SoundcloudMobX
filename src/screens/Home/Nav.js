@@ -1,5 +1,6 @@
 
 import React, { Component, PropTypes } from 'react';
+import { inject, observer } from 'mobx-react/native';
 import {
     ListView,
     StyleSheet,
@@ -11,12 +12,11 @@ import {
 
 import { GENRES_MAP } from '../../config';
 
+@inject(stores => ({
+    genre: stores.home.genre,
+    changeGenre: stores.home.changeGenre,
+}))
 export default class Nav extends Component {
-
-    static propTypes = {
-        genre: PropTypes.string.isRequired,
-        changeGenre: PropTypes.func.isRequired,
-    };
 
     render() {
 
@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
         top: 0,
         height: 100,
         width,
+        backgroundColor: 'transparent',
         alignItems: 'center',
         justifyContent: 'space-around',
         flexDirection: 'row',

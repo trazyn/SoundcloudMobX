@@ -18,17 +18,19 @@ import PlayList from './PlayList';
 import Controller from './Controller';
 import parseTimes from '../../utils/parseTimes';
 
-@inject(stores => ({
-    player: stores.player,
-    userid: stores.session.user.id,
-}))
+@inject(stores => {
+
+    var { song, playing, progress, start } = stores.player;
+
+    return {
+        song,
+        playing,
+        start,
+        progress,
+    };
+})
 @observer
 export default class Player extends Component {
-
-    static propTypes = {
-        player: PropTypes.object.isRequired,
-        userid: PropTypes.number,
-    };
 
     state = {
         index: 1,
@@ -44,18 +46,18 @@ export default class Player extends Component {
 
     componentWillReceiveProps(nextProps) {
 
-        if (this.props.player.song.id !== nextProps.player.song.id && this.state.index !== 0) {
+        if (this.props.song.id !== nextProps.song.id && this.state.index !== 0) {
             this.refs.playList.highlight();
         }
     }
 
     render() {
 
-        var { song, playlist, playing, progress, paused, toggle, next, prev, mode, changeMode } = this.props.player;
+        var { song, playlist, playing, start, progress } = this.props;
         var cover = song.artwork.replace(/large\./, 't500x500.');
         var times = parseTimes(song.duration);
         var current = parseTimes(song.duration * progress);
-        var playing = this.props.player.playing;
+        var playing = playing;
 
         return (
             <View style={styles.container}>
@@ -112,10 +114,6 @@ export default class Player extends Component {
                         <View style={styles.viewport}>
                             <PlayList
                             ref="playList"
-                            list={playlist.slice()}
-                            play={song => {
-                                this.props.player.start({ song });
-                            }}
                             current={song}>
                             </PlayList>
                         </View>
@@ -166,18 +164,7 @@ export default class Player extends Component {
                     </ScrollView>
                 </Image>
 
-                <Controller {...{
-                    userid: this.props.userid,
-                    message: this.props.message,
-                    song,
-                    playlist,
-                    paused,
-                    toggle,
-                    next,
-                    prev,
-                    mode,
-                    changeMode,
-                }}></Controller>
+                <Controller></Controller>
 
                 <View style={styles.dots}>
                     <View style={[styles.dot, this.state.index === 0 && styles.active]}></View>

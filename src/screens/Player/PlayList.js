@@ -1,6 +1,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
+import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Text,
@@ -12,12 +13,15 @@ import {
     Image,
 } from 'react-native';
 
+@inject(stores => ({
+    list: stores.player.playlist.slice(),
+    play: stores.player.start,
+}))
+@observer
 export default class PlayList extends Component {
 
     static propTypes = {
-        list: PropTypes.array.isRequired,
         current: PropTypes.object.isRequired,
-        play: PropTypes.func.isRequired,
     };
 
     offset = {};
@@ -31,7 +35,7 @@ export default class PlayList extends Component {
         return number;
     }
 
-    highlight(offset = this.offset[this.props.current.id].y) {
+    highlight(offset) {
 
         var container = this.refs.container;
         var activeOffset = this.offset[this.props.current.id];
@@ -58,10 +62,6 @@ export default class PlayList extends Component {
         if (nextProps.current.id !== this.props.current.id && offset) {
             this.highlight(offset.y);
         }
-    }
-
-    componentDidMount() {
-        InteractionManager.runAfterInteractions(this.highlight.bind(this));
     }
 
     render() {
@@ -116,11 +116,8 @@ export default class PlayList extends Component {
                                 <Text style={[styles.username, active && styles.active]}>{song.user.username}</Text>
 
                                 <View style={styles.right}>
-                                    <Icon name="heart" size={12} style={active && styles.active} color="rgba(255,255,255,.5)"></Icon>
-                                    <Text style={[styles.text, active && styles.active]}>{this.human(song.likes_count)}</Text>
-
                                     <Icon name="bubble" style={active && styles.active} size={12} color="rgba(255,255,255,.5)"></Icon>
-                                    <Text style={[styles.text, active && styles.active]}>{this.human(song.comment_count)}</Text>
+                                    <Text style={[styles.text, active && styles.active]}>{this.human(song.commentCount)}</Text>
                                 </View>
                             </View>
                         </View>

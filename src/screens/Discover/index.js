@@ -20,6 +20,7 @@ import RippleHeader from '../../components/RippleHeader';
     type: stores.discover.type,
     changeType: stores.discover.changeType,
     chart: stores.chart,
+    playing: stores.player.playing,
 }))
 export default class Discover extends Component {
 
@@ -51,52 +52,48 @@ export default class Discover extends Component {
         var isNewHot = this.props.type === 'trending';
 
         return (
+            <View style={styles.container}>
+                <View style={styles.nav}>
+                    {
+                        this.props.playing && (<RippleHeader></RippleHeader>)
+                    }
 
-            <View style={{
-                flex: 1,
-            }}>
-                <RippleHeader></RippleHeader>
+                    <TouchableOpacity style={styles.type} onPress={e => this.props.changeType('top')}>
+                        <Text style={[styles.text, isTop && styles.textActive]}>TOP 50</Text>
+                        <View style={[styles.indicator, isTop && styles.indicatorActive]}></View>
+                    </TouchableOpacity>
 
-                <View style={styles.container}>
-
-                    <View style={styles.nav}>
-                        <TouchableOpacity style={styles.type} onPress={e => this.props.changeType('top')}>
-                            <Text style={[styles.text, isTop && styles.textActive]}>TOP 50</Text>
-                            <View style={[styles.indicator, isTop && styles.indicatorActive]}></View>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.type} onPress={e => this.props.changeType('trending')}>
-                            <Text style={[styles.text, isNewHot && styles.textActive]}>NEW & HOT</Text>
-                            <View style={[styles.indicator, isNewHot && styles.indicatorActive]}></View>
-                        </TouchableOpacity>
-                    </View>
-
-                    <ScrollView style={styles.catagories} showsVerticalScrollIndicator={false}>
-                        {
-                            new Array(Math.ceil(CHART_GENRES_MAP.length / 2)).fill(0).map((e, index) => {
-
-                                var offset = index * 2;
-
-                                return (
-                                    <View style={styles.row} key={index}>
-                                        {
-                                            [CHART_GENRES_MAP[offset], CHART_GENRES_MAP[offset + 1]].map((genre, index) => {
-
-                                                if (genre) {
-                                                    return (
-                                                        <Provider card={genre.store} key={index}>
-                                                            <Card genre={blacklist(genre, 'store')} showChart={this.showChart.bind(this)}></Card>
-                                                        </Provider>
-                                                    );
-                                                }
-                                            })
-                                        }
-                                    </View>
-                                );
-                            })
-                        }
-                    </ScrollView>
+                    <TouchableOpacity style={styles.type} onPress={e => this.props.changeType('trending')}>
+                        <Text style={[styles.text, isNewHot && styles.textActive]}>NEW & HOT</Text>
+                        <View style={[styles.indicator, isNewHot && styles.indicatorActive]}></View>
+                    </TouchableOpacity>
                 </View>
+
+                <ScrollView style={styles.catagories} showsVerticalScrollIndicator={false}>
+                    {
+                        new Array(Math.ceil(CHART_GENRES_MAP.length / 2)).fill(0).map((e, index) => {
+
+                            var offset = index * 2;
+
+                            return (
+                                <View style={styles.row} key={index}>
+                                    {
+                                        [CHART_GENRES_MAP[offset], CHART_GENRES_MAP[offset + 1]].map((genre, index) => {
+
+                                            if (genre) {
+                                                return (
+                                                    <Provider card={genre.store} key={index}>
+                                                        <Card genre={blacklist(genre, 'store')} showChart={this.showChart.bind(this)}></Card>
+                                                    </Provider>
+                                                );
+                                            }
+                                        })
+                                    }
+                                </View>
+                            );
+                        })
+                    }
+                </ScrollView>
             </View>
         );
     }

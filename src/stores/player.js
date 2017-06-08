@@ -7,6 +7,9 @@ import { AsyncStorage } from 'react-native';
 import { CLIENT_ID, PLAYER_MODE } from '../config';
 import { DeviceEventEmitter } from 'react-native';
 
+/**
+ * TODO: WHEN FINISHED PLAY THE NEXT TRANSPARENT
+ * */
 class Player {
 
     @observable song = {};
@@ -19,14 +22,9 @@ class Player {
     history = [];
 
     async stop() {
-        ReactNativeAudioStreaming.stop();
-    }
-
-    @action reset() {
-
-        self.stop();
         self.paused = false;
         self.playing = false;
+        ReactNativeAudioStreaming.stop();
     }
 
     @action toggle() {
@@ -42,7 +40,12 @@ class Player {
 
     @action async start({ song, playlist = self.playlist, needTrack = true }) {
 
-        if (self.song.id === song.id
+        var prev = self.song;
+
+        /** Keep playlist always reaction */
+        self.song = song;
+
+        if (prev.id === song.id
             && self.playlist.uuid === playlist.uuid) {
 
             if (self.paused) {
@@ -54,15 +57,15 @@ class Player {
             }
         }
 
-        if (self.song.id !== song.id) {
-
+        if (prev.id !== song.id) {
             self.stop();
-            self.song = song;
         }
 
         if (self.playlist.uuid !== playlist.uuid) {
             self.history = [];
-            self.playlist = playlist;
+            self.playlist.clear();
+            self.playlist.uuid = playlist.uuid;
+            self.playlist.push(...playlist.slice());
         }
 
         needTrack && self.history.push(song);
@@ -78,6 +81,7 @@ class Player {
 
         self.paused = false;
         self.paying = true;
+
         ReactNativeAudioStreaming.play(streamurl, { showIniOSMediaCenter: true });
     }
 
@@ -117,7 +121,7 @@ class Player {
             song = playlist[Math.floor(Math.random() * shuffle.length)];
         }
 
-        self.reset();
+        self.stop();
         self.start({ song });
     }
 
@@ -131,7 +135,7 @@ class Player {
             self.history.pop();
         }
 
-        self.reset();
+        self.stop();
         self.start({ song, needTrack: false });
     }
 
@@ -155,6 +159,10 @@ class Player {
             if ('ERROR' === status) {
                 self.stop();
                 throw e;
+            }
+
+            if ('STOPPED' === status) {
+                self.stop();
             }
 
             if ('STREAMING' === status) {

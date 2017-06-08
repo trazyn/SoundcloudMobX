@@ -4,7 +4,11 @@ import { CLIENT_ID } from '../config';
 
 var favCache = {};
 
-export async function isFavorited(userid, songid) {
+export async function isFavorited({ userid, songid, value }) {
+
+    if (void 0 !== value) {
+        return favCache[songid] = value;
+    }
 
     if (favCache.hasOwnProperty(songid)) {
         return favCache[songid];

@@ -1,7 +1,7 @@
 
 import { observable, action } from 'mobx';
-import uuid from 'uuid';
 import axios from 'axios';
+import uuid from 'uuid';
 import { CLIENT_ID, GENRES_MAP, TAG_MAP } from '../config';
 import songsFilter from '../utils/songsFilter';
 
@@ -53,8 +53,8 @@ class PlayList {
 
         self.loading = false;
         self.playlist.clear();
-        self.playlist.push(...playlist);
         self.playlist.uuid = uuid.v4();
+        self.playlist.push(...playlist);
     }
 
     @action changeGenre(genre) {
@@ -80,6 +80,7 @@ class PlayList {
 
         self.showRefresh = false;
         self.playlist.clear();
+        self.playlist.uuid = uuid.v4();
         self.playlist.push(...playlist);
     }
 

@@ -1,6 +1,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
+import { inject, observer } from 'mobx-react/native';
 import {
     View,
     TouchableOpacity,
@@ -12,30 +13,40 @@ import {
 import { PLAYER_MODE } from '../../config';
 import { isFavorited, addFavorited, removeFavorited } from '../../utils/songUtil';
 
+@inject(stores => {
+
+    var { song, playlist, paused, toggle, next, prev, mode, changeMode } = stores.player;
+
+    return {
+        userid: stores.session.user.id,
+        message: stores.message,
+        song,
+        playlist,
+        paused,
+        toggle,
+        next,
+        prev,
+        mode,
+        changeMode,
+    };
+})
+@observer
 export default class Controller extends Component {
 
-    static propTypes = {
-        userid: PropTypes.number,
-        message: PropTypes.object.isRequired,
-        song: PropTypes.object.isRequired,
-        playlist: PropTypes.object.isRequired,
-        paused: PropTypes.bool.isRequired,
-        toggle: PropTypes.func.isRequired,
-        next: PropTypes.func.isRequired,
-        prev: PropTypes.func.isRequired,
-        changeMode: PropTypes.func.isRequired,
-        mode: PropTypes.string.isRequired,
-    };
-
     state = {
-        isFavorited: false,
+        favorite: false,
     };
 
     async componentWillReceiveProps(nextProps) {
 
         if (this.props.userid) {
+
+            return;
             this.setState({
-                isFavorited: await isFavorited(this.props.userid, this.props.song.id),
+                favorite: await isFavorited({
+                    userid: this.props.userid,
+                    songid: this.props.song.id,
+                })
             });
         }
     }
@@ -45,22 +56,30 @@ export default class Controller extends Component {
         var { id, title } = this.props.song;
         var { info, error } = this.props.message;
         var userid = this.props.userid;
-        var isFavorited = this.state.isFavorited;
+        var favorite = this.state.favorite;
 
         if (!userid) {
             return error('Please Login');
         }
 
-        if (isFavorited) {
+        if (favorite) {
             removeFavorited(userid, id);
+            isFavorited({
+                songid: id,
+                value: false,
+            });
             info(`Remove '${title}' from your collection`);
         } else {
             addFavorited(userid, id);
+            isFavorited({
+                songid: id,
+                value: true,
+            });
             info(`You're like '${title}'`);
         }
 
         this.setState({
-            isFavorited: !isFavorited,
+            favorite: !favorite,
         });
     }
 
@@ -68,7 +87,7 @@ export default class Controller extends Component {
 
         var { song, playing, paused, toggle, next, prev, mode, changeMode } = this.props;
 
-        var isFavorited = this.state.isFavorited;
+        var favorite = this.state.favorite;
 
         return (
             <View style={styles.control}>
@@ -103,7 +122,7 @@ export default class Controller extends Component {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.transparent} onPress={this.handleFavorited.bind(this)}>
-                        <Icon name="heart" size={15} style={isFavorited && {
+                        <Icon name="heart" size={15} style={favorite && {
                             color: 'red'
                         }}></Icon>
                     </TouchableOpacity>

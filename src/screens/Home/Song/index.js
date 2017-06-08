@@ -2,6 +2,7 @@
 import React, { Component, PropTypes } from 'react';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import MKIcon from 'react-native-vector-icons/MaterialIcons';
+import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Text,
@@ -12,10 +13,18 @@ import {
     Image,
 } from 'react-native';
 
-import blacklist from '../../utils/blacklist';
-import humanNumber from '../../utils/humanNumber';
+import blacklist from '../../../utils/blacklist';
+import humanNumber from '../../../utils/humanNumber';
 import Playing from './Playing';
 
+@inject(stores => {
+
+    return {
+        isPlaying: (id) => {
+            return stores.player.song.id === id && stores.player.playlist.uuid === stores.home.playlist.uuid;
+        },
+    };
+})
 export default class Song extends Component {
 
     static propTypes = {
@@ -44,12 +53,13 @@ export default class Song extends Component {
         artwork: PropTypes.string,
 
         play: PropTypes.func.isRequired,
-        playing: PropTypes.bool.isRequired,
     };
 
     render() {
 
-        const { title, id, user, artwork, likesCount, commentCount, playbackCount, play, playing } = this.props;
+        const { title, id, user, artwork, likesCount, commentCount, playbackCount, play } = this.props;
+
+        var playing = this.props.isPlaying(id);
 
         return (
             <View style={[styles.container, this.props.style]}>

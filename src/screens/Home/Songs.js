@@ -1,5 +1,6 @@
 
 import React, { Component, PropTypes } from 'react';
+import { inject, observer } from 'mobx-react/native';
 import {
     ListView,
     StyleSheet,
@@ -11,20 +12,26 @@ import {
     InteractionManager,
 } from 'react-native';
 
-import Song from '../../components/Song';
 import Loader from '../../components/Loader';
+import Song from './Song';
 
+@inject(stores => {
+
+    var { playlist, doRefresh, showRefresh, doLoadmore, showLoadmore } = stores.home;
+
+    return {
+        playlist,
+        doRefresh,
+        showLoadmore,
+        doLoadmore,
+        showLoadmore,
+    };
+})
+@observer
 export default class Songs extends Component {
 
     static propTypes = {
-        playlist: PropTypes.array.isRequired,
-        showRefresh: PropTypes.bool.isRequired,
-        doRefresh: PropTypes.func.isRequired,
-        showLoadmore: PropTypes.bool.isRequired,
-        doLoadmore: PropTypes.func.isRequired,
         play: PropTypes.func.isRequired,
-        current: PropTypes.object.isRequired,
-        playing: PropTypes.bool.isRequired,
     };
 
     state = {
@@ -37,7 +44,7 @@ export default class Songs extends Component {
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
         });
-        var dataSource = ds.cloneWithRows(playlist);
+        var dataSource = ds.cloneWithRows(playlist.slice());
         var opacity = this.state.opacity.interpolate({
             inputRange: [-30, -5],
             outputRange: [1, 0],
@@ -91,7 +98,7 @@ export default class Songs extends Component {
                 onScrollEndDrag={e => {
 
                     if (e.nativeEvent.contentOffset.x < -30) {
-                        InteractionManager.runAfterInteractions(() => doRefresh());
+                        setTimeout(doRefresh);
                     }
                 }}
 
@@ -123,13 +130,10 @@ export default class Songs extends Component {
                 renderRow={song => {
 
                     var index = playlist.findIndex(e => e.id === song.id);
-                    var playing = this.props.current.id === song.id && this.props.playing;
-
                     return (
                         <Song {...{
 
                             ...song,
-                            playing,
                             play,
 
                             style: [(index === playlist.length - 1 && styles.pad), {

@@ -14,7 +14,7 @@ export default class RippleHeader extends Component {
     componentDidMount() {
 
         Animated.timing(this.state.height, {
-            toValue: 40,
+            toValue: 60,
             duration: 1300,
         }).start();
     }
@@ -23,7 +23,7 @@ export default class RippleHeader extends Component {
 
         var height = this.state.height;
         var opacity = height.interpolate({
-            inputRange: [0, 40],
+            inputRange: [0, 60],
             outputRange: [0, 1]
         });
 
@@ -36,12 +36,14 @@ export default class RippleHeader extends Component {
                     top: 0,
                     left: 0,
                     width,
-                    height: 40,
-                    zIndex: 9,
+                    height: 60,
                     opacity,
                     height,
+                    alignItems: 'center',
+                    justifyContent: 'center',
                 }, this.props.style]
-            }}></Animated.Image>
+            }}>
+            </Animated.Image>
         );
     }
 }

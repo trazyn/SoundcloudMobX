@@ -9,6 +9,7 @@ import {
     TouchableOpacity,
     Dimensions,
     StyleSheet,
+    InteractionManager,
 } from 'react-native';
 
 export default class Toast extends Component {
@@ -21,7 +22,7 @@ export default class Toast extends Component {
     };
 
     static defaultProps = {
-        color: '#000',
+        color: 'rgba(0,0,0,.75)',
     };
 
     state = {
@@ -29,20 +30,23 @@ export default class Toast extends Component {
     };
 
     componentWillReceiveProps(nextProps) {
-        StatusBar.setHidden(!!nextProps.show, true);
 
         if (nextProps.show) {
 
+            StatusBar.setHidden(true, true);
+
             Animated.timing(this.state.height, {
-                toValue: 40,
+                toValue: 60,
                 duration: 200,
                 delay: 200,
             }).start();
         } else {
             Animated.timing(this.state.height, {
                 toValue: 0,
-                duration: 150,
-            }).start();
+                duration: 300,
+            }).start(() => {
+                StatusBar.setHidden(false, true);
+            });
         }
     }
 
@@ -50,7 +54,7 @@ export default class Toast extends Component {
 
         var height = this.state.height;
         var opacity = height.interpolate({
-            inputRange: [0, 40],
+            inputRange: [0, 60],
             outputRange: [0, 1]
         });
 
@@ -85,8 +89,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#fff',
         shadowColor: "#000000",
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
+        shadowOpacity: 0.4,
+        shadowRadius: 8,
         zIndex: 99,
     },
 
@@ -94,13 +98,11 @@ const styles = StyleSheet.create({
         fontFamily: 'HelveticaNeue-Light',
         marginLeft: 5,
         width: width - 60,
-        fontSize: 12,
-        fontWeight: '100',
+        fontSize: 13,
     },
 
     done: {
-        fontSize: 12,
-        fontWeight: '100',
+        fontFamily: 'HelveticaNeue-Light',
         color: '#ff4081'
     },
 });

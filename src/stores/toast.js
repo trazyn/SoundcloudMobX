@@ -22,7 +22,7 @@ class Toast {
         }
     }
 
-    @action showMessage(message, color = '#000') {
+    @action showMessage(message, color) {
 
         self.message = message;
         self.color = color;

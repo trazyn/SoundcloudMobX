@@ -10,10 +10,16 @@ import {
     Animated,
 } from 'react-native';
 
+import FadeImage from '../../components/FadeImage';
+
 export default class Footer extends Component {
 
     static propTypes = {
+        isLogin: PropTypes.func.isRequired,
+        playing: PropTypes.bool.isRequired,
+        paused: PropTypes.bool.isRequired,
         navigation: PropTypes.object.isRequired,
+        song: PropTypes.object,
     };
 
     highlight(props = this.props) {
@@ -55,20 +61,21 @@ export default class Footer extends Component {
 
     render() {
 
-        var { navigation } = this.props;
+        var { navigation, playing, paused, song } = this.props;
 
         return (
             <Animated.View style={[styles.container, this.props.style]}>
+
                 <TouchableOpacity style={styles.item} onPress={e => {
                     navigation.navigate('Home');
                 }}>
-                    <Icon name="playlist" ref="Home" size={16}></Icon>
+                    <Icon name="playlist" ref="Home" size={20}></Icon>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.item} onPress={e => {
                     navigation.navigate('Discover');
                 }}>
-                    <Icon name="magnifier" ref="Discover" size={16}></Icon>
+                    <Icon name="magnifier" ref="Discover" size={20}></Icon>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.item} onPress={e => {
@@ -79,8 +86,49 @@ export default class Footer extends Component {
                         navigation.navigate('Login');
                     }
                 }}>
-                    <Icon name="heart" ref="Fav" size={16}></Icon>
+                    <Icon name="heart" ref="Fav" size={20}></Icon>
                 </TouchableOpacity>
+
+                {
+                    playing && (
+                        <TouchableOpacity style={styles.item} onPress={e => {
+                            navigation.navigate('Player');
+                        }}>
+                            <FadeImage {...{
+                                source: {
+                                    uri: 'https://i1.sndcdn.com/artworks-000212336286-1zxdzc-large.jpg'
+                                },
+
+                                resizeMode: 'cover',
+                                style: {
+                                    height: 30,
+                                    width: 30,
+                                    shadowColor: "#000000",
+                                    shadowOpacity: 0.6,
+                                    shadowRadius: 8,
+                                    shadowOffset: {
+                                        height: 8,
+                                            width: -2
+                                    },
+                                },
+                            }}>
+                                <View style={{
+                                    width: 30,
+                                    height: 30,
+                                    backgroundColor: 'rgba(0,0,0,.7)',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}>
+                                    {
+                                        !paused
+                                            ? <Icon name="control-pause" size={10} color="white"></Icon>
+                                            : <Icon name="control-play" size={10} color="white"></Icon>
+                                    }
+                                </View>
+                            </FadeImage>
+                        </TouchableOpacity>
+                    )
+                }
             </Animated.View>
         );
     }
@@ -108,5 +156,13 @@ const styles = StyleSheet.create({
         height: 50,
         alignItems: 'center',
         justifyContent: 'center'
+    },
+
+    playing: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        width: 50,
+        height: 50,
     }
 });

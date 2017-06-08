@@ -16,21 +16,24 @@ import Loader from '../../components/Loader';
 import RippleHeader from '../../components/RippleHeader';
 import { CHART_GENRES_MAP } from '../../config';
 
-@inject(stores => ({
-    home: stores.home,
-    player: stores.player,
-}))
+@inject(stores => {
+
+    var { playlist, getPlaylist, loading } = stores.home;
+
+    return {
+        playlist,
+        getPlaylist,
+        loading,
+        play: stores.player.start,
+        playing: stores.player.playing,
+    };
+})
 @observer
 export default class Home extends Component {
 
-    static propTypes = {
-        home: PropTypes.object.isRequired,
-        player: PropTypes.object.isRequired,
-    };
-
     async componentDidMount() {
 
-        var { playlist, getPlaylist } = this.props.home;
+        var { playlist, getPlaylist } = this.props;
 
         if (!playlist.length) {
             await getPlaylist();
@@ -40,33 +43,29 @@ export default class Home extends Component {
     play(song) {
 
         this.props.navigation.navigate('Player');
-        this.props.player.start({
-            playlist: this.props.home.playlist,
-            song,
-        });
 
         for (var genre of CHART_GENRES_MAP) {
             genre.store && genre.store.setPlaying(false);
         }
+
+        this.props.play({
+            playlist: this.props.playlist,
+            song,
+        });
     }
 
     render() {
 
-        var player = this.props.player;
-        var { playlist, loading, genre, changeGenre, doRefresh, showRefresh, doLoadmore, showLoadmore } = this.props.home;
+        var loading = this.props.loading;
 
         StatusBar.setNetworkActivityIndicatorVisible(loading);
 
         return (
             <View style={styles.container}>
-
-                <RippleHeader></RippleHeader>
-
-                <Nav {...{
-                    genre,
-                    changeGenre
-                }}></Nav>
-
+                <Nav></Nav>
+                {
+                    this.props.playing && (<RippleHeader></RippleHeader>)
+                }
                 {
                     loading
                         ? (
@@ -84,7 +83,7 @@ export default class Home extends Component {
                             }}>
                                 <View style={styles.title}>
                                     <Text>
-                                        {playlist.length} &nbsp;
+                                        {this.props.playlist.length} &nbsp;
                                     </Text>
 
                                     <Text style={{
@@ -92,13 +91,6 @@ export default class Home extends Component {
                                     }}>Tracks in Quene</Text>
                                 </View>
                                 <Songs {...{
-                                    playlist: playlist.slice(),
-                                    current: player.song,
-                                    doRefresh,
-                                    showRefresh,
-                                    doLoadmore,
-                                    showLoadmore,
-                                    playing: player.playing,
                                     play: this.play.bind(this)
                                 }}></Songs>
                             </View>
