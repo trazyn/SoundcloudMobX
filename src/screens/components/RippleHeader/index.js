@@ -54,7 +54,7 @@ export default class RippleHeader extends Component {
 
         return (
             <Animated.Image {...{
-                source: require('../../images/head.gif'),
+                source: require('../../../images/head.gif'),
 
                 style: [{
                     position: 'absolute',

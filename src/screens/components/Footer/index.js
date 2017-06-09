@@ -10,7 +10,7 @@ import {
     Animated,
 } from 'react-native';
 
-import FadeImage from '../../components/FadeImage';
+import FadeImage from '../../../components/FadeImage';
 
 @inject(stores => ({
     isLogin: stores.session.isLogin,

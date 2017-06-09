@@ -14,7 +14,7 @@ import { CHART_GENRES_MAP } from '../../config';
 import CardStore from '../../stores/card';
 import Card from './Card';
 import blacklist from '../../utils/blacklist';
-import RippleHeader from '../../components/RippleHeader';
+import RippleHeader from '../components/RippleHeader';
 
 @inject(stores => ({
     type: stores.charts.type,

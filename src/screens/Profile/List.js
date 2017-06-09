@@ -11,7 +11,7 @@ import {
     StyleSheet,
 } from 'react-native';
 
-import RippleHeader from '../../components/RippleHeader';
+import RippleHeader from '../../../components/RippleHeader';
 
 export default class List extends Component {
 

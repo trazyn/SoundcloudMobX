@@ -11,8 +11,8 @@ import {
 
 import blacklist from '../utils/blacklist';
 import stores from '../stores';
+import Footer from './components/Footer';
 import Toast from '../components/Toast';
-import Footer from '../components/Footer';
 
 @observer
 export default class Screen extends Component {

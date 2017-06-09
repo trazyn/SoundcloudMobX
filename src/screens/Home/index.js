@@ -13,7 +13,7 @@ import {
 import Songs from './Songs';
 import Nav from './Nav';
 import Loader from '../../components/Loader';
-import RippleHeader from '../../components/RippleHeader';
+import RippleHeader from '../components/RippleHeader';
 import { CHART_GENRES_MAP } from '../../config';
 
 @inject(stores => {
