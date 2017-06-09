@@ -65,9 +65,7 @@ export default class Home extends Component {
         return (
             <View style={styles.container}>
                 <Nav></Nav>
-                {
-                    this.props.playing && (<RippleHeader></RippleHeader>)
-                }
+                <RippleHeader></RippleHeader>
                 {
                     loading
                         ? (

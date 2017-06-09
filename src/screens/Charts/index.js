@@ -30,7 +30,7 @@ export default class Charts extends Component {
     }
 
     showChart(data) {
-        this.props.navigation.navigate('Catagory', { data });
+        this.props.navigation.navigate('Category', { data });
     }
 
     render() {
@@ -55,7 +55,7 @@ export default class Charts extends Component {
                     </TouchableOpacity>
                 </View>
 
-                <ScrollView style={styles.catagories} showsVerticalScrollIndicator={false}>
+                <ScrollView style={styles.categories} showsVerticalScrollIndicator={false}>
                     {
                         new Array(Math.ceil(CHART_GENRES_MAP.length / 2)).fill(0).map((e, index) => {
 
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         borderBottomColor: 'rgba(0,0,0,.8)',
     },
 
-    catagories: {
+    categories: {
         marginBottom: 50,
         paddingTop: 100,
     },

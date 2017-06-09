@@ -2,7 +2,7 @@
 import { observable, action, autorun } from 'mobx';
 import Card from './card';
 
-class Catagory extends Card {
+class Category extends Card {
 
     @observable showRefresh = false;
     @observable showLoadmore = false;
@@ -57,5 +57,5 @@ class Catagory extends Card {
     }
 };
 
-const self = new Catagory();
+const self = new Category();
 export default self;

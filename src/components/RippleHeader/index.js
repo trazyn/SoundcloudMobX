@@ -1,10 +1,16 @@
+
 import React, { Component, PropTypes } from 'react';
+import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Dimensions,
     Animated,
 } from 'react-native';
 
+@inject(stores => ({
+    playing: stores.player.playing
+}))
+@observer
 export default class RippleHeader extends Component {
 
     state = {
@@ -13,10 +19,29 @@ export default class RippleHeader extends Component {
 
     componentDidMount() {
 
+        this.props.playing &&
         Animated.timing(this.state.height, {
             toValue: 60,
             duration: 1300,
         }).start();
+    }
+
+    componentWillReceiveProps(nextProps) {
+
+        if (this.props.playing !== nextProps.playing) {
+
+            if (nextProps.playing) {
+                Animated.timing(this.state.height, {
+                    toValue: 60,
+                    duration: 1300,
+                }).start();
+            } else {
+                Animated.timing(this.state.height, {
+                    toValue: 0,
+                    duration: 1300,
+                }).start();
+            }
+        }
     }
 
     render() {

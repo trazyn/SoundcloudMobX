@@ -1,6 +1,5 @@
 
 import React, { Component, PropTypes } from 'react';
-import { autorun } from 'mobx';
 import {
     StackNavigator,
     TabRouter,
@@ -12,7 +11,7 @@ import {
 import Layout from './screens';
 import Home from './screens/Home';
 import Charts from './screens/Charts';
-import Catagory from './screens/Catagory';
+import Category from './screens/Category';
 import Fav from './screens/Fav';
 import Player from './screens/Player';
 import Login from './screens/Login';
@@ -50,12 +49,12 @@ const App = StackNavigator({
         screen: createNavigationContainer(createNavigator(router)(view)),
     },
 
-    Catagory: {
+    Category: {
         screen: ({ navigation }) => {
 
             return (
                 <Layout showFooter={false} navigation={navigation}>
-                    <Catagory></Catagory>
+                    <Category></Category>
                 </Layout>
             );
         },

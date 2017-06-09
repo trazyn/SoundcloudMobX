@@ -21,22 +21,22 @@ import SongCard from './Song';
 @inject(stores => {
 
     return {
-        playlist: stores.catagory.playlist,
-        genre: stores.catagory.genre,
-        doRefresh: stores.catagory.doRefresh,
-        showRefresh: stores.catagory.showRefresh,
-        doLoadmore: stores.catagory.doLoadmore,
-        showLoadmore: stores.catagory.showLoadmore,
-        hasEnd: stores.catagory.hasEnd,
-        playing: stores.catagory.playing,
-        setPlaying: stores.catagory.setPlaying,
-        init: stores.catagory.init,
+        playlist: stores.category.playlist,
+        genre: stores.category.genre,
+        doRefresh: stores.category.doRefresh,
+        showRefresh: stores.category.showRefresh,
+        doLoadmore: stores.category.doLoadmore,
+        showLoadmore: stores.category.showLoadmore,
+        hasEnd: stores.category.hasEnd,
+        playing: stores.category.playing,
+        setPlaying: stores.category.setPlaying,
+        init: stores.category.init,
 
         player: stores.player,
     };
 })
 @observer
-export default class Catagory extends Component {
+export default class Category extends Component {
 
     componentWillMount() {
         this.props.init(this.props.navigation.state.params.data);
@@ -88,7 +88,6 @@ export default class Catagory extends Component {
         var { playlist, player, playing } = this.props;
 
         if (!playing) {
-
             this.showPlaying(playlist[0]);
         } else {
             player.toggle();
@@ -142,7 +141,7 @@ export default class Catagory extends Component {
                             this.renderCoverWall(5, 10)
                         }
                     </View>
-                    <TouchableOpacity onPress={() => this.props.navigator.pop()} style={styles.back}>
+                    <TouchableOpacity onPress={() => this.props.navigation.goBack()} style={styles.back}>
                         <Icon name="arrow-left" color="white" size={14}></Icon>
                     </TouchableOpacity>
 
@@ -158,7 +157,7 @@ export default class Catagory extends Component {
 
                         <TouchableOpacity onPress={this.togglePlayer.bind(this)}>
                             {
-                                playing && player.playing
+                                playing && player.paused
                                     ? (<Icon name="control-pause" size={20} color="red"></Icon>)
                                     : (<Icon name="control-play" size={20} color="red"></Icon>)
                             }

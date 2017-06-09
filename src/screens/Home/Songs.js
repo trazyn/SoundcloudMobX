@@ -31,7 +31,7 @@ import Song from './Song';
 
             /** When load more update the playlist of player */
             if (playlist.uuid === player.playlist.uuid
-                && playlist.length !== player.playlist.length) {
+                && playlist.length > player.playlist.length) {
                 player.updatePlaylist(playlist.slice());
             }
         }

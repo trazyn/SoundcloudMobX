@@ -2,7 +2,7 @@
 import player from './player';
 import home from './home';
 import charts from './charts';
-import catagory from './catagory';
+import category from './category';
 import session from './session';
 import toast from './toast';
 import profile from './profile';
@@ -14,7 +14,7 @@ export default {
     home,
     player,
     charts,
-    catagory,
+    category,
     session,
     toast,
     profile,

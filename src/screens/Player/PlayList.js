@@ -121,7 +121,7 @@ export default class PlayList extends Component {
                                 <Text style={[styles.username, active && styles.active]}>{song.user.username}</Text>
 
                                 <View style={styles.right}>
-                                    <Text style={styles.duration}>{times.minutes}:{times.seconds}</Text>
+                                    <Text style={[styles.duration, active && styles.active]}>{times.minutes}:{times.seconds}</Text>
                                 </View>
                             </View>
                         </View>

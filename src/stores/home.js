@@ -52,8 +52,8 @@ class PlayList {
         var playlist = self.filter(response.data, genre);
 
         self.loading = false;
-        self.playlist.clear();
         self.playlist.uuid = uuid.v4();
+        self.playlist.clear();
         self.playlist.push(...playlist);
     }
 
@@ -79,8 +79,8 @@ class PlayList {
         var playlist = self.filter(response.data);
 
         self.showRefresh = false;
-        self.playlist.clear();
         self.playlist.uuid = uuid.v4();
+        self.playlist.clear();
         self.playlist.push(...playlist);
     }
 
