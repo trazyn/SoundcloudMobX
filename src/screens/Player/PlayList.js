@@ -12,6 +12,7 @@ import {
     TouchableOpacity,
     Image,
 } from 'react-native';
+import parseTimes from '../../utils/parseTimes';
 
 @inject(stores => ({
     list: stores.player.playlist.slice(),
@@ -89,12 +90,16 @@ export default class PlayList extends Component {
             renderRow={song => {
 
                 var active = song.id === current.id;
+                var times = parseTimes(song.duration);
 
                 return (
                     <TouchableOpacity style={styles.item} onLayout={e => {
                         this.offset[song.id] = e.nativeEvent.layout;
                     }}
-                    onPress={e => this.props.play(song)}
+                    onPress={e => {
+                        console.log(song);
+                        this.props.play({ song });
+                    }}
                     ref="items">
                         <View>
                             <View>
@@ -116,8 +121,7 @@ export default class PlayList extends Component {
                                 <Text style={[styles.username, active && styles.active]}>{song.user.username}</Text>
 
                                 <View style={styles.right}>
-                                    <Icon name="bubble" style={active && styles.active} size={12} color="rgba(255,255,255,.5)"></Icon>
-                                    <Text style={[styles.text, active && styles.active]}>{this.human(song.commentCount)}</Text>
+                                    <Text style={styles.duration}>{times.minutes}:{times.seconds}</Text>
                                 </View>
                             </View>
                         </View>
@@ -157,6 +161,12 @@ const styles = StyleSheet.create({
 
     title: {
         color: 'rgba(255,255,255,.7)'
+    },
+
+    duration: {
+        fontSize: 11,
+        fontWeight: '100',
+        color: 'rgba(0,0,0,.2)'
     },
 
     username: {

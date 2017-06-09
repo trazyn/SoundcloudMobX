@@ -15,16 +15,15 @@ import {
 import FadeImage from '../../components/FadeImage';
 
 @inject(stores => ({
+    /** Get the associate instance */
     card: stores.card,
-    type: stores.discover.type,
+    type: stores.charts.type,
 }))
 @observer
 export default class Card extends Component {
 
     static propTypes = {
-        type: PropTypes.oneOf(['top', 'trending']).isRequired,
         genre: PropTypes.object.isRequired,
-        card: PropTypes.object.isRequired,
         showChart: PropTypes.func.isRequired,
     };
 
@@ -35,8 +34,8 @@ export default class Card extends Component {
         card.setGenre(genre);
         card.setType(type);
 
-        if (!card.songs.length) {
-            card.getSongs();
+        if (!card.playlist.length) {
+            card.getPlaylist();
         }
     }
 
@@ -45,7 +44,7 @@ export default class Card extends Component {
         var { card, genre, type } = this.props;
 
         if (this.props.type !== nextProps.type) {
-            card.getSongs(genre, nextProps.type);
+            card.getPlaylist(genre, nextProps.type);
         }
     }
 
@@ -82,10 +81,10 @@ export default class Card extends Component {
     render() {
 
         var { card, showChart } = this.props;
-        var song = card.songs.slice()[0];
+        var song = card.playlist.slice()[0];
 
         return (
-            <TouchableOpacity style={styles.container} onPress={e => card.songs.length && showChart(card)}>
+            <TouchableOpacity style={styles.container} onPress={e => card.playlist.length && showChart(card)}>
                 {
                     song
                     ? (

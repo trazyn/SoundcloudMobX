@@ -19,7 +19,6 @@ import { isFavorited, addFavorited, removeFavorited } from '../../utils/songUtil
 
     return {
         userid: stores.session.user.id,
-        message: stores.message,
         song,
         playlist,
         paused,
@@ -33,15 +32,18 @@ import { isFavorited, addFavorited, removeFavorited } from '../../utils/songUtil
 @observer
 export default class Controller extends Component {
 
+    static propTypes = {
+        message: PropTypes.object.isRequired,
+    };
+
     state = {
         favorite: false,
     };
 
     async componentWillReceiveProps(nextProps) {
 
-        if (this.props.userid) {
+        if (this.props.song.id !== nextProps.song.id) {
 
-            return;
             this.setState({
                 favorite: await isFavorited({
                     userid: this.props.userid,
@@ -49,6 +51,16 @@ export default class Controller extends Component {
                 })
             });
         }
+    }
+
+    async componentDidMount() {
+
+        this.setState({
+            favorite: await isFavorited({
+                userid: this.props.userid,
+                songid: this.props.song.id,
+            })
+        });
     }
 
     handleFavorited() {

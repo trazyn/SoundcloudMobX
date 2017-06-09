@@ -1,6 +1,6 @@
 
 import React, { Component, PropTypes } from 'react';
-import { inject, observer, Provider } from 'mobx-react/native';
+import { inject, Provider } from 'mobx-react/native';
 import {
     View,
     Text,
@@ -17,17 +17,10 @@ import blacklist from '../../utils/blacklist';
 import RippleHeader from '../../components/RippleHeader';
 
 @inject(stores => ({
-    type: stores.discover.type,
-    changeType: stores.discover.changeType,
-    chart: stores.chart,
-    playing: stores.player.playing,
+    type: stores.charts.type,
+    changeType: stores.charts.changeType,
 }))
-export default class Discover extends Component {
-
-    static propTypes = {
-        type: PropTypes.oneOf(['top', 'trending']).isRequired,
-        changeType: PropTypes.func.isRequired,
-    };
+export default class Charts extends Component {
 
     componentWillMount() {
 
@@ -36,13 +29,8 @@ export default class Discover extends Component {
         }
     }
 
-    showChart(store) {
-
-        this.props.chart.setup(store);
-
-        this.props.setRoute({
-            name: 'Chart',
-        });
+    showChart(data) {
+        this.props.navigation.navigate('Catagory', { data });
     }
 
     render() {
@@ -54,9 +42,7 @@ export default class Discover extends Component {
         return (
             <View style={styles.container}>
                 <View style={styles.nav}>
-                    {
-                        this.props.playing && (<RippleHeader></RippleHeader>)
-                    }
+                    <RippleHeader></RippleHeader>
 
                     <TouchableOpacity style={styles.type} onPress={e => this.props.changeType('top')}>
                         <Text style={[styles.text, isTop && styles.textActive]}>TOP 50</Text>
@@ -83,7 +69,7 @@ export default class Discover extends Component {
                                             if (genre) {
                                                 return (
                                                     <Provider card={genre.store} key={index}>
-                                                        <Card genre={blacklist(genre, 'store')} showChart={this.showChart.bind(this)}></Card>
+                                                        <Card genre={blacklist(genre, 'store')} showChart={this.showChart.bind(this, genre.store)}></Card>
                                                     </Provider>
                                                 );
                                             }

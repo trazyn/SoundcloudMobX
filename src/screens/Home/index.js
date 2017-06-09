@@ -33,6 +33,8 @@ export default class Home extends Component {
 
     async componentDidMount() {
 
+        console.log('HOME');
+
         var { playlist, getPlaylist } = this.props;
 
         if (!playlist.length) {

@@ -1,5 +1,6 @@
 
 import React, { Component, PropTypes } from 'react';
+import { autorun } from 'mobx';
 import {
     StackNavigator,
     TabRouter,
@@ -10,7 +11,8 @@ import {
 
 import Layout from './screens';
 import Home from './screens/Home';
-import Discover from './screens/Discover';
+import Charts from './screens/Charts';
+import Catagory from './screens/Catagory';
 import Fav from './screens/Fav';
 import Player from './screens/Player';
 import Login from './screens/Login';
@@ -20,8 +22,8 @@ const router = TabRouter({
         screen: Home,
     },
 
-    Discover: {
-        screen: Discover,
+    Charts: {
+        screen: Charts,
     },
 
     Fav: {
@@ -42,12 +44,21 @@ const view = ({ router, navigation }) => {
     );
 };
 
-const MainScreen = createNavigationContainer(createNavigator(router)(view));
-
 const App = StackNavigator({
 
-    Root: {
-        screen: MainScreen,
+    HomeNavigator: {
+        screen: createNavigationContainer(createNavigator(router)(view)),
+    },
+
+    Catagory: {
+        screen: ({ navigation }) => {
+
+            return (
+                <Layout showFooter={false} navigation={navigation}>
+                    <Catagory></Catagory>
+                </Layout>
+            );
+        },
     },
 
     Player: {
@@ -74,11 +85,8 @@ const App = StackNavigator({
     },
 }, {
     mode: 'modal',
-    navigationOptions: ({ navigation }) => {
-
-        return {
-            header: false,
-        };
+    navigationOptions: {
+        header: false,
     }
 });
 

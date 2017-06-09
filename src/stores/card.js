@@ -10,7 +10,7 @@ function filter(data) {
 
 export default class Card {
 
-    @observable songs = [];
+    @observable playlist = [];
     @observable genre = {};
     @observable playing = false;
     @observable type;
@@ -30,14 +30,14 @@ export default class Card {
         });
     }
 
-    @action async getSongs() {
+    @action async getPlaylist() {
 
-        this.songs.clear();
+        this.playlist.clear();
         this.nextHref = '';
 
-        var songs = await this.request();
-        this.songs.clear();
-        this.songs.push(...songs);
+        var playlist = await this.request();
+        this.playlist.clear();
+        this.playlist.push(...playlist);
     }
 
     @action setGenre(genre) {

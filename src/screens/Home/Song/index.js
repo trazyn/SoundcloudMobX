@@ -19,9 +19,13 @@ import Playing from './Playing';
 
 @inject(stores => {
 
+    var player = stores.player;
+
     return {
         isPlaying: (id) => {
-            return stores.player.song.id === id && stores.player.playlist.uuid === stores.home.playlist.uuid;
+            return player.playing
+                && player.song.id === id
+                && player.playlist.uuid === stores.home.playlist.uuid;
         },
     };
 })

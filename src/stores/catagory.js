@@ -1,8 +1,8 @@
 
-import { toJS, observable, action } from 'mobx';
+import { observable, action, autorun } from 'mobx';
 import Card from './card';
 
-class Chart extends Card {
+class Catagory extends Card {
 
     @observable showRefresh = false;
     @observable showLoadmore = false;
@@ -14,9 +14,9 @@ class Chart extends Card {
         self.showRefresh = true;
         self.nextHref = '';
 
-        var songs = await self.request();
+        var playlist = await self.request();
 
-        self.songs.replace(songs);
+        self.playlist.replace(playlist);
         self.showRefresh = false;
     }
 
@@ -24,27 +24,27 @@ class Chart extends Card {
 
         self.showLoadmore = true;
 
-        var songs = await self.request();
+        var playlist = await self.request();
         var remain = 0;
 
-        if (self.songs.length + songs.length > 50) {
+        if (self.playlist.length + playlist.length > 50) {
 
-            remain = 50 - self.songs.length;
-            songs = songs.slice(0, remain);
+            remain = 50 - self.playlist.length;
+            playlist = playlist.slice(0, remain);
 
             self.hasEnd = true;
         }
 
-        self.songs.push(...songs);
+        self.playlist.push(...playlist);
         self.showLoadmore = false;
 
         if ('function' === typeof appendPlaylist) {
-            appendPlaylist(songs);
+            appendPlaylist(playlist);
         }
     }
 
-    setup(target) {
-        self.songs = target.songs;
+    init(target) {
+        self.playlist = target.playlist;
         self.genre = target.genre;
         self.type = target.type;
         self.nextHref = target.nextHref;
@@ -57,5 +57,5 @@ class Chart extends Card {
     }
 };
 
-const self = new Chart();
+const self = new Catagory();
 export default self;

@@ -18,39 +18,41 @@ import Loader from '../../components/Loader';
 import FadeImage from '../../components/FadeImage';
 import SongCard from './Song';
 
-@inject(stores => ({
-    songs: stores.chart.songs,
-    genre: stores.chart.genre,
-    doRefresh: stores.chart.doRefresh,
-    showRefresh: stores.chart.showRefresh,
-    doLoadmore: stores.chart.doLoadmore,
-    showLoadmore: stores.chart.showLoadmore,
-    hasEnd: stores.chart.hasEnd,
-    playing: stores.chart.playing,
-    setPlaying: stores.chart.setPlaying,
+@inject(stores => {
 
-    player: stores.player,
-}))
-@observer
-export default class Chart extends Component {
+    return {
+        playlist: stores.catagory.playlist,
+        genre: stores.catagory.genre,
+        doRefresh: stores.catagory.doRefresh,
+        showRefresh: stores.catagory.showRefresh,
+        doLoadmore: stores.catagory.doLoadmore,
+        showLoadmore: stores.catagory.showLoadmore,
+        hasEnd: stores.catagory.hasEnd,
+        playing: stores.catagory.playing,
+        setPlaying: stores.catagory.setPlaying,
+        init: stores.catagory.init,
 
-    static propTypes = {
-        songs: PropTypes.object.isRequired,
-        genre: PropTypes.object.isRequired,
-        doRefresh: PropTypes.func.isRequired,
-        showRefresh: PropTypes.bool.isRequired,
-        doLoadmore: PropTypes.func.isRequired,
-        showLoadmore: PropTypes.bool.isRequired,
-        hasEnd: PropTypes.bool.isRequired,
-        playing: PropTypes.bool.isRequired,
-        setPlaying: PropTypes.func.isRequired,
+        player: stores.player,
     };
+})
+@observer
+export default class Catagory extends Component {
+
+    componentWillMount() {
+        this.props.init(this.props.navigation.state.params.data);
+    }
 
     renderCoverWall(start = 0, end = 5) {
 
+        var playlist = this.props.playlist;
+
+        if (!playlist.length) {
+            return false;
+        }
+
         return new Array(end - start).fill(0).map((e, index) => {
 
-            var song = this.props.songs[start + index];
+            var song = playlist[start + index];
 
             return (
                 <FadeImage key={index + start} {...{
@@ -67,33 +69,27 @@ export default class Chart extends Component {
         });
     }
 
-    showPlaying() {
-
-        this.props.player.start();
-
-        this.props.setRoute({
-            name: 'Player'
-        });
+    showPlaying(song) {
 
         for (var genre of CHART_GENRES_MAP) {
             genre.store.setPlaying(false);
         }
 
         this.props.setPlaying(true);
+        this.props.navigation.navigate('Player');
+        this.props.player.start({
+            song,
+            playlist: this.props.playlist,
+        });
     }
 
     togglePlayer() {
 
-        var { songs, player, playing } = this.props;
+        var { playlist, player, playing } = this.props;
 
         if (!playing) {
 
-            player.setup({
-                song: songs[0],
-                playlist: songs
-            });
-
-            this.showPlaying();
+            this.showPlaying(playlist[0]);
         } else {
             player.toggle();
             this.setState({
@@ -108,11 +104,11 @@ export default class Chart extends Component {
 
     render() {
 
-        var { songs, genre, doRefresh, showRefresh, doLoadmore, showLoadmore, hasEnd, player, playing } = this.props;
+        var { playlist, genre, doRefresh, showRefresh, doLoadmore, showLoadmore, hasEnd, player, playing } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
         });
-        var dataSource = ds.cloneWithRows(songs.slice());
+        var dataSource = ds.cloneWithRows(playlist.slice());
         var opacity = this.state.opacity.interpolate({
             inputRange: [-40, -10],
             outputRange: [1, 0],
@@ -156,7 +152,7 @@ export default class Chart extends Component {
                                 # {genre.name}
                             </Text>
                             <Text style={styles.count}>
-                                {songs.length} Tracks
+                                {playlist.length} Tracks
                             </Text>
                         </View>
 
@@ -198,7 +194,7 @@ export default class Chart extends Component {
                     }]
                 )}
 
-                style={[styles.songs, showRefresh && {
+                style={[styles.playlist, showRefresh && {
                     paddingTop: 40
                 }]}
 
@@ -217,21 +213,7 @@ export default class Chart extends Component {
                                 user: song.user,
                                 active: !!active,
                                 play: () => {
-
-                                    var { setRoute } = this.props;
-
-                                    if (playing) {
-                                        player.setup({
-                                            song,
-                                        });
-                                    } else {
-                                        player.setup({
-                                            song,
-                                            playlist: songs
-                                        });
-                                    }
-
-                                    this.showPlaying();
+                                    this.showPlaying(song);
                                 },
                                 rank: +rowId + 1,
                             }}></SongCard>
@@ -355,7 +337,7 @@ const styles = StyleSheet.create({
         fontWeight: '100',
     },
 
-    songs: {
+    playlist: {
         marginTop: 150,
     },
 

@@ -71,10 +71,6 @@ export default class Screen extends Component {
                     {
                         showFooter && (
                             <Footer {...{
-                                isLogin: stores.session.isLogin,
-                                playing: stores.player.playing,
-                                paused: stores.player.paused,
-                                song: stores.player.song,
                                 navigation,
                             }}></Footer>
                         )

@@ -38,6 +38,12 @@ class Player {
         self.paused = !self.paused;
     }
 
+    @action updatePlaylist(playlist) {
+
+        self.playlist.clear();
+        self.playlist.push(...playlist.slice());
+    }
+
     @action async start({ song, playlist = self.playlist, needTrack = true }) {
 
         var prev = self.song;
@@ -65,6 +71,9 @@ class Player {
             self.history = [];
             self.playlist.clear();
             self.playlist.uuid = playlist.uuid;
+            self.playlist.push(...playlist.slice());
+        } else if (self.playlist.length !== playlist.length) {
+            self.playlist.clear();
             self.playlist.push(...playlist.slice());
         }
 
@@ -169,12 +178,12 @@ class Player {
                 return self.progress = progress / duration;
             }
 
+            if ('END' === status) {
+                self.progress;
+            }
+
             if (['BUFFERING', 'STOPPED'].includes(status)) {
                 self.progress = 0;
-
-                if ('STOPPED' === status && url) {
-                    //self.next();
-                }
             }
         });
     }

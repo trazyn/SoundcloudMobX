@@ -25,6 +25,16 @@ import Song from './Song';
         showLoadmore,
         doLoadmore,
         showLoadmore,
+        updatePlaylist: (playlist) => {
+
+            var player = stores.player;
+
+            /** When load more update the playlist of player */
+            if (playlist.uuid === player.playlist.uuid
+                && playlist.length !== player.playlist.length) {
+                player.updatePlaylist(playlist.slice());
+            }
+        }
     };
 })
 @observer
@@ -37,6 +47,10 @@ export default class Songs extends Component {
     state = {
         opacity: new Animated.Value(0)
     };
+
+    componentWillReceiveProps(nextProps) {
+        this.props.updatePlaylist(this.props.playlist);
+    }
 
     render() {
 

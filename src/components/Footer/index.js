@@ -12,14 +12,17 @@ import {
 
 import FadeImage from '../../components/FadeImage';
 
+@inject(stores => ({
+    isLogin: stores.session.isLogin,
+    playing: stores.player.playing,
+    paused: stores.player.paused,
+    song: stores.player.song,
+}))
+@observer
 export default class Footer extends Component {
 
     static propTypes = {
-        isLogin: PropTypes.func.isRequired,
-        playing: PropTypes.bool.isRequired,
-        paused: PropTypes.bool.isRequired,
         navigation: PropTypes.object.isRequired,
-        song: PropTypes.object,
     };
 
     highlight(props = this.props) {
@@ -73,9 +76,9 @@ export default class Footer extends Component {
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.item} onPress={e => {
-                    navigation.navigate('Discover');
+                    navigation.navigate('Charts');
                 }}>
-                    <Icon name="magnifier" ref="Discover" size={20}></Icon>
+                    <Icon name="magnifier" ref="Charts" size={20}></Icon>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.item} onPress={e => {
@@ -96,7 +99,7 @@ export default class Footer extends Component {
                         }}>
                             <FadeImage {...{
                                 source: {
-                                    uri: 'https://i1.sndcdn.com/artworks-000212336286-1zxdzc-large.jpg'
+                                    uri: song.artwork,
                                 },
 
                                 resizeMode: 'cover',

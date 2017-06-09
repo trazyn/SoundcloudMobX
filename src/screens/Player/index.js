@@ -44,13 +44,6 @@ export default class Player extends Component {
         });
     }
 
-    componentWillReceiveProps(nextProps) {
-
-        if (this.props.song.id !== nextProps.song.id && this.state.index !== 0) {
-            this.refs.playList.highlight();
-        }
-    }
-
     render() {
 
         var { song, playlist, playing, start, progress } = this.props;
@@ -99,10 +92,6 @@ export default class Player extends Component {
 
                         var index = e.nativeEvent.contentOffset.x / width;
 
-                        if (index === 1) {
-                            this.refs.playList.highlight();
-                        }
-
                         this.setState({
                             index
                         });
@@ -113,7 +102,6 @@ export default class Player extends Component {
                     snapToAlignment='start'>
                         <View style={styles.viewport}>
                             <PlayList
-                            ref="playList"
                             current={song}>
                             </PlayList>
                         </View>
@@ -164,7 +152,7 @@ export default class Player extends Component {
                     </ScrollView>
                 </Image>
 
-                <Controller></Controller>
+                <Controller message={this.props.message}></Controller>
 
                 <View style={styles.dots}>
                     <View style={[styles.dot, this.state.index === 0 && styles.active]}></View>

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "ios": "react-native run-ios"
+    "dev": "react-native run-ios"
   },
   "dependencies": {
     "axios": "^0.15.3",

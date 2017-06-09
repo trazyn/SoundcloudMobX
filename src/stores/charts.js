@@ -1,7 +1,7 @@
 
 import { observable, action } from 'mobx';
 
-class Discover {
+class Charts {
 
     @observable type = 'top';
 
@@ -10,5 +10,5 @@ class Discover {
     }
 }
 
-const self = new Discover();
+const self = new Charts();
 export default self;
