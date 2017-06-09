@@ -97,7 +97,6 @@ export default class PlayList extends Component {
                         this.offset[song.id] = e.nativeEvent.layout;
                     }}
                     onPress={e => {
-                        console.log(song);
                         this.props.play({ song });
                     }}
                     ref="items">

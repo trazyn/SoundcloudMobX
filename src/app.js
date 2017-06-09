@@ -43,21 +43,10 @@ const view = ({ router, navigation }) => {
     );
 };
 
-const App = StackNavigator({
+const MainNavigator = StackNavigator({
 
-    HomeNavigator: {
+    _HOME: {
         screen: createNavigationContainer(createNavigator(router)(view)),
-    },
-
-    Category: {
-        screen: ({ navigation }) => {
-
-            return (
-                <Layout showFooter={false} navigation={navigation}>
-                    <Category></Category>
-                </Layout>
-            );
-        },
     },
 
     Player: {
@@ -84,9 +73,32 @@ const App = StackNavigator({
     },
 }, {
     mode: 'modal',
+    initialRouteName: '_HOME',
     navigationOptions: {
         header: false,
     }
 });
 
-export default App;
+export default StackNavigator({
+
+    Category: {
+        screen: ({ navigation }) => {
+
+            return (
+                <Layout showFooter={false} navigation={navigation}>
+                    <Category></Category>
+                </Layout>
+            );
+        },
+    },
+
+    _MAIN: {
+        screen: MainNavigator,
+    },
+}, {
+    initialRouteName: '_MAIN',
+
+    navigationOptions: {
+        header: false,
+    },
+});
