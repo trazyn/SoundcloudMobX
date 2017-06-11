@@ -5,7 +5,6 @@ import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import {
     View,
     Text,
-    Image,
     TextInput,
     StatusBar,
     TouchableOpacity,
@@ -21,19 +20,8 @@ import FadeImage from '../../components/FadeImage';
 @inject(stores => ({
     login: stores.session.login,
     loading: stores.session.loading,
-    showError: stores.showError,
-    showMessage: stores.showMessage,
-    navigation: stores.navigation,
 }))
 export default class Login extends Component {
-
-    static propTypes = {
-        login: PropTypes.func.isRequired,
-        loading: PropTypes.bool.isRequired,
-        showError: PropTypes.func.isRequired,
-        showMessage: PropTypes.func.isRequired,
-        navigation: PropTypes.object.isRequired,
-    };
 
     handleBack() {
         this.props.navigation.goBack();
@@ -41,6 +29,7 @@ export default class Login extends Component {
 
     handleLogin() {
 
+        var { info, error } = this.props.message;
         var { username, password } = this.refs;
         var backward = this.handleBack.bind(this);
 
@@ -48,15 +37,15 @@ export default class Login extends Component {
         password = password._lastNativeText;
 
         if (!username || !password) {
-            this.props.showError('Invaild Username or Password!');
+            error('Invaild Username or Password!');
         } else {
             this.props.login(username, password)
                 .then(() => {
                     backward();
-                    this.props.showMessage('Login Success!');
+                    info('Login Success!');
                 })
                 .catch(ex => {
-                    this.props.showError('Invaild Username or Password!');
+                    error('Invaild Username or Password!');
                 });
         }
     }
@@ -71,7 +60,7 @@ export default class Login extends Component {
 
         return (
             <View style={styles.container}>
-                <FadeImage source={{
+                <FadeImage showLoading={true} source={{
                     uri: 'https://unsplash.it/375/667?random'
                 }}
                 style={styles.background}>
