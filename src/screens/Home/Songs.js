@@ -9,7 +9,6 @@ import {
     Dimensions,
     Animated,
     TouchableOpacity,
-    InteractionManager,
 } from 'react-native';
 
 import Loader from '../../components/Loader';

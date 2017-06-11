@@ -81,6 +81,7 @@ export default class FadeImage extends Component {
                         duration: 400
                     }).start();
                 }}>
+                {this.props.children}
                 </Animated.Image>
             </View>
         );

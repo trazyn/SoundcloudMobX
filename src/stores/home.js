@@ -78,10 +78,10 @@ class PlayList {
         var response = await axios.get(self.request());
         var playlist = self.filter(response.data);
 
-        self.showRefresh = false;
         self.playlist.uuid = uuid.v4();
         self.playlist.clear();
         self.playlist.push(...playlist);
+        self.showRefresh = false;
     }
 
     @action async doLoadmore() {
@@ -95,8 +95,8 @@ class PlayList {
         var response = await axios.get(self.request());
         var playlist = self.filter(response.data);
 
-        self.showLoadmore = false;
         self.playlist.push(...playlist);
+        self.showLoadmore = false;
     }
 }
 
