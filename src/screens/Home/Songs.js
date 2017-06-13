@@ -48,7 +48,7 @@ export default class Songs extends Component {
     };
 
     componentWillReceiveProps(nextProps) {
-        this.props.updatePlaylist(this.props.playlist);
+        this.props.updatePlaylist(nextProps.playlist);
     }
 
     render() {

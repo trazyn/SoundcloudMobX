@@ -43,11 +43,6 @@ export default class Home extends Component {
     play(song) {
 
         this.props.navigation.navigate('Player');
-
-        for (var genre of CHART_GENRES_MAP) {
-            genre.store && genre.store.setPlaying(false);
-        }
-
         this.props.play({
             playlist: this.props.playlist,
             song,

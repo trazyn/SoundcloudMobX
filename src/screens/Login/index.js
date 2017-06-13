@@ -8,7 +8,7 @@ import {
     TextInput,
     StatusBar,
     TouchableOpacity,
-    TouchableHighlight,
+    Linking,
     StyleSheet,
     Dimensions,
 } from 'react-native';
@@ -23,15 +23,10 @@ import FadeImage from '../../components/FadeImage';
 }))
 export default class Login extends Component {
 
-    handleBack() {
-        this.props.navigation.goBack();
-    }
-
     handleLogin() {
 
         var { info, error } = this.props.message;
         var { username, password } = this.refs;
-        var backward = this.handleBack.bind(this);
 
         username = username._lastNativeText.trim();
         password = password._lastNativeText.trim();
@@ -41,8 +36,8 @@ export default class Login extends Component {
         } else {
             this.props.login(username, password)
                 .then(() => {
-                    backward();
                     info('Login Success!');
+                    this.props.navigation.navigate('Profile');
                 })
                 .catch(ex => {
                     error('Invaild Username or Password!');
@@ -135,13 +130,18 @@ export default class Login extends Component {
                     <View style={styles.bottom}>
                         <View style={styles.note}>
                             <Text style={styles.muted}>Don't have an account?</Text>
-                            <Text style={[styles.muted, {
-                                marginLeft: 5,
-                                color: 'rgba(0,0,0,.55)',
-                            }]}>Sign up</Text>
+
+                            <TouchableOpacity onPress={() => {
+                                Linking.openURL('https://soundcloud.com/');
+                            }}>
+                                <Text style={[styles.muted, {
+                                    marginLeft: 5,
+                                    color: 'rgba(0,0,0,.55)',
+                                }]}>Sign up</Text>
+                            </TouchableOpacity>
                         </View>
 
-                        <Text style={styles.back} onPress={this.handleBack.bind(this)}>Contine without sigining in</Text>
+                        <Text style={styles.back} onPress={() => this.props.navigation.goBack()}>Contine without sigining in</Text>
                     </View>
                 </View>
             </View>

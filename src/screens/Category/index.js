@@ -28,11 +28,31 @@ import SongCard from './Song';
         doLoadmore: stores.category.doLoadmore,
         showLoadmore: stores.category.showLoadmore,
         hasEnd: stores.category.hasEnd,
-        playing: stores.category.playing,
-        setPlaying: stores.category.setPlaying,
         init: stores.category.init,
 
+        mark4playing: () => {
+            stores.charts.setType4playing(stores.category.type);
+        },
+
         player: stores.player,
+
+        isPlaying: () => {
+
+            var player = stores.player;
+            return player.playing
+                && player.playlist.uuid === stores.category.playlist.uuid;
+        },
+
+        updatePlaylist: (playlist) => {
+
+            var player = stores.player;
+
+            /** When load more update the playlist of player */
+            if (playlist.uuid === player.playlist.uuid
+                && playlist.length !== player.playlist.length) {
+                player.updatePlaylist(playlist.slice());
+            }
+        }
     };
 })
 @observer
@@ -40,6 +60,10 @@ export default class Category extends Component {
 
     componentWillMount() {
         this.props.init(this.props.navigation.state.params.data);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.props.updatePlaylist(nextProps.playlist);
     }
 
     renderCoverWall(start = 0, end = 5) {
@@ -71,11 +95,7 @@ export default class Category extends Component {
 
     showPlaying(song) {
 
-        for (var genre of CHART_GENRES_MAP) {
-            genre.store.setPlaying(false);
-        }
-
-        this.props.setPlaying(true);
+        this.props.mark4playing();
         this.props.navigation.navigate('Player');
         this.props.player.start({
             song,
@@ -103,7 +123,8 @@ export default class Category extends Component {
 
     render() {
 
-        var { playlist, genre, doRefresh, showRefresh, doLoadmore, showLoadmore, hasEnd, player, playing } = this.props;
+        var { playlist, genre, doRefresh, showRefresh, doLoadmore, showLoadmore, hasEnd, player } = this.props;
+        var playing = this.props.isPlaying();
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
         });
@@ -157,7 +178,7 @@ export default class Category extends Component {
 
                         <TouchableOpacity onPress={this.togglePlayer.bind(this)}>
                             {
-                                playing && player.paused
+                                playing && !player.paused
                                     ? (<Icon name="control-pause" size={20} color="red"></Icon>)
                                     : (<Icon name="control-play" size={20} color="red"></Icon>)
                             }

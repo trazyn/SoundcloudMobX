@@ -84,12 +84,12 @@ export default class Footer extends Component {
                 <TouchableOpacity style={styles.item} onPress={e => {
 
                     if (this.props.isLogin()) {
-                        navigation.navigate('Fav');
+                        navigation.navigate('Profile');
                     } else {
                         navigation.navigate('Login');
                     }
                 }}>
-                    <Icon name="heart" ref="Fav" size={20}></Icon>
+                    <Icon name="heart" ref="Profile" size={20}></Icon>
                 </TouchableOpacity>
 
                 {

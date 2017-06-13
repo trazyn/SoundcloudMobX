@@ -13,10 +13,8 @@ class Category extends Card {
         self.hasEnd = false;
         self.showRefresh = true;
         self.nextHref = '';
-
-        var playlist = await self.request();
-
-        self.playlist.replace(playlist);
+        /** Dont call the super 'refresh', make sure 'REFRESH' is display */
+        self.playlist.replace((await self.request()));
         self.showRefresh = false;
     }
 
@@ -50,10 +48,6 @@ class Category extends Card {
         self.nextHref = target.nextHref;
         self.hasEnd = false;
         self.playing = target.playing;
-        self.setPlaying = state => {
-            self.playing = state;
-            target.setPlaying(state);
-        };
     }
 };
 

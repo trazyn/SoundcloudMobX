@@ -18,6 +18,13 @@ import FadeImage from '../../components/FadeImage';
     /** Get the associate instance */
     card: stores.card,
     type: stores.charts.type,
+    isPlaying: () => {
+
+        var player = stores.player;
+        return player.playing
+            && player.playlist.uuid === stores.card.playlist.uuid
+            && stores.charts.type4playing === stores.charts.type;
+    }
 }))
 @observer
 export default class Card extends Component {
@@ -44,13 +51,14 @@ export default class Card extends Component {
         var { card, genre, type } = this.props;
 
         if (this.props.type !== nextProps.type) {
-            card.getPlaylist(genre, nextProps.type);
+            card.setType(nextProps.type);
+            card.refresh();
         }
     }
 
     renderContent() {
 
-        var playing = this.props.card.playing;
+        var playing = this.props.isPlaying();
 
         return (
             <View style={styles.inner}>

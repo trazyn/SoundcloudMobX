@@ -12,7 +12,7 @@ import Layout from './screens';
 import Home from './screens/Home';
 import Charts from './screens/Charts';
 import Category from './screens/Category';
-import Fav from './screens/Fav';
+import Profile from './screens/Profile';
 import Player from './screens/Player';
 import Login from './screens/Login';
 
@@ -25,8 +25,8 @@ const router = TabRouter({
         screen: Charts,
     },
 
-    Fav: {
-        screen: Fav,
+    Profile: {
+        screen: Profile,
     },
 }, {
     initialRouteName: 'Home'

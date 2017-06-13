@@ -1,6 +1,7 @@
 
 import { observable, action } from 'mobx';
 import axios from 'axios';
+import uuid from 'uuid';
 import songsFilter from '../utils/songsFilter';
 import { CLIENT_ID } from '../config';
 
@@ -12,7 +13,6 @@ export default class Card {
 
     @observable playlist = [];
     @observable genre = {};
-    @observable playing = false;
     @observable type;
 
     nextHref = '';
@@ -30,12 +30,20 @@ export default class Card {
         });
     }
 
+    async refresh() {
+
+        this.nextHref = '';
+        this.playlist.clear();
+        this.playlist.replace((await this.request()));
+    }
+
     @action async getPlaylist() {
 
         this.playlist.clear();
         this.nextHref = '';
 
         var playlist = await this.request();
+        this.playlist.uuid = uuid.v4();
         this.playlist.clear();
         this.playlist.push(...playlist);
     }
@@ -46,9 +54,5 @@ export default class Card {
 
     @action setType(type) {
         this.type = type;
-    }
-
-    @action setPlaying(state = false) {
-        this.playing = state;
     }
 }
