@@ -33,8 +33,8 @@ export default class Login extends Component {
         var { username, password } = this.refs;
         var backward = this.handleBack.bind(this);
 
-        username = username._lastNativeText;
-        password = password._lastNativeText;
+        username = username._lastNativeText.trim();
+        password = password._lastNativeText.trim();
 
         if (!username || !password) {
             error('Invaild Username or Password!');

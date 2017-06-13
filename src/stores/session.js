@@ -92,11 +92,13 @@ class Session {
             client_id: CLIENT_ID,
             client_secret: SECRET,
             grant_type: 'password',
-            username,
-            password,
+            username: username,
+            password: password,
         }).then((response) => {
             self.create(response.data);
-        }).catch(ex => console.error('Failed login to Soundcloud:', ex));
+        }).catch(ex => {
+            console.error('Failed login to Soundcloud:', ex);
+        });
     }
 
     isLogin() {
