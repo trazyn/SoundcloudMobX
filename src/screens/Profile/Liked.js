@@ -1,5 +1,6 @@
 
 import React, { Component, PropTypes } from 'react';
+import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Text,
@@ -10,16 +11,26 @@ import {
 
 import FadeImage from '../../components/FadeImage';
 
+@inject(stores => ({
+    list: stores.profile.likes,
+    getList: () => {
+        stores.profile.getLikes(stores.session.user.id);
+    },
+}))
+@observer
 export default class Liked extends Component {
 
     static propTypes = {
-        tracks: PropTypes.array.isRequired,
         showList: PropTypes.func.isRequired,
     };
 
+    componentWillMount() {
+        this.props.getList();
+    }
+
     covers(tracks) {
 
-        return tracks.map((track, index) => {
+        return tracks.slice().map((track, index) => {
 
             return (
                 <FadeImage key={index} {...{
@@ -37,7 +48,7 @@ export default class Liked extends Component {
 
     render() {
 
-        var { tracks } = this.props;
+        var { list } = this.props;
 
         return (
             <TouchableOpacity style={styles.container} onPress={this.props.showList}>
@@ -47,7 +58,7 @@ export default class Liked extends Component {
                     flexDirection: 'row',
                 }}>
                 {
-                    this.covers(tracks.slice(0, 4))
+                    this.covers(list.slice(0, 4))
                 }
                 </View>
                 <View style={{
@@ -56,7 +67,7 @@ export default class Liked extends Component {
                     flexDirection: 'row',
                 }}>
                 {
-                    this.covers(tracks.slice(4, 8))
+                    this.covers(list.slice(4, 8))
                 }
                 </View>
 
@@ -84,7 +95,7 @@ export default class Liked extends Component {
                         }}>
                             <View style={styles.line}></View>
                                 <Text style={styles.count}>{
-                                    tracks.length > 99 ? '99+' : tracks.length
+                                    list.length > 99 ? '99+' : list.length
                                 } Songs In Collection</Text>
                             <View style={styles.line}></View>
                         </View>

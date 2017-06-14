@@ -7,26 +7,35 @@ import {
     Text,
     StyleSheet,
     Dimensions,
+    Linking,
 } from 'react-native';
 
 import FadeImage from '../../components/FadeImage';
 import humanNumber from '../../utils/humanNumber';
 
+@inject(stores => ({
+    list: stores.profile.followers.slice(),
+    getList: () => {
+        stores.profile.getFollowers(stores.session.user.id);
+    },
+    count: stores.session.user.followers_count,
+}))
+@observer
 export default class Followers extends Component {
 
-    static propTypes = {
-        users: PropTypes.array.isRequired,
-        count: PropTypes.number.isRequired,
-    };
+    componentWillMount() {
+        this.props.getList();
+    }
 
-    render() {
-
-        var { users, count } = this.props;
+    renderList(list) {
 
         return (
-            <View style={styles.container}>
+            <View style={{
+                alignItems: 'center',
+                flexDirection: 'row',
+            }}>
                 {
-                    users.slice(0, 5).map((user, index) => {
+                    list.slice(0, 5).map((user, index) => {
 
                         return (
                             <View style={styles.avatar} key={index}>
@@ -44,7 +53,7 @@ export default class Followers extends Component {
                                     }
                                 }}>
                                 {
-                                    users.length > 4 && index === 4 && (
+                                    list.length > 4 && index === 4 && (
                                         <View style={styles.overlay}>
                                             <Icon name="options" color="white" size={12}></Icon>
                                         </View>
@@ -55,7 +64,24 @@ export default class Followers extends Component {
                         );
                     })
                 }
-                <Text style={styles.count}>{humanNumber(count)} Followers</Text>
+                <Text style={styles.count}>{humanNumber(this.props.count)} Followers</Text>
+            </View>
+        );
+
+    }
+
+    render() {
+
+        var { list } = this.props;
+
+        return (
+            <View style={styles.container}>
+                {
+                    list.length
+                        ? this.renderList(list)
+                        : <Text style={[styles.count, styles.empty]}>No one is following you yet.</Text>
+                }
+
             </View>
         );
     }
@@ -64,8 +90,6 @@ export default class Followers extends Component {
 const styles = StyleSheet.create({
     container: {
         height: 25,
-        alignItems: 'center',
-        flexDirection: 'row',
         overflow: 'hidden',
     },
 
@@ -89,5 +113,11 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 8,
         fontWeight: '100',
-    }
+        backgroundColor: 'transparent',
+    },
+
+    empty: {
+        marginLeft: -.1,
+        fontSize: 12,
+    },
 });

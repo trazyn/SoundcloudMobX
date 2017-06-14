@@ -44,11 +44,13 @@ export default class Controller extends Component {
 
         if (this.props.song.id !== nextProps.song.id) {
 
+            var favorite = await isFavorited({
+                userid: this.props.userid,
+                songid: nextProps.song.id,
+            });
+
             this.setState({
-                favorite: await isFavorited({
-                    userid: this.props.userid,
-                    songid: this.props.song.id,
-                })
+                favorite,
             });
         }
     }

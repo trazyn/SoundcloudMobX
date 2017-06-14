@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="refresh" content="0;url=wel.html"> 
+<meta charset="gb2312">
+<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+<title>完&nbsp;成</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<link rel="stylesheet" href="css/reset.css" />
+<link rel="stylesheet" href="css/index.css" />
+<link rel="stylesheet" href="css/iconfont.css" />
+</head>
+<body>
+<div data-role="page" id="Result">
+	<header class="base_page_bgcolor">
+		<ul>
+			<li class="num"><label>100</label></li>
+			<li class="desc"><!--入网说明--></li>
+		</ul>
+	</header>
+	<article>
+		<section>
+			<ul>
+			<!--安检项
+			<li>
+				<i class="iconfont Yes">&#xe609;</i>
+				<i class="desc">
+					<h3>test</h3>
+					<p>qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq</p>
+				</i>
+			</li>
+			<li>
+				<i class="iconfont Yes">&#xe609;</i>
+				<i class="desc">
+					<h3>test</h3>
+					<p>阿斯顿发送到发送到发斯蒂芬阿斯顿发斯蒂芬阿打发斯蒂芬阿道夫圣达菲</p>
+				</i>
+			</li>
+			-->
+			</ul>
+		</section>
+	</article>
+	<div data-role="footer" class="nav-glyphish-example" data-theme="b"  data-position="fixed" role="banner" data-fullscreen="true" style="text-align:center;">
+		<a href="###" id="accessNet" data-ajax="false" class="ui-btn ui-shadow ui-corner-all ui-icon-action ui-btn-icon-left ui-btn-active">
+			访问网络<span id="sec"></span>
+		</a>
+		<a href="wel.html" id="reAuth" data-ajax="false" class="ui-btn ui-shadow ui-corner-all ui-icon-recycle ui-btn-icon-left">
+			重新认证
+		</a>
+	</div>
+<script type="text/javascript">
+;(function($){
+	$.Infogo_Result={
+			Init:function(pagedom,g_this){
+				this.GetPageID=pagedom;
+				this.Privateobj.getResult(this.GetPageID,g_this);//获取并展示安检结果
+				this.Onbind(this.GetPageID);
+				if(g_this.Globalobj.urlGet('log')=='1')//打印日志
+					this.Privateobj.printDebug(this.GetPageID,g_this);
+			},
+			Privateobj:{
+				//提交安检结果并返回结果
+				getResult:function(GetPageID,g_this){
+					var _Globalobj=g_this.Globalobj,self=this;
+					if(parseInt(_Globalobj.DeviceData.DeviceID)>0)
+					{
+						//无安检
+						if(_Globalobj.Safecheck.isCheck!='1')
+						{
+							$(GetPageID+" li.num label").html(
+							'<i id="icon" class="iconfont">&#xe609;</i>'
+							);
+							$("#Result").addClass('noCheck');
+							$("#Result header").height($("#Result").height()+70);
+							g_this.Globalobj.pageRemark("#Result header");
+							$("#Result .remark").css({"position":"absolute"});
+						}
+						var res=_Globalobj.Ajax({
+							url:'/a/ajax.php?tradecode=mobileresult',
+							type:'POST',
+							async:false,
+							data:{"deviceid":_Globalobj.DeviceData.DeviceID
+							,"policyid":_Globalobj.Safecheck.policyid
+							,"itemsid":_Globalobj.Safecheck.itemsid
+							,"checkres":_Globalobj.Safecheck.checkres
+							,"is_safecheck":(_Globalobj.Safecheck.isCheck || '0')
+							,"roleid":_Globalobj.AuthData.RoleID
+							,"LastAuthID":_Globalobj.AuthData.LastAuthID
+							,"firsturl":_Globalobj.urlGet('firsturl').replace("#","")
+							,"ascid":_Globalobj.urlGet('ascid')},
+							success:function(data){
+									if(typeof(data)=='object')
+									{
+										//存在问题项
+										self.crateItem(data.NoItem,GetPageID);
+										//通过项
+										self.crateItem(data.YesItem,GetPageID);
+										
+										//失败项
+										self.crateItem(data.ErrItem,GetPageID);
+										//得分
+										if(data.CheckResult)
+										{
+											var SColor=new Array();
+											SColor['success']="#0066CA";
+											SColor['fault']="#E99C03";
+											SColor['false']="#E34037";
+											$(GetPageID+" header").css("background-color",SColor[data.CheckResult.Res]);
+											$(GetPageID+" li.desc").html(data.CheckResult.Desc);
+											var maxNum=100;
+											var cL=setInterval(function(){
+												if(maxNum>parseInt(data.CheckResult.Rate))
+												{
+													maxNum-=1;
+													$(GetPageID+" li.num label").html(maxNum);
+												}else{
+													if(maxNum==100)
+													{
+														$(GetPageID+" header ul li.desc").addClass("desc100");
+														$(GetPageID+" li.num label").attr("id","num100");
+													}
+													clearInterval(cL);
+												}
+											},20);
+											//缓存安检项
+											if(_Globalobj.Safecheck.isCheck=='1')
+												self.cacheCheckItem(_Globalobj);
+											//设置重定向按钮事件
+											if(data.Other.firsturl!="" 
+											&& data.CheckResult.Res!="false" 
+											&& !g_this.Globalobj.IsPhoneClient)
+											{
+												$(GetPageID+" #accessNet").attr("href"
+												,data.Other.firsturl).show();
+												self.setTimeouts(9,data.Other.firsturl,GetPageID+" #accessNet #sec")
+											}else{//选中重新认证按钮
+												$(GetPageID+" #reAuth").addClass('ui-btn-active');
+											}
+											if(_Globalobj.IsPhoneClient 
+											&& data.CheckResult.Res!="false" )
+											{
+												//下发配置
+												self.setClietnConfig(_Globalobj,data.CheckResult);
+												//VPN拨号
+												self.startVpn(_Globalobj,data.CheckResult);
+											}
+											if(_Globalobj.IsPhoneClient 
+											&& data.CheckResult.Res=="false" )
+											{
+												//sopVPN拨号
+												window.mobile.stopVpn();
+											}
+										}
+									}else{
+										_Globalobj.PopupOpen("交易失败["+data+"]！");
+									}
+								}
+							});
+					}else{
+						_Globalobj.PopupOpen("设备id异常["+_Globalobj.DeviceData.DeviceID+"]！");
+					}
+					
+				},
+				//创建结果项
+				crateItem:function(data,GetPageID,keyItemID){
+					
+					if(data && data.length>0)
+					{
+						var iconType=new Array();
+						iconType['Yes']='&#xe609;';
+						iconType['No']='&#xe608;';
+						iconType['Key']='&#xe60a;';
+						iconType['Err']='&#xe60a;';
+						for(var i in data)
+						{
+							if(data[i].OutsideName)
+							{
+								var _status=data[i].Result|| 'Err';
+								$(GetPageID+" section ul").append(
+								'<li><i class="iconfont '+_status+'">'
+								+iconType[_status]+'</i><i class="desc"><h3>'
+								+data[i].OutsideName+'</h3><p>'+data[i].Message+'</p></i></li>');
+							}
+						}
+					}
+				},
+				setTimeouts:function(sec,_href,randerTo)
+				{
+					var self=this;
+					if(_href=="http://" || _href=="")
+						return false;
+					if(sec<=0){
+						var u_s=(_href.substr(0,4)=='http'?_href:'http://'+_href);
+						var url=u_s+(u_s.substr(-1)=='/'?'':'/')+(u_s.indexOf('?')!=-1? "&":"?")+'cache='+Math.random();
+						window.top.location.href=url;
+						return true;
+					}
+					$(randerTo).html("<span class='red'>"+sec+"秒</span>");
+					setTimeout(function(){
+						self.setTimeouts(--sec,_href,randerTo);
+					},1000);
+				},
+				/**
+				 * Description:启动vpn
+				 * Param _Globalobj 全局对象，CheckResult 安检结果
+				 */
+				startVpn:function(_Globalobj,CheckResult)
+				{
+					if(_Globalobj.AuthData.BeforeAuthType=='User'
+					&& _Globalobj.ServerConfig.Mobile['isvpn'])
+					{
+						window.mobile.openVpn(
+							_Globalobj.Client.HOST,
+							_Globalobj.AuthData.UserName,
+							_Globalobj.AuthData.Passw,
+							_Globalobj.DeviceData.Mac,
+							_Globalobj.DeviceData.IP,
+							_Globalobj.DeviceData.DeviceID
+						);
+					}
+				},
+				/**
+				* 下发配置给小助手
+				*/
+				setClietnConfig:function(_Globalobj,CheckResult)
+				{
+					if(_Globalobj.DeviceData.DeviceID>0 
+					&& _Globalobj.AuthData.RoleID>0)
+					{
+						window.mobile.getWEBConfig('{'
+						+'"DeviceID":"'+_Globalobj.DeviceData.DeviceID+'",'
+						+'"RoleID":"'+_Globalobj.AuthData.RoleID+'"'
+						+'}');
+					}
+				},
+				/**
+				 * Description:缓存安检信息
+				 */
+				cacheCheckItem:function(_Globalobj)
+				{
+					if(_Globalobj.Safecheck.ChangeTime!="")
+					{
+					var policyid=_Globalobj.Safecheck.policyid;
+					var ChangeTime=_Globalobj.Safecheck.ChangeTime;
+
+					var itemsid=_Globalobj.Safecheck.itemsid;
+						itemsid=itemsid.split("###||###");
+						var checkres=_Globalobj.Safecheck.CacheCheckItem;
+						checkres.replace(/[\r\n\t]/g,"");
+						checkres.replace(/\\/g,"\\\\");
+						checkres.replace("'","\'");
+						checkres=checkres.split("###||###");
+	
+
+					var content=[];
+						for(var i=0;i<itemsid.length;i++){
+							content.push("CheckItem_"+itemsid[i]+":'"
+							+checkres[i]+"'");
+						}
+						ActionLocalFile_Jar('save','CheckItemData.ini',"{PolicyID:'"
+							+policyid+"',ChangeTime:'"
+							+ChangeTime+"',Content:{"+content.join(',')+"}}");
+						}
+					}
+				,
+				printDebug:function(GetPageID,g_this)
+				{
+					$(GetPageID).append(
+					"<textarea>"
+					+g_this.Globalobj.Safecheck.checkres
+					+"</textarea>"
+					);
+				}
+			},
+			Onbind:function(GetPageID){
+				//重新访问网络 带上参数
+				$(GetPageID+" #reAuth").attr("href","wel.html"+window.location.search)
+			},
+			Validation:function(){}
+		};
+})(jQuery);
+</script>
+</div><!-- /page -->
+
+</body>
+</html>

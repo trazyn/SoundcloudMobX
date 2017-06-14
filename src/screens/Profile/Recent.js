@@ -1,23 +1,89 @@
 
 import React, { Component, PropTypes } from 'react';
+import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Text,
     TouchableOpacity,
     Dimensions,
+    Image,
     StyleSheet,
 } from 'react-native';
 
 import FadeImage from '../../components/FadeImage';
 
+@inject(stores => ({
+    list: stores.profile.recent.slice(0, 3),
+    getList: stores.profile.getRecent,
+}))
+@observer
 export default class Recent extends Component {
 
     static propTypes = {
-        tracks: PropTypes.array.isRequired,
         showList: PropTypes.func.isRequired,
     };
 
+    componentWillMount() {
+        this.props.getList();
+    }
+
+    renderList(list) {
+
+        return list.map((track, index) => {
+
+            return (
+                <View key={index} style={styles.item}>
+                    <View>
+                        <FadeImage {...{
+                            source: {
+                                uri: track.artwork,
+                            },
+
+                            showLoading: true,
+
+                            style: {
+                                height: 100,
+                                width: 100,
+                                shadowOpacity: 0.3,
+                                shadowRadius: 12,
+                            }
+                        }}></FadeImage>
+                    </View>
+                </View>
+            );
+        });
+    }
+
+    renderEmpty() {
+
+        return new Array(3).fill('../../images/loading.gif').map((e, index) => {
+
+            return (
+                <View key={index} style={{
+                    height: 100,
+                    width: 100,
+                    backgroundColor: '#fff',
+                    shadowOpacity: 0.3,
+                    shadowRadius: 12,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}>
+                    <Image key={index} {...{
+                        source: require('../../images/loading.gif'),
+                        style: {
+                            height: 12,
+                            width: 12,
+                            zIndex: 1,
+                        },
+                    }}></Image>
+                </View>
+            );
+        });
+    }
+
     render() {
+
+        var list = this.props.list;
 
         return (
             <View style={styles.container}>
@@ -28,29 +94,7 @@ export default class Recent extends Component {
                     justifyContent: 'space-between',
                 }}>
                 {
-                    this.props.tracks.map((track, index) => {
-
-                        return (
-                            <View key={index} style={styles.item}>
-                                <View>
-                                    <FadeImage {...{
-                                        source: {
-                                            uri: track.artwork,
-                                        },
-
-                                        showLoading: true,
-
-                                        style: {
-                                            height: 100,
-                                            width: 100,
-                                            shadowOpacity: 0.3,
-                                            shadowRadius: 12,
-                                        }
-                                    }}></FadeImage>
-                                </View>
-                            </View>
-                        );
-                    })
+                    list.length ? this.renderList(list) : this.renderEmpty()
                 }
                 </View>
 
