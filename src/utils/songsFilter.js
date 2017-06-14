@@ -12,7 +12,7 @@ export default (collection) => {
                 duration: song['duration'],
                 kind: song['kind'],
                 commentCount: song['comment_count'],
-                likesCount: song['likes_count'],
+                likedCount: song['likes_count'],
                 playbackCount: song['playback_count'],
                 created: +new Date(song['created_at']),
                 desc: song['description'],

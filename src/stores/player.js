@@ -148,10 +148,6 @@ class Player {
         self.start({ song, needTrack: false });
     }
 
-    @action appendPlaylist(songs) {
-        self.playlist.push(...songs);
-    }
-
     @action async init() {
         var mode = await AsyncStorage.getItem('@Player:mode');
 

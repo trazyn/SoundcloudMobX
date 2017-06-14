@@ -12,10 +12,10 @@ import {
     StyleSheet,
 } from 'react-native';
 
-import { CHART_GENRES_MAP } from '../../config';
-import parseTimes from '../../utils/parseTimes';
-import Loader from '../../components/Loader';
-import FadeImage from '../../components/FadeImage';
+import { CHART_GENRES_MAP } from '../../../config';
+import parseTimes from '../../../utils/parseTimes';
+import Loader from '../../../components/Loader';
+import FadeImage from '../../../components/FadeImage';
 import SongCard from './Song';
 
 @inject(stores => {
@@ -199,7 +199,7 @@ export default class Category extends Component {
                 onEndReached={() => {
 
                     if (hasEnd === false) {
-                        doLoadmore(player.appendPlaylist);
+                        doLoadmore();
                     }
                 }}
 

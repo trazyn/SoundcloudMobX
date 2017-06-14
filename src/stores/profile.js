@@ -10,13 +10,15 @@ class Profile {
     @observable followers = [];
     @observable suggestions = [];
     @observable recent = [];
-    @observable likes = [];
-    @observable showLoadMoreSuggestion = false;
+    @observable liked = [];
+    @observable loading4suggestion = false;
+    @observable loading4recent = false;
+    @observable loading4liked = false;
 
     followersHrefNext;
     suggestionHrefNext;
     recentHrefNext;
-    likesHrefNext;
+    likedHrefNext;
 
     @action async getFollowers(userid) {
 
@@ -54,16 +56,18 @@ class Profile {
 
     @action async loadMoreSuggestion() {
 
-        self.showLoadMoreSuggestion = true;
+        self.loading4suggestion = true;
 
         var response = await axios.get(self.suggestionHrefNext);
 
         self.suggestions.push(...response.data.collection);
         self.suggestionHrefNext = response.data.next_href;
-        self.showLoadMoreSuggestion = false;
+        self.loading4suggestion = false;
     }
 
     @action async getRecent() {
+
+        self.loading = true;
 
         var response = await axios.get(`https://api-v2.soundcloud.com/me/play-history/tracks?
             &client_id=${CLIENT_ID}
@@ -76,23 +80,24 @@ class Profile {
 
         self.recent.replace(songs);
         self.recentHrefNext = response.data.next_href;
-
-        return songs;
+        self.loading = false;
     }
 
     @action async loadMoreRecent() {
+
+        self.loading4recent = true;
 
         var response = await axios.get(self.recentHrefNext);
         var songs = songsFilter(response.data.collection.map(e => e.track));
 
         self.recent.push(...songs);
         self.recentHrefNext = response.data.next_href;
-
-        return songs;
+        self.loading4recent = false;
     }
 
-    @action async getLikes(userid) {
+    @action async getLiked(userid) {
 
+        self.loading = true;
         var response = await axios.get(`https://api-v2.soundcloud.com/users/${userid}/track_likes?
             &client_id=${CLIENT_ID}
             &limit=20
@@ -102,25 +107,25 @@ class Profile {
 
         var songs = songsFilter(response.data.collection.map(e => e.track));
 
-        self.likes.replace(songs);
-        self.likesHrefNext = response.data.next_href;
-
-        return songs;
+        self.liked.replace(songs);
+        self.likedHrefNext = response.data.next_href;
+        self.loading = false;
     }
 
-    @action async loadMoreLikes() {
+    @action async loadMoreLiked() {
 
-        if (!self.likesHrefNext) {
+        if (!self.likedHrefNext) {
             return [];
         }
 
-        var response = await axios.get(self.likesHrefNext);
+        self.loading4liked = true;
+
+        var response = await axios.get(self.likedHrefNext);
         var songs = songsFilter(response.data.collection.map(e => e.track));
 
-        self.likes.push(...songs);
-        self.likesHrefNext = response.data.next_href;
-
-        return songs;
+        self.liked.push(...songs);
+        self.likedHrefNext = response.data.next_href;
+        self.loading4liked = false;
     }
 }
 

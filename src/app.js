@@ -11,8 +11,10 @@ import {
 import Layout from './screens';
 import Home from './screens/Home';
 import Charts from './screens/Charts';
-import Category from './screens/Category';
+import Category from './screens/Charts/Category';
 import Profile from './screens/Profile';
+import RecentPlaylist from './screens/Profile/Playlist/RecentPlaylist';
+import LikedPlaylist from './screens/Profile/Playlist/LikedPlaylist';
 import Player from './screens/Player';
 import Login from './screens/Login';
 
@@ -87,6 +89,28 @@ export default StackNavigator({
             return (
                 <Layout showFooter={false} navigation={navigation}>
                     <Category></Category>
+                </Layout>
+            );
+        },
+    },
+
+    RecentPlaylist: {
+        screen: ({ navigation }) => {
+
+            return (
+                <Layout showFooter={false} navigation={navigation}>
+                    <RecentPlaylist></RecentPlaylist>
+                </Layout>
+            );
+        },
+    },
+
+    LikedPlaylist: {
+        screen: ({ navigation }) => {
+
+            return (
+                <Layout showFooter={false} navigation={navigation}>
+                    <LikedPlaylist></LikedPlaylist>
                 </Layout>
             );
         },

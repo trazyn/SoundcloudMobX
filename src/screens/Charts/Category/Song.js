@@ -8,7 +8,7 @@ import {
     StyleSheet,
 } from 'react-native';
 
-import FadeImage from '../../components/FadeImage';
+import FadeImage from '../../../components/FadeImage';
 
 export default class Song extends Component {
 

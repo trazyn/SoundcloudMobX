@@ -35,10 +35,6 @@ class Category extends Card {
 
         self.playlist.push(...playlist);
         self.showLoadmore = false;
-
-        if ('function' === typeof appendPlaylist) {
-            appendPlaylist(playlist);
-        }
     }
 
     init(target) {

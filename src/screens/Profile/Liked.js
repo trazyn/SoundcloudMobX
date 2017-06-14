@@ -12,9 +12,9 @@ import {
 import FadeImage from '../../components/FadeImage';
 
 @inject(stores => ({
-    list: stores.profile.likes,
+    list: stores.profile.liked,
     getList: () => {
-        stores.profile.getLikes(stores.session.user.id);
+        stores.profile.getLiked(stores.session.user.id);
     },
 }))
 @observer

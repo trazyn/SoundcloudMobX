@@ -62,6 +62,16 @@ export default class Footer extends Component {
         this.highlight(nextProps);
     }
 
+    caninavigate(routeName) {
+
+        var { navigate, state } = this.props.navigation;
+        var current = state.routes[state.index];
+
+        if (routeName !== current.routeName) {
+            navigate(routeName);
+        }
+    }
+
     render() {
 
         var { navigation, playing, paused, song } = this.props;
@@ -70,13 +80,13 @@ export default class Footer extends Component {
             <Animated.View style={[styles.container, this.props.style]}>
 
                 <TouchableOpacity style={styles.item} onPress={e => {
-                    navigation.navigate('Home');
+                    this.caninavigate('Home');
                 }}>
                     <Icon name="playlist" ref="Home" size={20}></Icon>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.item} onPress={e => {
-                    navigation.navigate('Charts');
+                    this.caninavigate('Charts');
                 }}>
                     <Icon name="magnifier" ref="Charts" size={20}></Icon>
                 </TouchableOpacity>
@@ -84,9 +94,9 @@ export default class Footer extends Component {
                 <TouchableOpacity style={styles.item} onPress={e => {
 
                     if (this.props.isLogin()) {
-                        navigation.navigate('Profile');
+                        this.caninavigate('Profile');
                     } else {
-                        navigation.navigate('Login');
+                        this.caninavigate('Login');
                     }
                 }}>
                     <Icon name="heart" ref="Profile" size={20}></Icon>
@@ -95,7 +105,7 @@ export default class Footer extends Component {
                 {
                     playing && (
                         <TouchableOpacity style={styles.item} onPress={e => {
-                            navigation.navigate('Player');
+                            this.caninavigate('Player');
                         }}>
                             <FadeImage {...{
                                 source: {

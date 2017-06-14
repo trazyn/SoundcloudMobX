@@ -71,7 +71,7 @@ export default class Suggestion extends Component {
                             justifyContent: 'space-around',
                             alignItems: 'center',
                         }}>
-                            <Text style={styles.meta}>{humanNumber(track.likesCount)} LIKES</Text>
+                            <Text style={styles.meta}>{humanNumber(track.likedCount)} LIKES</Text>
                             <Text style={[styles.meta, {
                                 marginRight: 30,
                                 marginLeft: 30,

@@ -1,7 +1,7 @@
 
 import React, { Component, PropTypes } from 'react';
-import { inject, observer } from 'mobx-react/native';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
+import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Text,
@@ -22,29 +22,25 @@ import Suggestion from './Suggestion';
 
 @inject(stores => ({
     user: stores.session.user,
-    loadMoreRecent: stores.profile.loadMoreRecent,
-    loadMoreLikes: stores.profile.loadMoreLikes,
-    suggestions: stores.profile.suggestions,
-    getSuggestion: stores.profile.getSuggestion,
-    loadMoreSuggestion: stores.profile.loadMoreSuggestion,
-    showLoadMoreSuggestion: stores.profile.showLoadMoreSuggestion,
-
-    setup: stores.list.setup,
+    loading: stores.profile.loading4suggestion,
+    list: stores.profile.suggestions.slice(),
+    getList: stores.profile.getSuggestion,
+    loadMore: stores.profile.loadMoreSuggestion,
 }))
 @observer
 export default class Profile extends Component {
 
     componentWillMount() {
-        this.props.getSuggestion();
+        this.props.getList();
     }
 
     componentWillReceiveProps(nextProps) {
-        StatusBar.setNetworkActivityIndicatorVisible(nextProps.showLoadMoreSuggestion);
+        StatusBar.setNetworkActivityIndicatorVisible(nextProps.loading);
     }
 
     renderHeader() {
 
-        var { user, recent, likes } = this.props;
+        var { user, recent, liked } = this.props;
 
         return (
 
@@ -107,48 +103,18 @@ export default class Profile extends Component {
                     </TouchableOpacity>
                 </FadeImage>
 
-                <Recent showList={e => {
-
-                    var { getRecent, loadMoreRecent } = this.props;
-
-                    this.props.setup({
-                        data: recent,
-                        title: 'RECENTLY PLAYED',
-                        actions: {
-                            refresh: getRecent,
-                            loadmore: loadMoreRecent,
-                        }
-                    });
-                    this.props.setRoute({
-                        name: 'List',
-                    });
-                }}></Recent>
-                <Liked showList={e => {
-
-                    var { getLikes, user, loadMoreLikes } = this.props;
-
-                    this.props.setup({
-                        data: likes,
-                        title: 'YOU\'VE LIKED',
-                        actions: {
-                            refresh: () => this.props.getLikes(user.id),
-                            loadmore: this.props.loadMoreLikes,
-                        }
-                    });
-                    this.props.setRoute({
-                        name: 'List',
-                    });
-                }}></Liked>
+                <Recent showList={e => this.props.navigation.navigate('RecentPlaylist')}></Recent>
+                <Liked showList={e => this. props.navigation.navigate('LikedPlaylist')}></Liked>
             </View>
         );
     }
 
     render() {
-        var { suggestions } = this.props;
+        var { list } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.seed_sound.id !== r2.seed_sound.id
         });
-        var dataSource = ds.cloneWithRows(suggestions.slice());
+        var dataSource = ds.cloneWithRows(list);
 
         return (
             <ListView
@@ -159,7 +125,7 @@ export default class Profile extends Component {
             onEndReachedThreshold={1}
             pageSize={1}
             onEndReached={() => {
-                suggestions.length && this.props.loadMoreSuggestion();
+                list.length && this.props.loadMore();
             }}
 
             enableEmptySections={true}

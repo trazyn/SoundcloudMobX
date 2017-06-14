@@ -36,7 +36,7 @@ export default class Song extends Component {
         id: PropTypes.number.isRequired,
         duration: PropTypes.number.isRequired,
         commentCount: PropTypes.number.isRequired,
-        likesCount: PropTypes.number.isRequired,
+        likedCount: PropTypes.number.isRequired,
         playbackCount: PropTypes.number.isRequired,
         created: PropTypes.number.isRequired,
         genre: PropTypes.string.isRequired,
@@ -61,7 +61,7 @@ export default class Song extends Component {
 
     render() {
 
-        const { title, id, user, artwork, likesCount, commentCount, playbackCount, play } = this.props;
+        const { title, id, user, artwork, likedCount, commentCount, playbackCount, play } = this.props;
 
         var playing = this.props.isPlaying(id);
 
@@ -94,7 +94,7 @@ export default class Song extends Component {
                                     <View style={styles.meta}>
                                         <TouchableOpacity style={styles.metaItem}>
                                             <Icon name="heart" style={styles.metaIcon}></Icon>
-                                            <Text style={styles.metaText}>{humanNumber(likesCount)}</Text>
+                                            <Text style={styles.metaText}>{humanNumber(likedCount)}</Text>
                                         </TouchableOpacity>
 
                                         <TouchableOpacity style={styles.metaItem}>
