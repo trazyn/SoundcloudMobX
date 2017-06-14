@@ -8,7 +8,7 @@ import { CLIENT_ID, PLAYER_MODE } from '../config';
 import { DeviceEventEmitter } from 'react-native';
 
 /**
- * TODO: WHEN FINISHED PLAY THE NEXT TRANSPARENT
+ * TODO: WHEN FINISHED PLAY THE NEXT
  * */
 class Player {
 

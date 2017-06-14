@@ -3,6 +3,7 @@ import { observable, action, computed } from 'mobx';
 import axios from 'axios';
 import { CLIENT_ID } from '../config';
 import songsFilter from '../utils/songsFilter';
+import uuid from 'uuid';
 
 class Profile {
 
@@ -60,6 +61,7 @@ class Profile {
 
         var response = await axios.get(self.suggestionHrefNext);
 
+        self.suggestions.uuid = self.suggestions.uuid || uuid.v4();
         self.suggestions.push(...response.data.collection);
         self.suggestionHrefNext = response.data.next_href;
         self.loading4suggestion = false;
@@ -78,6 +80,7 @@ class Profile {
 
         var songs = songsFilter(response.data.collection.map(e => e.track));
 
+        self.recent.uuid = self.recent.uuid || uuid.v4();
         self.recent.replace(songs);
         self.recentHrefNext = response.data.next_href;
         self.loading = false;
@@ -107,6 +110,7 @@ class Profile {
 
         var songs = songsFilter(response.data.collection.map(e => e.track));
 
+        self.liked.uuid = self.liked.uuid || uuid.v4();
         self.liked.replace(songs);
         self.likedHrefNext = response.data.next_href;
         self.loading = false;

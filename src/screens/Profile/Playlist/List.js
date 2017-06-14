@@ -41,7 +41,7 @@ import Loader from '../../../components/Loader';
         var player = stores.player;
 
         return player.playing
-            && player.uuid === uuid
+            && player.playlist.uuid === uuid
             && player.song.id === songid;
     },
 
