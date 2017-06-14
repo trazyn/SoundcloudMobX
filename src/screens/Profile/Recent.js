@@ -15,6 +15,15 @@ import FadeImage from '../../components/FadeImage';
 @inject(stores => ({
     list: stores.profile.recent.slice(0, 3),
     getList: stores.profile.getRecent,
+    isPlaying: () => {
+
+        var uuid4player = stores.player.playlist.uuid;
+        var uuid = stores.profile.recent.uuid;
+
+        return uuid4player
+            && uuid
+            && uuid === uuid4player;
+    },
 }))
 @observer
 export default class Recent extends Component {
@@ -109,11 +118,11 @@ export default class Recent extends Component {
                         justifyContent: 'center',
                         borderRadius: 28,
                     }}>
-                        <Text style={{
+                        <Text style={[{
                             color: '#fff',
                             fontSize: 12,
                             fontWeight: '100',
-                        }}>Hear the tracks you’ve played</Text>
+                        }, this.props.isPlaying() && { color: '#f50' }]}>Hear the tracks you’ve played</Text>
                     </TouchableOpacity>
                 </View>
             </View>

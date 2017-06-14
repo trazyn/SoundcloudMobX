@@ -6,7 +6,6 @@ import category from './category';
 import session from './session';
 import toast from './toast';
 import profile from './profile';
-import list from './list';
 
 import { observable, action } from 'mobx';
 
@@ -18,5 +17,4 @@ export default {
     session,
     toast,
     profile,
-    list,
 };
