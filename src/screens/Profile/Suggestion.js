@@ -1,5 +1,6 @@
 
 import React, { Component, PropTypes } from 'react';
+import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Text,
@@ -12,19 +13,31 @@ import FadeImage from '../../components/FadeImage';
 import songsFilter from '../../utils/songsFilter';
 import humanNumber from '../../utils/humanNumber';
 
+@inject(stores => ({
+    uuid: stores.player.playlist.uuid,
+    songid: stores.player.song.id,
+}))
+@observer
 export default class Suggestion extends Component {
 
     static propTypes = {
         seed: PropTypes.object.isRequired,
         tracks: PropTypes.array.isRequired,
+        play: PropTypes.func.isRequired,
     };
 
     renderContent(tracks) {
 
+        var { uuid, songid, seed } = this.props;
+
         return songsFilter(tracks).map((track, index) => {
 
+            var playing = uuid === seed.id && songid === track.id;
+
             return (
-                <View style={styles.item} key={index}>
+                <TouchableOpacity style={styles.item} key={index} onPress={() => {
+                    this.props.play(track);
+                }}>
                     <FadeImage {...{
                         source: {
                             uri: track.artwork
@@ -39,14 +52,16 @@ export default class Suggestion extends Component {
                         }
                     }}></FadeImage>
 
-                    <View style={styles.overlay}>
-                        <Text numberOfLines={1} ellipsizeMode="tail" style={{
+                    <View style={[styles.overlay, playing && {
+                        backgroundColor: 'rgba(255,255,255,.8)',
+                    }]}>
+                        <Text numberOfLines={1} ellipsizeMode="tail" style={[{
                             marginTop: 10,
                             fontWeight: '100',
                             color: '#fff',
                             width: 260,
                             textAlign: 'center',
-                        }}>{track.title.toUpperCase()}</Text>
+                        }, playing && styles.playing]}>{track.title.toUpperCase()}</Text>
 
                         <View style={{
                             marginTop: 10,
@@ -54,15 +69,15 @@ export default class Suggestion extends Component {
                             justifyContent: 'center',
                             alignItems: 'center',
                         }}>
-                            <View style={styles.line}></View>
-                            <Text style={{
+                            <View style={[styles.line, playing && { backgroundColor: '#f50' }]}></View>
+                            <Text style={[{
                                 marginRight: 10,
                                 marginLeft: 10,
                                 fontSize: 12,
                                 color: '#fff',
                                 fontWeight: '100',
-                            }}>{track.user.username}</Text>
-                            <View style={styles.line}></View>
+                            }, playing && styles.playing]}>{track.user.username}</Text>
+                            <View style={[styles.line, playing && { backgroundColor: '#f50' }]}></View>
                         </View>
 
                         <View style={{
@@ -71,15 +86,15 @@ export default class Suggestion extends Component {
                             justifyContent: 'space-around',
                             alignItems: 'center',
                         }}>
-                            <Text style={styles.meta}>{humanNumber(track.likedCount)} LIKES</Text>
-                            <Text style={[styles.meta, {
+                            <Text style={[styles.meta, playing && styles.playing]}>{humanNumber(track.likedCount)} LIKES</Text>
+                            <Text style={[styles.meta, playing && styles.playing, {
                                 marginRight: 30,
                                 marginLeft: 30,
                             }]}>{humanNumber(track.commentCount)} COMMENTS</Text>
-                            <Text style={styles.meta}>{humanNumber(track.playbackCount)} PLAYED</Text>
+                            <Text style={[styles.meta, playing && styles.playing]}>{humanNumber(track.playbackCount)} PLAYED</Text>
                         </View>
                     </View>
-                </View>
+                </TouchableOpacity>
             );
         });
     }
@@ -162,5 +177,9 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: '100',
         color: '#fff',
-    }
+    },
+
+    playing: {
+        color: '#f50',
+    },
 });

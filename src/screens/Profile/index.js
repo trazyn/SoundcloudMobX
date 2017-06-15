@@ -26,6 +26,7 @@ import Suggestion from './Suggestion';
     list: stores.profile.suggestions.slice(),
     getList: stores.profile.getSuggestion,
     loadMore: stores.profile.loadMoreSuggestion,
+    play: stores.player.start,
 }))
 @observer
 export default class Profile extends Component {
@@ -132,9 +133,24 @@ export default class Profile extends Component {
             dataSource={dataSource}
             renderRow={(collection, sectionId, rowId) => {
 
+                var seed = collection.seed_sound;
+                var tracks = collection.recommended;
+
                 return (
                     <View style={styles.suggestions}>
-                        <Suggestion seed={collection.seed_sound} tracks={collection.recommended.slice()}></Suggestion>
+                        <Suggestion {...{
+                            play: (song) => {
+
+                                tracks.uuid = seed.id;
+                                this.props.play({
+                                    song,
+                                    playlist: tracks,
+                                });
+                                this.props.navigation.navigate('Player');
+                            },
+                            seed,
+                            tracks: tracks.slice(),
+                        }}></Suggestion>
                     </View>
                 );
             }}
