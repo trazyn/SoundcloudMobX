@@ -13,6 +13,7 @@ import blacklist from '../utils/blacklist';
 import stores from '../stores';
 import Footer from './components/Footer';
 import Toast from '../components/Toast';
+import Options from '../components/Options';
 
 @observer
 export default class Screen extends Component {
@@ -39,7 +40,7 @@ export default class Screen extends Component {
 
     render() {
 
-        var toast = stores.toast;
+        var { toast, options } = stores;
         var { navigation, showFooter } = this.props;
 
         return (
@@ -49,6 +50,11 @@ export default class Screen extends Component {
                 <View style={{
                     flex: 1,
                 }}>
+                    <Options {...{
+                        show: options.show,
+                        toggle: () => options.toggle(),
+                        close: () => options.toggle(false),
+                    }}></Options>
                     <Toast {...{
                         message: toast.message,
                         show: toast.show,
@@ -65,6 +71,7 @@ export default class Screen extends Component {
                                     info: toast.showMessage,
                                     error: toast.showError,
                                 },
+                                openModal: () => options.toggle(true),
                             })
                         }
                     </View>

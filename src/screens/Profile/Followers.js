@@ -6,7 +6,7 @@ import {
     View,
     Text,
     StyleSheet,
-    Dimensions,
+    TouchableOpacity,
     Linking,
 } from 'react-native';
 
@@ -19,6 +19,9 @@ import humanNumber from '../../utils/humanNumber';
         stores.profile.getFollowers(stores.session.user.id);
     },
     count: stores.session.user.followers_count,
+    open: () => {
+        Linking.openURL(`${stores.session.user.permalink_url}/followers`);
+    },
 }))
 @observer
 export default class Followers extends Component {
@@ -30,7 +33,7 @@ export default class Followers extends Component {
     renderList(list) {
 
         return (
-            <View style={{
+            <TouchableOpacity onPress={this.props.open} style={{
                 alignItems: 'center',
                 flexDirection: 'row',
             }}>
@@ -65,7 +68,7 @@ export default class Followers extends Component {
                     })
                 }
                 <Text style={styles.count}>{humanNumber(this.props.count)} Followers</Text>
-            </View>
+            </TouchableOpacity>
         );
 
     }

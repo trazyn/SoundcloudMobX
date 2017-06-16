@@ -8,6 +8,7 @@ import {
     Dimensions,
     StatusBar,
     StyleSheet,
+    TouchableOpacity,
 } from 'react-native';
 
 import Songs from './Songs';

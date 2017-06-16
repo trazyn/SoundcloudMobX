@@ -68,6 +68,7 @@ class Session {
 
         var response = await axios.get(`https://api.soundcloud.com/me?oauth_token=${self.auth.access_token}`);
         self.user = response.data;
+        console.log(self.user);
     }
 
     @action async create(auth) {
