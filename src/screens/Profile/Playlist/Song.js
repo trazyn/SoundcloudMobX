@@ -26,6 +26,7 @@ export default class Song extends Component {
         paused: PropTypes.bool.isRequired,
         play: PropTypes.func.isRequired,
         commentCount: PropTypes.number.isRequired,
+        showComments: PropTypes.func.isRequired,
     };
 
     render() {
@@ -92,7 +93,7 @@ export default class Song extends Component {
                         }, {
                             title: `${humanNumber(commentCount)} Comments`,
                             callback: () => {
-                                console.log(`${humanNumber(commentCount)} Comments`);
+                                this.props.showComments();
                             }
                         }]);
                     }}>

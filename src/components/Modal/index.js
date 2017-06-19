@@ -34,23 +34,22 @@ export default class Modal extends Component {
             Animated.timing(this.state.fadein, {
                 toValue: 1,
                 duration: 300,
-                delay: 100,
             }).start(() => {
 
                 Animated.timing(this.state.translateY, {
                     toValue: 0,
-                    duration: 400,
+                    duration: 200,
                 }).start();
             });
         } else {
 
             Animated.timing(this.state.translateY, {
                 toValue: height,
-                duration: 300,
+                duration: 200,
             }).start(() => {
                 Animated.timing(this.state.fadein, {
                     toValue: 0,
-                    duration: 300,
+                    duration: 200,
                 }).start(() => {
 
                     this.setState({

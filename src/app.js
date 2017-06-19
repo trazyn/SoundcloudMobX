@@ -17,6 +17,8 @@ import RecentPlaylist from './screens/Profile/Playlist/RecentPlaylist';
 import LikedPlaylist from './screens/Profile/Playlist/LikedPlaylist';
 import Player from './screens/Player';
 import Login from './screens/Login';
+import Comments from './screens/Comments';
+import Reply from './screens/Reply';
 
 const router = TabRouter({
     Home: {
@@ -73,6 +75,18 @@ const MainNavigator = StackNavigator({
             );
         },
     },
+
+    Comments: {
+
+        screen: ({ navigation }) => {
+
+            return (
+                <Layout showFooter={false} navigation={navigation}>
+                    <Comments></Comments>
+                </Layout>
+            );
+        },
+    },
 }, {
     mode: 'modal',
     initialRouteName: '_HOME',
@@ -111,6 +125,17 @@ export default StackNavigator({
             return (
                 <Layout showFooter={false} navigation={navigation}>
                     <LikedPlaylist></LikedPlaylist>
+                </Layout>
+            );
+        },
+    },
+
+    Reply: {
+        screen: ({ navigation }) => {
+
+            return (
+                <Layout showFooter={false} navigation={navigation}>
+                    <Reply></Reply>
                 </Layout>
             );
         },

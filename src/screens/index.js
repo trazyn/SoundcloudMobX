@@ -46,6 +46,8 @@ export default class Screen extends Component {
             <Provider {...{
                 ...blacklist(stores, 'toast'),
                 openModal: modal.open,
+                info: toast.showMessage,
+                error: toast.showError,
             }}>
                 <View style={{
                     flex: 1,
@@ -67,10 +69,6 @@ export default class Screen extends Component {
 
                                 /** Avoid mobx warning: replace 'navigation' in store */
                                 navigation,
-                                message: {
-                                    info: toast.showMessage,
-                                    error: toast.showError,
-                                },
                             })
                         }
                     </View>

@@ -16,14 +16,13 @@ export async function isFavorited({ userid, songid, value }) {
 
     try {
         var response = await axios.get(`http://api.soundcloud.com/users/${userid}/favorites/${songid}?client_id=${CLIENT_ID}`);
-        var res = favCache[songid] = response.data.user_favorite;
+        var res = favCache[songid] = !!response.data.user_favorite;
 
         return res;
     } catch(ex) {
         favCache[songid] = false;
         return false;
     }
-
 }
 
 isFavorited.cache = {};

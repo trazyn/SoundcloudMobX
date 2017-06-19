@@ -21,12 +21,14 @@ import FadeImage from '../../components/FadeImage';
 @inject(stores => ({
     login: stores.session.login,
     loading: stores.session.loading,
+    info: stores.info,
+    error: stores.error,
 }))
 export default class Login extends Component {
 
     handleLogin() {
 
-        var { info, error } = this.props.message;
+        var { info, error } = this.props;
         var { username, password } = this.refs;
 
         username = username._lastNativeText.trim();

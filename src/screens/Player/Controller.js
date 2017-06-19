@@ -27,14 +27,12 @@ import { isFavorited, addFavorited, removeFavorited } from '../../utils/songUtil
         prev,
         mode,
         changeMode,
+        info: stores.info,
+        error: stores.error,
     };
 })
 @observer
 export default class Controller extends Component {
-
-    static propTypes = {
-        message: PropTypes.object.isRequired,
-    };
 
     state = {
         favorite: false,
@@ -57,18 +55,20 @@ export default class Controller extends Component {
 
     async componentDidMount() {
 
+        var favorite = await isFavorited({
+            userid: this.props.userid,
+            songid: this.props.song.id,
+        });
+
         this.setState({
-            favorite: await isFavorited({
-                userid: this.props.userid,
-                songid: this.props.song.id,
-            })
+            favorite,
         });
     }
 
     handleFavorited() {
 
         var { id, title } = this.props.song;
-        var { info, error } = this.props.message;
+        var { info, error } = this.props;
         var userid = this.props.userid;
         var favorite = this.state.favorite;
 

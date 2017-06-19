@@ -119,7 +119,7 @@ class Session {
     }
 
     isLogin() {
-        return !!self.auth;
+        return !!self.auth && false;
     }
 }
 

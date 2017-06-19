@@ -7,6 +7,7 @@ import session from './session';
 import toast from './toast';
 import modal from './modal';
 import profile from './profile';
+import comments from './comments';
 
 import { observable, action } from 'mobx';
 
@@ -19,4 +20,5 @@ export default {
     toast,
     modal,
     profile,
+    comments,
 };

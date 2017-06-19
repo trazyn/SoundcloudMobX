@@ -31,6 +31,7 @@ export default (collection) => {
                 user: song['user'],
                 filetype: song['original_format'] || 'mp3',
                 waveform: song['waveform_url'],
+                shareUrl: song['permalink_url'],
             };
         })
         .filter(song => {

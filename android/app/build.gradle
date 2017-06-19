@@ -126,6 +126,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-share')
     compile project(':@remobile/react-native-splashscreen')
     compile project(':react-native-blur')
     compile project(':react-native-audio')

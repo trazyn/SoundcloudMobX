@@ -149,6 +149,12 @@ export default class List extends Component {
                                     this.props.navigate('Player');
                                 },
                                 commentCount: song.commentCount,
+                                showComments: () => {
+                                    this.props.navigation.navigate('Comments', {
+                                        songid: song.id,
+                                        count: song.commentCount,
+                                    });
+                                },
                             }}></Song>
 
                             <View style={styles.line}></View>

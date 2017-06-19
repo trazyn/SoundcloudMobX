@@ -11,12 +11,14 @@ import {
     ScrollView,
     Dimensions,
     StyleSheet,
+    Share,
 } from 'react-native';
 
 import Bar from './Bar';
 import PlayList from './PlayList';
 import Controller from './Controller';
 import parseTimes from '../../utils/parseTimes';
+import humanNumber from '../../utils/humanNumber';
 
 @inject(stores => {
 
@@ -27,6 +29,7 @@ import parseTimes from '../../utils/parseTimes';
         playing,
         start,
         progress,
+        openModal: stores.openModal,
     };
 })
 @observer
@@ -51,6 +54,8 @@ export default class Player extends Component {
         var times = parseTimes(song.duration);
         var current = parseTimes(song.duration * progress);
         var playing = playing;
+
+        console.log(song.user.avatar_url);
 
         return (
             <View style={styles.container}>
@@ -78,7 +83,28 @@ export default class Player extends Component {
                             <Icon name="arrow-down" size={14} color="white"></Icon>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={{
+                        <TouchableOpacity
+                        onPress={() => {
+
+                            this.props.openModal([{
+                                title: 'Share',
+                                callback: () => {
+                                    Share.share({
+                                        title: `${song.user.username} - ${song.title}`,
+                                        url: song.shareUrl,
+                                    });
+                                }
+                            }, {
+                                title: `${humanNumber(song.commentCount)} Comments`,
+                                callback: () => {
+                                    this.props.navigation.navigate('Comments', {
+                                        songid: song.id,
+                                        count: song.commentCount,
+                                    });
+                                }
+                            }]);
+                        }}
+                        style={{
                             height: 32,
                             width: 32,
                             justifyContent: 'center',
@@ -160,7 +186,7 @@ export default class Player extends Component {
                     </ScrollView>
                 </Image>
 
-                <Controller message={this.props.message}></Controller>
+                <Controller></Controller>
 
                 <View style={styles.dots}>
                     <View style={[styles.dot, this.state.index === 0 && styles.active]}></View>
