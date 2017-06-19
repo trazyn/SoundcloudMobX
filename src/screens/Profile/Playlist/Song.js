@@ -84,7 +84,7 @@ export default class Song extends Component {
                         </View>
                     </View>
 
-                    <TouchableOpacity onPress={() => {
+                    <TouchableOpacity style={styles.options} onPress={() => {
 
                         this.props.openModal([{
                             title: 'Play',
@@ -126,6 +126,13 @@ const styles = StyleSheet.create({
         marginRight: 30,
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+
+    options: {
+        height: 48,
+        width: 48,
+        justifyContent: 'center',
         alignItems: 'center',
     },
 

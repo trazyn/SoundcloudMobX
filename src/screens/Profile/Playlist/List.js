@@ -222,6 +222,9 @@ const styles = StyleSheet.create({
         position: 'absolute',
         left: 20,
         bottom: 10,
+        height: 32,
+        width: 32,
+        justifyContent: 'flex-end',
         backgroundColor: 'transparent',
         zIndex: 9,
     }

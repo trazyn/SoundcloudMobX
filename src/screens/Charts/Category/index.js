@@ -312,8 +312,12 @@ const styles = StyleSheet.create({
 
     back: {
         position: 'absolute',
-        left: 20,
-        top: 40,
+        left: 10,
+        top: 30,
+        height: 32,
+        width: 32,
+        justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: 'transparent',
         zIndex: 9,
     },

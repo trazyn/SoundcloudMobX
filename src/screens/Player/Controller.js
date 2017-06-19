@@ -159,6 +159,10 @@ const styles = StyleSheet.create({
     },
 
     transparent: {
+        height: 32,
+        width: 32,
+        justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: 'transparent',
         margin: 12,
     },

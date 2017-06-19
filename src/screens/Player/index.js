@@ -69,12 +69,20 @@ export default class Player extends Component {
                 }}>
                     <View style={styles.header}>
                         <TouchableOpacity onPress={() => this.props.navigation.goBack()} style={{
+                            height: 32,
+                            width: 32,
+                            justifyContent: 'center',
+                            alignItems: 'center',
                             backgroundColor: 'transparent',
                         }}>
                             <Icon name="arrow-down" size={14} color="white"></Icon>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={{
+                            height: 32,
+                            width: 32,
+                            justifyContent: 'center',
+                            alignItems: 'center',
                             backgroundColor: 'transparent',
                         }}>
                             <Icon name="options" size={14} color="white"></Icon>
@@ -182,8 +190,8 @@ const styles = StyleSheet.create({
         left: 0,
         width,
         height: 100,
-        paddingLeft: 20,
-        paddingRight: 20,
+        paddingLeft: 10,
+        paddingRight: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
