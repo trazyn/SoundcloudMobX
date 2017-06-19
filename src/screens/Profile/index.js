@@ -11,6 +11,7 @@ import {
     StyleSheet,
     StatusBar,
     Dimensions,
+    Linking,
 } from 'react-native';
 
 import FadeImage from '../../components/FadeImage';
@@ -27,6 +28,11 @@ import Suggestion from './Suggestion';
     getList: stores.profile.getSuggestion,
     loadMore: stores.profile.loadMoreSuggestion,
     play: stores.player.start,
+    openModal: stores.openModal,
+    openHomePage: () => {
+        Linking.openURL(stores.session.user.permalink_url);
+    },
+    logout: stores.session.logout,
 }))
 @observer
 export default class Profile extends Component {
@@ -97,6 +103,19 @@ export default class Profile extends Component {
                         width: 24,
                         flexDirection: 'row',
                         justifyContent: 'flex-end',
+                    }}
+                    onPress={() => {
+
+                        this.props.openModal([{
+                            title: 'Logout',
+                            callback: () => {
+                                this.props.logout();
+                                this.props.navigation.navigate('Home');
+                            },
+                        }, {
+                            title: 'View Home Page',
+                            callback: this.props.openHomePage,
+                        }]);
                     }}>
                         <Icon name="options-vertical" size={18} color="white" style={{
                             backgroundColor: 'transparent',

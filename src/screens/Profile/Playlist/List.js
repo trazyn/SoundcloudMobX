@@ -148,7 +148,7 @@ export default class List extends Component {
                                     this.props.play(song, list);
                                     this.props.navigate('Player');
                                 },
-                                rank: +rowId + 1,
+                                commentCount: song.commentCount,
                             }}></Song>
 
                             <View style={styles.line}></View>

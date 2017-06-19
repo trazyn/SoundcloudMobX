@@ -38,7 +38,7 @@ class Session {
         if (auth) {
 
             self.auth = JSON.parse(auth);
-            self.getUserInfo();
+            await self.getUserInfo();
 
             if (self.auth.expires - new Date() < 10000) {
 
@@ -51,8 +51,8 @@ class Session {
                         refresh_token: self.auth.refresh_token
                     });
 
-                    self.create(response.data);
-                    self.getUserInfo();
+                    await self.create(response.data);
+                    await self.getUserInfo();
 
                 } catch(ex) {
                     self.auth = 0;
@@ -61,14 +61,26 @@ class Session {
 
             console.log(`SET AUTH: ${self.auth.access_token}`);
             axios.defaults.headers.common['Authorization'] = `OAuth ${self.auth.access_token}`;
+
+            return self.user;
         }
+    }
+
+    async logout() {
+
+        await AsyncStorage.removeItem('@Session:auth');
+
+        self.user = {};
+        self.auth = 0;
+        delete axios.defaults.headers.common['Authorization'];
     }
 
     async getUserInfo() {
 
         var response = await axios.get(`https://api.soundcloud.com/me?oauth_token=${self.auth.access_token}`);
         self.user = response.data;
-        console.log(self.user);
+
+        return self.user;
     }
 
     @action async create(auth) {
@@ -80,26 +92,30 @@ class Session {
         }
 
         self.auth = auth;
-        self.loading = false;
 
         return auth;
     }
 
-    login(username, password) {
+    async login(username, password) {
 
         self.loading = true;
 
-        return axios.post('https://api.soundcloud.com/oauth2/token', {
+        var response = await axios.post('https://api.soundcloud.com/oauth2/token', {
             client_id: CLIENT_ID,
             client_secret: SECRET,
             grant_type: 'password',
             username: username,
             password: password,
-        }).then((response) => {
-            self.create(response.data);
         }).catch(ex => {
             console.error('Failed login to Soundcloud:', ex);
         });
+
+        await self.create(response.data);
+        await self.init();
+
+        self.loading = false;
+
+        return response;
     }
 
     isLogin() {

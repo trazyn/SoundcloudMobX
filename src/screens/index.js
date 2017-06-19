@@ -1,7 +1,6 @@
 
 import React, { Component, PropTypes } from 'react';
-import { observer } from 'mobx-react/native';
-import { Provider } from 'mobx-react/native';
+import { Provider, observer } from 'mobx-react/native';
 import axios from 'axios';
 import {
     View,
@@ -13,7 +12,7 @@ import blacklist from '../utils/blacklist';
 import stores from '../stores';
 import Footer from './components/Footer';
 import Toast from '../components/Toast';
-import Options from '../components/Options';
+import Modal from '../components/Modal';
 
 @observer
 export default class Screen extends Component {
@@ -40,21 +39,22 @@ export default class Screen extends Component {
 
     render() {
 
-        var { toast, options } = stores;
+        var { toast, modal } = stores;
         var { navigation, showFooter } = this.props;
 
         return (
             <Provider {...{
                 ...blacklist(stores, 'toast'),
+                openModal: modal.open,
             }}>
                 <View style={{
                     flex: 1,
                 }}>
-                    <Options {...{
-                        show: options.show,
-                        toggle: () => options.toggle(),
-                        close: () => options.toggle(false),
-                    }}></Options>
+                    <Modal {...{
+                        show: modal.show,
+                        items: modal.items.slice(),
+                        close: () => modal.toggle(false),
+                    }}></Modal>
                     <Toast {...{
                         message: toast.message,
                         show: toast.show,
@@ -71,7 +71,6 @@ export default class Screen extends Component {
                                     info: toast.showMessage,
                                     error: toast.showError,
                                 },
-                                openModal: () => options.toggle(true),
                             })
                         }
                     </View>

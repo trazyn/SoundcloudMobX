@@ -9,7 +9,7 @@ import {
     Dimensions,
 } from 'react-native';
 
-export default class Options extends Component {
+export default class Modal extends Component {
 
     static propTypes = {
         show: PropTypes.bool.isRequired,
@@ -63,23 +63,7 @@ export default class Options extends Component {
 
     render() {
 
-        var items = [{
-            title: 'Donate Steps',
-            fn: () => {
-                console.log('Donate');
-            }
-        }, {
-            title: 'Send to Chat',
-            fn: () => {
-                console.log('Send');
-            }
-        }, {
-            title: 'Share on Facebook',
-            fn: () => {
-                console.log('Share');
-            }
-        }];
-
+        var items = this.props.items;
         var backgroundColor = this.state.fadein.interpolate({
             inputRange: [0, 1],
             outputRange: ['rgba(0,0,0,0)', 'rgba(0,0,0,.3)'],
@@ -112,10 +96,11 @@ export default class Options extends Component {
                                 style={[styles.item, index === items.length - 1 && { borderBottomWidth: 0 }]}
                                 key={index}
                                 onPress={() => {
-                                    var callback = e.fn;
+                                    var callback = e.callback;
 
                                     if ('function' === typeof callback) {
                                         callback();
+                                        this.props.close();
                                     }
                                 }}>
                                     <Text style={styles.title}>{e.title}</Text>
@@ -170,6 +155,7 @@ const styles = StyleSheet.create({
 
     cacel: {
         fontWeight: '100',
+        fontSize: 13,
         color: 'red',
         letterSpacing: 1,
     },

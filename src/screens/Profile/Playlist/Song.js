@@ -1,5 +1,6 @@
 
 import React, { Component, PropTypes } from 'react';
+import { inject } from 'mobx-react/native';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import {
     View,
@@ -10,7 +11,11 @@ import {
 } from 'react-native';
 
 import FadeImage from '../../../components/FadeImage';
+import humanNumber from '../../../utils/humanNumber';
 
+@inject(stores => ({
+    openModal: stores.openModal,
+}))
 export default class Song extends Component {
 
     static propTypes = {
@@ -20,11 +25,12 @@ export default class Song extends Component {
         actived: PropTypes.bool.isRequired,
         paused: PropTypes.bool.isRequired,
         play: PropTypes.func.isRequired,
+        commentCount: PropTypes.number.isRequired,
     };
 
     render() {
 
-        var { artwork, title, user, actived, play, paused } = this.props;
+        var { artwork, title, user, actived, play, paused, commentCount } = this.props;
 
         return (
             <TouchableOpacity style={styles.container} onPress={play}>
@@ -78,7 +84,18 @@ export default class Song extends Component {
                         </View>
                     </View>
 
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+
+                        this.props.openModal([{
+                            title: 'Play',
+                            callback: play
+                        }, {
+                            title: `${humanNumber(commentCount)} Comments`,
+                            callback: () => {
+                                console.log(`${humanNumber(commentCount)} Comments`);
+                            }
+                        }]);
+                    }}>
                         <Icon name="options" color="#f50" size={14}></Icon>
                     </TouchableOpacity>
                 </View>

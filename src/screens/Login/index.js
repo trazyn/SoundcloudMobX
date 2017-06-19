@@ -11,6 +11,7 @@ import {
     Linking,
     StyleSheet,
     Dimensions,
+    InteractionManager,
 } from 'react-native';
 
 import { CLIENT_ID, SECRET } from '../../config';
@@ -36,8 +37,10 @@ export default class Login extends Component {
         } else {
             this.props.login(username, password)
                 .then(() => {
-                    info('Login Success!');
                     this.props.navigation.navigate('Profile');
+                    InteractionManager.runAfterInteractions(() => {
+                        info('Login Success!');
+                    });
                 })
                 .catch(ex => {
                     error('Invaild Username or Password!');
