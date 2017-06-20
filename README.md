@@ -1,5 +1,7 @@
 # SoundcloudMboX App
 
+[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)](https://github.com/trazyn/SoundcloudMboX/pulls)
+
 SoundcloudMobX is a simple ios app to support Soundcloud for ios.
 
 It's built with React-Native, MobX, React-Navigation.
