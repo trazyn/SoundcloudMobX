@@ -7,9 +7,6 @@ import { AsyncStorage } from 'react-native';
 import { CLIENT_ID, PLAYER_MODE } from '../config';
 import { DeviceEventEmitter } from 'react-native';
 
-/**
- * TODO: WHEN FINISHED PLAY THE NEXT
- * */
 class Player {
 
     @observable song = {};
@@ -24,7 +21,8 @@ class Player {
     async stop() {
         self.paused = false;
         self.playing = false;
-        ReactNativeAudioStreaming.stop();
+        self.progress = 0;
+        ReactNativeAudioStreaming.pause();
     }
 
     @action toggle() {
@@ -80,7 +78,6 @@ class Player {
         needTrack && self.history.push(song);
 
         self.paused = false;
-        self.paying = true;
 
         var response = axios.get(song.uri + '/streams', {
             params: {
@@ -159,24 +156,23 @@ class Player {
 
             var { status, duration, progress, url } = e;
 
-            console.log(status, duration, progress, url);
-
             if ('ERROR' === status) {
+                ReactNativeAudioStreaming.stop();
                 throw e;
-            }
-
-            if ('STOPPED' === status && self.playing === false) {
-                self.next();
             }
 
             self.playing = ['PLAYING', 'BUFFERING', 'PAUSED', 'STREAMING'].includes(status);
 
-            if ('STREAMING' === status) {
-                return self.progress = progress / duration;
+            if (['BUFFERING', 'STOPPED'].includes(status)) {
+                self.progress = 0;
             }
 
-            if (['BUFFERING'].includes(status)) {
-                self.progress = 0;
+            if ('STOPPED' === status && self.playing === false) {
+                return self.next();
+            }
+
+            if ('STREAMING' === status) {
+                return self.progress = progress / duration;
             }
         });
     }
