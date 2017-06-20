@@ -12,10 +12,36 @@ import {
     Dimensions,
 } from 'react-native';
 
+import Loader from '../../components/Loader';
+
+@inject(stores => ({
+    commit: stores.comments.commit,
+    sending: stores.comments.loading4send,
+    error: stores.error,
+}))
+@observer
 export default class Reply extends Component {
 
     componentDidMount() {
         StatusBar.setHidden(true);
+    }
+
+    async handleSend() {
+
+        var { commit, error } = this.props;
+        var comment = this.refs.input._lastNativeText;
+
+        if (!comment) {
+            return error('Comment can not be null');
+        }
+
+        var res = await commit(comment);
+
+        if (res) {
+            this.props.navigation.goBack();
+        } else {
+            error('Failed to commit');
+        }
     }
 
     render() {
@@ -31,7 +57,9 @@ export default class Reply extends Component {
                     <Text style={styles.title}>
                         WRITE COMMENTS
                     </Text>
-                    <TouchableOpacity style={styles.icon}>
+                    <TouchableOpacity
+                    onPress={this.handleSend.bind(this)}
+                    style={styles.icon}>
                         <Icon name="paper-plane" size={14} color="#000"></Icon>
                     </TouchableOpacity>
                 </View>
@@ -52,6 +80,32 @@ export default class Reply extends Component {
                         ref: 'input',
                     }}></TextInput>
                 </View>
+
+                {
+                    this.props.sending && (
+                        <View style={{
+                            position: 'absolute',
+                            top: 80,
+                            left: 0,
+                            width,
+                            height: height - 80,
+                            backgroundColor: 'rgba(255,255,255,.9)',
+                            zIndex: 99
+                        }}>
+                            <Loader {...{
+                                show: true,
+                                animate: true,
+                                text: 'SENDING',
+                                style4container: {
+                                    width,
+                                    transform: [{
+                                        rotate: '0deg'
+                                    }]
+                                }
+                            }}></Loader>
+                        </View>
+                    )
+                }
             </View>
         );
     }

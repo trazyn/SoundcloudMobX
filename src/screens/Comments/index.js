@@ -20,6 +20,8 @@ import FadeImage from '../../components/FadeImage';
 
 @inject(stores => ({
 
+    count: stores.comments.count,
+    setCount: stores.comments.setCount,
     list: stores.comments.list.slice(),
     getList: stores.comments.getList,
     loadMore: stores.comments.loadMore,
@@ -29,10 +31,6 @@ import FadeImage from '../../components/FadeImage';
 }))
 @observer
 export default class Comments extends Component {
-
-    state = {
-        count: 0,
-    };
 
     componentWillMount() {
         this.props.getList(this.props.navigation.state.params.songid);
@@ -47,15 +45,12 @@ export default class Comments extends Component {
     }
 
     componentDidMount() {
-        this.setState({
-            count: this.props.navigation.state.params.count,
-        });
+        this.props.setCount(this.props.navigation.state.params.count);
     }
 
     render() {
 
-        var { list, hasNext, loading, loading4loadmore } = this.props;
-        var count = this.state.count;
+        var { list, count, hasNext, loading, loading4loadmore } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
         });
@@ -111,7 +106,7 @@ export default class Comments extends Component {
                                             width: 40,
                                         },
                                         source: {
-                                            uri: user.avatar_url,
+                                            uri: `https:${user.avatar_url.split(':')[1]}`,
                                         },
                                     }}></FadeImage>
                                 </View>

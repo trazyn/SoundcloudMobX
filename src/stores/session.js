@@ -38,9 +38,8 @@ class Session {
         if (auth) {
 
             self.auth = JSON.parse(auth);
-            await self.getUserInfo();
 
-            if (self.auth.expires - new Date() < 10000) {
+            if (self.auth.expires - new Date() < 100000) {
 
                 try {
 
@@ -57,6 +56,8 @@ class Session {
                 } catch(ex) {
                     self.auth = 0;
                 }
+            } else {
+                await self.getUserInfo();
             }
 
             console.log(`SET AUTH: ${self.auth.access_token}`);
@@ -119,7 +120,7 @@ class Session {
     }
 
     isLogin() {
-        return !!self.auth && false;
+        return !!self.auth;
     }
 }
 
