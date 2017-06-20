@@ -8,6 +8,10 @@ SoundcloudMobX is a simple ios app to support Soundcloud for ios.
 
 It's built with React-Native, MobX, React-Navigation.
 
+![1.png](https://raw.githubusercontent.com/trazyn/SoundcloudMboX/dev/screenshot/1.png)
+![2.png](https://raw.githubusercontent.com/trazyn/SoundcloudMboX/dev/screenshot/2.png)
+![3.png](https://raw.githubusercontent.com/trazyn/SoundcloudMboX/dev/screenshot/3.png)
+
 ## Supported Platforms
 
 * Mac
