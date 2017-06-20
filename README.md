@@ -1,6 +1,7 @@
 # SoundcloudMboX App
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)](https://github.com/trazyn/SoundcloudMboX/pulls)
+[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
 
 SoundcloudMobX is a simple ios app to support Soundcloud for ios.
 
