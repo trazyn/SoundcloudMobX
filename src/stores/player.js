@@ -79,6 +79,9 @@ class Player {
 
         needTrack && self.history.push(song);
 
+        self.paused = false;
+        self.paying = true;
+
         var response = axios.get(song.uri + '/streams', {
             params: {
                 client_id: CLIENT_ID,
@@ -87,9 +90,6 @@ class Player {
             self.next();
         });
         var streamurl = (await response).data.http_mp3_128_url;
-
-        self.paused = false;
-        self.paying = true;
 
         ReactNativeAudioStreaming.play(streamurl, { showIniOSMediaCenter: true });
     }
@@ -159,26 +159,23 @@ class Player {
 
             var { status, duration, progress, url } = e;
 
-            self.playing = ['PLAYING', 'BUFFERING', 'PAUSED', 'STREAMING'].includes(status);
+            console.log(status, duration, progress, url);
 
             if ('ERROR' === status) {
-                self.stop();
                 throw e;
             }
 
-            if ('STOPPED' === status) {
-                self.stop();
+            if ('STOPPED' === status && self.playing === false) {
+                self.next();
             }
+
+            self.playing = ['PLAYING', 'BUFFERING', 'PAUSED', 'STREAMING'].includes(status);
 
             if ('STREAMING' === status) {
                 return self.progress = progress / duration;
             }
 
-            if ('END' === status) {
-                self.progress;
-            }
-
-            if (['BUFFERING', 'STOPPED'].includes(status)) {
+            if (['BUFFERING'].includes(status)) {
                 self.progress = 0;
             }
         });

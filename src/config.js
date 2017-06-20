@@ -121,6 +121,9 @@ const IMAGE_SIZES = {
     XLARGE: 't500x500',
 };
 
+/** Debug network in chrome devtools network tab */
+GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
+
 console.ignoredYellowBox = ['Warning: ReactNative.createElement', 'Possible Unhandlerd Promise ', 'Remote debugger', 'View '];
 
 export { CLIENT_ID, SECRET, GENRES_MAP, TAG_MAP, CHART_GENRES_MAP, PLAYER_MODE, IMAGE_SIZES };

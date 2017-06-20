@@ -1,13 +1,18 @@
 
 import React, { Component, PropTypes } from 'react';
+import { Provider, observer } from 'mobx-react/native';
+import { View } from 'react-native';
 import {
     StackNavigator,
     TabRouter,
     createNavigator,
     createNavigationContainer,
-    addNavigationHelpers,
 } from 'react-navigation';
 
+import blacklist from './utils/blacklist';
+import stores from './stores';
+import Toast from './components/Toast';
+import Modal from './components/Modal';
 import Layout from './screens';
 import Home from './screens/Home';
 import Charts from './screens/Charts';
@@ -95,7 +100,7 @@ const MainNavigator = StackNavigator({
     }
 });
 
-export default StackNavigator({
+const Sketch = StackNavigator({
 
     Category: {
         screen: ({ navigation }) => {
@@ -151,3 +156,46 @@ export default StackNavigator({
         header: false,
     },
 });
+
+@observer
+export default class App extends Component {
+
+    async componentWillMount() {
+
+        await stores.session.init();
+        await stores.player.init();
+    }
+
+    render() {
+
+        var { toast, modal } = stores;
+
+        return (
+            <Provider {...{
+                ...blacklist(stores, 'toast', 'modal'),
+                openModal: modal.open,
+                info: toast.showMessage,
+                error: toast.showError,
+            }}>
+
+                <View style={{
+                    flex: 1,
+                }}>
+                    <Modal {...{
+                        show: modal.show,
+                        items: modal.items.slice(),
+                        close: () => modal.toggle(false),
+                    }}></Modal>
+                    <Toast {...{
+                        message: toast.message,
+                        show: toast.show,
+                        color: toast.color,
+                        close: () => toast.toggle(false),
+                    }}></Toast>
+
+                    <Sketch></Sketch>
+                </View>
+            </Provider>
+        );
+    }
+}

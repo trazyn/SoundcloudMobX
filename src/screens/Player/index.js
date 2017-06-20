@@ -55,8 +55,6 @@ export default class Player extends Component {
         var current = parseTimes(song.duration * progress);
         var playing = playing;
 
-        console.log(song.user.avatar_url);
-
         return (
             <View style={styles.container}>
                 <Image {...{
