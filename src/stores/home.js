@@ -10,8 +10,8 @@ class PlayList {
     @observable genre = GENRES_MAP[0];
     @observable playlist = [];
     @observable loading = true;
-    @observable showRefresh = false;
-    @observable showLoadmore = false;
+    @observable loading4refresh = false;
+    @observable loading4loadmore = false;
 
     nextHref = '';
 
@@ -68,11 +68,11 @@ class PlayList {
 
     @action async doRefresh()  {
 
-        if (self.showRefresh) {
+        if (self.loading4refresh) {
             return;
         }
 
-        self.showRefresh = true;
+        self.loading4refresh = true;
         self.nextHref = '';
 
         var response = await axios.get(self.request());
@@ -81,22 +81,22 @@ class PlayList {
         self.playlist.uuid = uuid.v4();
         self.playlist.clear();
         self.playlist.push(...playlist);
-        self.showRefresh = false;
+        self.loading4refresh = false;
     }
 
     @action async doLoadmore() {
 
-        if (self.showLoadmore) {
+        if (self.loading4loadmore) {
             return;
         }
 
-        self.showLoadmore = true;
+        self.loading4loadmore = true;
 
         var response = await axios.get(self.request());
         var playlist = self.filter(response.data);
 
         self.playlist.push(...playlist);
-        self.showLoadmore = false;
+        self.loading4loadmore = false;
     }
 }
 

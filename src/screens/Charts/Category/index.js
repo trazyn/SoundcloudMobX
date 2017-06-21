@@ -24,9 +24,9 @@ import SongCard from './Song';
         playlist: stores.category.playlist,
         genre: stores.category.genre,
         doRefresh: stores.category.doRefresh,
-        showRefresh: stores.category.showRefresh,
+        loading4refresh: stores.category.loading4refresh,
         doLoadmore: stores.category.doLoadmore,
-        showLoadmore: stores.category.showLoadmore,
+        loading4loadmore: stores.category.loading4loadmore,
         hasEnd: stores.category.hasEnd,
         init: stores.category.init,
 
@@ -105,15 +105,12 @@ export default class Category extends Component {
 
     togglePlayer() {
 
-        var { playlist, player, playing } = this.props;
+        var { playlist, player, isPlaying } = this.props;
 
-        if (!playing) {
+        if (!isPlaying()) {
             this.showPlaying(playlist[0]);
         } else {
             player.toggle();
-            this.setState({
-                playing: false
-            });
         }
     }
 
@@ -123,7 +120,7 @@ export default class Category extends Component {
 
     render() {
 
-        var { playlist, genre, doRefresh, showRefresh, doLoadmore, showLoadmore, hasEnd, player } = this.props;
+        var { playlist, genre, doRefresh, loading4refresh, doLoadmore, loading4loadmore, hasEnd, player } = this.props;
         var playing = this.props.isPlaying();
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
@@ -139,12 +136,12 @@ export default class Category extends Component {
 
                 <Loader {...{
                     show: true,
-                    animate: showRefresh,
+                    animate: loading4refresh,
                     text: 'REFRESH',
                     style4container: {
                         top: 160,
                         width,
-                        opacity: showRefresh ? 1 : opacity,
+                        opacity: loading4refresh ? 1 : opacity,
                         transform: [{
                             rotate: '0deg'
                         }]
@@ -214,7 +211,7 @@ export default class Category extends Component {
                     }]
                 )}
 
-                style={[styles.playlist, showRefresh && {
+                style={[styles.playlist, loading4refresh && {
                     paddingTop: 40
                 }]}
 
@@ -262,7 +259,7 @@ export default class Category extends Component {
                 </ListView>
 
                 {
-                    showLoadmore && (
+                    loading4loadmore && (
 
                         <View style={{
                             position: 'absolute',

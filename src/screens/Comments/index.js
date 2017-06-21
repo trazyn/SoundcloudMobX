@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     StyleSheet,
     StatusBar,
+    TouchableHighlight,
     Dimensions,
 } from 'react-native';
 
@@ -28,6 +29,7 @@ import FadeImage from '../../components/FadeImage';
     hasNext: stores.comments.hasNext,
     loading: stores.comments.loading,
     loading4loadmore: stores.comments.loading4loadmore,
+    isLogin: stores.session.isLogin,
 }))
 @observer
 export default class Comments extends Component {
@@ -50,7 +52,7 @@ export default class Comments extends Component {
 
     render() {
 
-        var { list, count, hasNext, loading, loading4loadmore } = this.props;
+        var { list, count, hasNext, loading, loading4loadmore, isLogin } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
         });
@@ -68,13 +70,21 @@ export default class Comments extends Component {
                     <Text style={styles.title}>
                         {humanNumber(count)} COMMENTS
                     </Text>
-                    <TouchableOpacity
-                    onPress={() => {
-                        this.props.navigation.navigate('Reply');
-                    }}
-                    style={styles.icon}>
-                        <Icon name="note" size={14} color="#000"></Icon>
-                    </TouchableOpacity>
+                    {
+                        isLogin() ? (
+                            <TouchableOpacity
+                            onPress={() => {
+                                this.props.navigation.navigate('Reply');
+                            }}
+                            style={styles.icon}>
+                                <Icon name="note" size={14} color="#000"></Icon>
+                            </TouchableOpacity>
+                        ) : (
+                            <TouchableHighlight style={styles.icon}>
+                                <Icon name="note" size={14} color="#ddd"></Icon>
+                            </TouchableHighlight>
+                        )
+                    }
                 </View>
 
                 <ListView

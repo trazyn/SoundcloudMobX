@@ -54,9 +54,9 @@ export default class List extends Component {
         navigate: PropTypes.func.isRequired,
         list: PropTypes.object.isRequired,
         doRefresh: PropTypes.func.isRequired,
-        showRefresh: PropTypes.bool.isRequired,
+        loading4refresh: PropTypes.bool.isRequired,
         doLoadMore: PropTypes.func.isRequired,
-        showLoadmore: PropTypes.bool.isRequired,
+        loading4loadmore: PropTypes.bool.isRequired,
     };
 
     componentWillReceiveProps(nextProps) {
@@ -69,7 +69,7 @@ export default class List extends Component {
 
     render() {
 
-        var { title, list, doRefresh, showRefresh, doLoadMore, showLoadmore, paused } = this.props;
+        var { title, list, doRefresh, loading4refresh, doLoadMore, loading4loadmore, paused } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
         });
@@ -93,12 +93,12 @@ export default class List extends Component {
 
                 <Loader {...{
                     show: true,
-                    animate: showRefresh,
+                    animate: loading4refresh,
                     text: 'REFRESH',
                     style4container: {
                         top: 80,
                         width,
-                        opacity: showRefresh ? 1 : opacity,
+                        opacity: loading4refresh ? 1 : opacity,
                         transform: [{
                             rotate: '0deg'
                         }]
@@ -128,7 +128,7 @@ export default class List extends Component {
                     }]
                 )}
 
-                style={[showRefresh && {
+                style={[loading4refresh && {
                     paddingTop: 40
                 }]}
 
@@ -164,7 +164,7 @@ export default class List extends Component {
                 ></ListView>
 
                 {
-                    showLoadmore && (
+                    loading4loadmore && (
 
                         <View style={{
                             position: 'absolute',

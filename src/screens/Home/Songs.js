@@ -16,14 +16,14 @@ import Song from './Song';
 
 @inject(stores => {
 
-    var { playlist, doRefresh, showRefresh, doLoadmore, showLoadmore } = stores.home;
+    var { playlist, doRefresh, loading4refresh, doLoadmore, loading4loadmore } = stores.home;
 
     return {
         playlist,
         doRefresh,
-        showLoadmore,
+        loading4refresh,
         doLoadmore,
-        showLoadmore,
+        loading4loadmore,
         updatePlaylist: (playlist) => {
 
             var player = stores.player;
@@ -53,7 +53,7 @@ export default class Songs extends Component {
 
     render() {
 
-        var { playlist, doRefresh, showRefresh, doLoadmore, showLoadmore, play } = this.props;
+        var { playlist, doRefresh, loading4refresh, doLoadmore, loading4loadmore, play } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
         });
@@ -63,7 +63,7 @@ export default class Songs extends Component {
             outputRange: [1, 0],
         });
 
-        if (showRefresh) {
+        if (loading4refresh) {
             opacity = 1;
         }
 
@@ -72,7 +72,7 @@ export default class Songs extends Component {
 
                 <Loader {...{
                     show: true,
-                    animate: showRefresh,
+                    animate: loading4refresh,
                     text: 'REFRESH',
                     style4container: {
                         left: -40,
@@ -81,7 +81,7 @@ export default class Songs extends Component {
                 }}></Loader>
 
                 {
-                    showLoadmore && (
+                    loading4loadmore && (
                         <View style={{
                             position: 'absolute',
                             top: 0,

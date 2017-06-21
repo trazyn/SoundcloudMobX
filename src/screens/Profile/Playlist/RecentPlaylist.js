@@ -11,9 +11,9 @@ import List from './List';
 @inject(stores => ({
     list: stores.profile.recent,
     doRefresh: stores.profile.getRecent,
-    showRefresh: stores.profile.loading,
+    loading4refresh: stores.profile.loading,
     doLoadMore: stores.profile.loadMoreRecent,
-    showLoadmore: stores.profile.loading4recent,
+    loading4loadmore: stores.profile.loading4recent,
 }))
 @observer
 export default class RecentPlaylist extends Component {

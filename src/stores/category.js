@@ -4,23 +4,23 @@ import Card from './card';
 
 class Category extends Card {
 
-    @observable showRefresh = false;
-    @observable showLoadmore = false;
+    @observable loading4refresh = false;
+    @observable loading4loadmore = false;
     @observable hasEnd = false;
 
     @action async doRefresh() {
 
         self.hasEnd = false;
-        self.showRefresh = true;
+        self.loading4refresh = true;
         self.nextHref = '';
         /** Dont call the super 'refresh', make sure 'REFRESH' is display */
         self.playlist.replace((await self.request()));
-        self.showRefresh = false;
+        self.loading4refresh = false;
     }
 
     @action async doLoadmore(updatePlaylist) {
 
-        self.showLoadmore = true;
+        self.loading4loadmore = true;
 
         var playlist = await self.request();
         var remain = 0;
@@ -34,7 +34,7 @@ class Category extends Card {
         }
 
         self.playlist.push(...playlist);
-        self.showLoadmore = false;
+        self.loading4loadmore = false;
     }
 
     init(target) {

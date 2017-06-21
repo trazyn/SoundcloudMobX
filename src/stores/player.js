@@ -157,7 +157,6 @@ class Player {
             var { status, duration, progress, url } = e;
 
             if ('ERROR' === status) {
-                ReactNativeAudioStreaming.stop();
                 throw e;
             }
 
