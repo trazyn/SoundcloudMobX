@@ -1,7 +1,6 @@
 
 import React, { Component, PropTypes } from 'react';
 import {
-    View,
     Text,
     TouchableOpacity,
     Animated,
@@ -10,7 +9,6 @@ import {
 } from 'react-native';
 
 export default class Modal extends Component {
-
     static propTypes = {
         show: PropTypes.bool.isRequired,
         items: PropTypes.array,
@@ -24,9 +22,7 @@ export default class Modal extends Component {
     };
 
     componentWillReceiveProps(nextProps) {
-
         if (nextProps.show) {
-
             this.setState({
                 show: true,
             });
@@ -35,14 +31,12 @@ export default class Modal extends Component {
                 toValue: 1,
                 duration: 300,
             }).start(() => {
-
                 Animated.timing(this.state.translateY, {
                     toValue: 0,
                     duration: 200,
                 }).start();
             });
         } else {
-
             Animated.timing(this.state.translateY, {
                 toValue: height,
                 duration: 200,
@@ -51,7 +45,6 @@ export default class Modal extends Component {
                     toValue: 0,
                     duration: 200,
                 }).start(() => {
-
                     this.setState({
                         show: false,
                     });
@@ -61,7 +54,6 @@ export default class Modal extends Component {
     }
 
     render() {
-
         var items = this.props.items;
         var backgroundColor = this.state.fadein.interpolate({
             inputRange: [0, 1],
@@ -89,19 +81,18 @@ export default class Modal extends Component {
 
                     {
                         items.map((e, index) => {
-
                             return (
                                 <TouchableOpacity
-                                style={[styles.item, index === items.length - 1 && { borderBottomWidth: 0 }]}
-                                key={index}
-                                onPress={() => {
-                                    var callback = e.callback;
+                                    style={[styles.item, index === items.length - 1 && { borderBottomWidth: 0 }]}
+                                    key={index}
+                                    onPress={() => {
+                                        var callback = e.callback;
 
-                                    if ('function' === typeof callback) {
-                                        callback();
-                                        this.props.close();
-                                    }
-                                }}>
+                                        if (typeof callback === 'function') {
+                                            callback();
+                                            this.props.close();
+                                        }
+                                    }}>
                                     <Text style={styles.title}>{e.title}</Text>
                                 </TouchableOpacity>
                             );

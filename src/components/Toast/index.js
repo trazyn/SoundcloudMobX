@@ -1,19 +1,15 @@
 
 import React, { Component, PropTypes } from 'react';
-import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import {
-    View,
     Text,
     Animated,
     StatusBar,
     TouchableOpacity,
     Dimensions,
     StyleSheet,
-    InteractionManager,
 } from 'react-native';
 
 export default class Toast extends Component {
-
     static propTypes = {
         show: PropTypes.bool.isRequired,
         close: PropTypes.func.isRequired,
@@ -30,9 +26,7 @@ export default class Toast extends Component {
     };
 
     componentWillReceiveProps(nextProps) {
-
         if (nextProps.show) {
-
             StatusBar.setHidden(true, true);
 
             Animated.timing(this.state.height, {
@@ -51,7 +45,6 @@ export default class Toast extends Component {
     }
 
     render() {
-
         var height = this.state.height;
         var opacity = height.interpolate({
             inputRange: [0, 60],
@@ -74,7 +67,7 @@ export default class Toast extends Component {
     }
 }
 
-const { height, width } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
 
     container: {
@@ -88,7 +81,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: '#fff',
-        shadowColor: "#000000",
+        shadowColor: '#000',
         shadowOpacity: 0.4,
         shadowRadius: 8,
         zIndex: 99,

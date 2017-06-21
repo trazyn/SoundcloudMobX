@@ -6,7 +6,6 @@ import { CLIENT_ID, GENRES_MAP, TAG_MAP } from '../config';
 import songsFilter from '../utils/songsFilter';
 
 class PlayList {
-
     @observable genre = GENRES_MAP[0];
     @observable playlist = [];
     @observable loading = true;
@@ -16,21 +15,16 @@ class PlayList {
     nextHref = '';
 
     filter(data) {
-
-        var genre = self.genre;
-
         this.nextHref = data['next_href'];
 
         return songsFilter(data.collection);
     }
 
     request() {
-
         var url = this.nextHref || `https://api.soundcloud.com/tracks?linked_partitioning=1&client_id=${CLIENT_ID}&limit=50`;
         var genre = self.genre;
 
         if (GENRES_MAP.includes(genre)) {
-
             if (TAG_MAP.indexOf(genre) === -1) {
                 genre = `${genre} house`;
             }
@@ -44,7 +38,6 @@ class PlayList {
     }
 
     @action async getPlaylist(genre = self.genre) {
-
         self.loading = true;
         self.nextHref = '';
 
@@ -58,7 +51,6 @@ class PlayList {
     }
 
     @action changeGenre(genre) {
-
         if (!self.loading) {
             self.playlist.clear();
             self.genre = genre;
@@ -66,8 +58,7 @@ class PlayList {
         }
     }
 
-    @action async doRefresh()  {
-
+    @action async doRefresh() {
         if (self.loading4refresh) {
             return;
         }
@@ -85,7 +76,6 @@ class PlayList {
     }
 
     @action async doLoadmore() {
-
         if (self.loading4loadmore) {
             return;
         }

@@ -4,21 +4,17 @@ import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Text,
-    Animated,
     Dimensions,
     StatusBar,
     StyleSheet,
-    TouchableOpacity,
 } from 'react-native';
 
 import Songs from './Songs';
 import Nav from './Nav';
 import Loader from '../../components/Loader';
 import RippleHeader from '../components/RippleHeader';
-import { CHART_GENRES_MAP } from '../../config';
 
 @inject(stores => {
-
     var { playlist, getPlaylist, loading } = stores.home;
 
     return {
@@ -31,9 +27,11 @@ import { CHART_GENRES_MAP } from '../../config';
 })
 @observer
 export default class Home extends Component {
+    static propTypes = {
+        navigation: PropTypes.object.isRequired,
+    };
 
     async componentDidMount() {
-
         var { playlist, getPlaylist } = this.props;
 
         if (!playlist.length) {
@@ -42,7 +40,6 @@ export default class Home extends Component {
     }
 
     play(song) {
-
         this.props.navigation.navigate('Player');
         this.props.play({
             playlist: this.props.playlist,
@@ -51,15 +48,14 @@ export default class Home extends Component {
     }
 
     render() {
-
         var loading = this.props.loading;
 
         StatusBar.setNetworkActivityIndicatorVisible(loading);
 
         return (
             <View style={styles.container}>
-                <Nav></Nav>
-                <RippleHeader></RippleHeader>
+                <Nav />
+                <RippleHeader />
                 {
                     loading
                         ? (
@@ -69,7 +65,7 @@ export default class Home extends Component {
                                 transform: [{
                                     rotate: '0deg'
                                 }],
-                            }}></Loader>
+                            }} />
                         )
                         : (
                             <View style={{
@@ -84,9 +80,7 @@ export default class Home extends Component {
                                         color: 'rgba(0,0,0,.5)',
                                     }}>Tracks in Quene</Text>
                                 </View>
-                                <Songs {...{
-                                    play: this.play.bind(this)
-                                }}></Songs>
+                                <Songs play={(song) => this.play(song)} />
                             </View>
                         )
                 }
@@ -95,7 +89,7 @@ export default class Home extends Component {
     }
 }
 
-const { height, width } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
 
     container: {

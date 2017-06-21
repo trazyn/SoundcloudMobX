@@ -17,9 +17,7 @@ import RippleHeader from '../../components/RippleHeader';
 import Loader from '../../../components/Loader';
 
 @inject(stores => ({
-
     updatePlaylist: (list) => {
-
         if (list.length
             && stores.player.playlist.uuid === list.uuid
             && stores.player.playlist.length !== list.length) {
@@ -28,7 +26,6 @@ import Loader from '../../../components/Loader';
     },
 
     play: (song, playlist) => {
-
         stores.player.start({
 
             song,
@@ -37,7 +34,6 @@ import Loader from '../../../components/Loader';
     },
 
     isPlaying: (uuid, songid) => {
-
         var player = stores.player;
 
         return player.playing
@@ -48,7 +44,6 @@ import Loader from '../../../components/Loader';
     paused: stores.player.paused,
 }))
 export default class List extends Component {
-
     static propTypes = {
         title: PropTypes.string.isRequired,
         navigate: PropTypes.func.isRequired,
@@ -68,7 +63,6 @@ export default class List extends Component {
     };
 
     render() {
-
         var { title, list, doRefresh, loading4refresh, doLoadMore, loading4loadmore, paused } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
@@ -82,10 +76,10 @@ export default class List extends Component {
         return (
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <RippleHeader></RippleHeader>
+                    <RippleHeader />
 
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()} style={styles.back}>
-                        <Icon name="arrow-left" color="#000" size={14}></Icon>
+                        <Icon name="arrow-left" color="#000" size={14} />
                     </TouchableOpacity>
 
                     <Text style={styles.title}>{title}</Text>
@@ -103,65 +97,62 @@ export default class List extends Component {
                             rotate: '0deg'
                         }]
                     }
-                }}></Loader>
+                }} />
 
                 <ListView
 
-                onScrollEndDrag={e => {
-
-                    if (e.nativeEvent.contentOffset.y < -40) {
-                        doRefresh();
-                    }
-                }}
-
-                onEndReachedThreshold={1}
-                onEndReached={() => doLoadMore()}
-
-                scrollEventThrottle={16}
-                onScroll={Animated.event(
-                    [{
-                        nativeEvent: {
-                            contentOffset: {
-                                y: this.state.opacity
-                            }
+                    onScrollEndDrag={e => {
+                        if (e.nativeEvent.contentOffset.y < -40) {
+                            doRefresh();
                         }
-                    }]
-                )}
+                    }}
 
-                style={[loading4refresh && {
-                    paddingTop: 40
-                }]}
+                    onEndReachedThreshold={1}
+                    onEndReached={() => doLoadMore()}
 
-                enableEmptySections={true}
-                dataSource={dataSource}
-                renderRow={(song, sectionId, rowId) => {
+                    scrollEventThrottle={16}
+                    onScroll={Animated.event(
+                        [{
+                            nativeEvent: {
+                                contentOffset: {
+                                    y: this.state.opacity
+                                }
+                            }
+                        }]
+                    )}
 
-                    return (
-                        <View>
-                            <Song {...{
-                                artwork: song.artwork,
-                                title: song.title,
-                                user: song.user,
-                                actived: this.props.isPlaying(list.uuid, song.id),
-                                paused,
-                                play: () => {
-                                    this.props.play(song, list);
-                                    this.props.navigate('Player');
-                                },
-                                commentCount: song.commentCount,
-                                showComments: () => {
-                                    this.props.navigation.navigate('Comments', {
-                                        songid: song.id,
-                                        count: song.commentCount,
-                                    });
-                                },
-                            }}></Song>
+                    style={[loading4refresh && {
+                        paddingTop: 40
+                    }]}
 
-                            <View style={styles.line}></View>
-                        </View>
-                    );
-                }}
-                ></ListView>
+                    enableEmptySections={true}
+                    dataSource={dataSource}
+                    renderRow={(song, sectionId, rowId) => {
+                        return (
+                            <View>
+                                <Song {...{
+                                    artwork: song.artwork,
+                                    title: song.title,
+                                    user: song.user,
+                                    actived: this.props.isPlaying(list.uuid, song.id),
+                                    paused,
+                                    play: () => {
+                                        this.props.play(song, list);
+                                        this.props.navigate('Player');
+                                    },
+                                    commentCount: song.commentCount,
+                                    showComments: () => {
+                                        this.props.navigation.navigate('Comments', {
+                                            songid: song.id,
+                                            count: song.commentCount,
+                                        });
+                                    },
+                                }} />
+
+                                <View style={styles.line} />
+                            </View>
+                        );
+                    }} />
 
                 {
                     loading4loadmore && (
@@ -185,7 +176,7 @@ export default class List extends Component {
                                         rotate: '0deg'
                                     }]
                                 }
-                            }}></Loader>
+                            }} />
                         </View>
                     )
                 }
@@ -210,7 +201,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'center',
         backgroundColor: '#f1dfdd',
-        shadowColor: "#000",
+        shadowColor: '#000',
         shadowOpacity: 0.3,
         shadowRadius: 12,
         shadowOffset: {

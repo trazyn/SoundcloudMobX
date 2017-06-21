@@ -21,7 +21,6 @@ import parseTimes from '../../utils/parseTimes';
 import humanNumber from '../../utils/humanNumber';
 
 @inject(stores => {
-
     var { song, playing, progress, start } = stores.player;
 
     return {
@@ -34,13 +33,15 @@ import humanNumber from '../../utils/humanNumber';
 })
 @observer
 export default class Player extends Component {
+    static propTypes = {
+        navigation: PropTypes.object.isRequired,
+    };
 
     state = {
         index: 1,
     };
 
     componentDidMount() {
-
         this.refs.viewport.scrollTo({
             x: width,
             animated: false
@@ -48,12 +49,10 @@ export default class Player extends Component {
     }
 
     render() {
-
-        var { song, playlist, playing, start, progress } = this.props;
+        var { navigation, song, progress } = this.props;
         var cover = song.artwork.replace(/large\./, 't500x500.');
         var times = parseTimes(song.duration);
         var current = parseTimes(song.duration * progress);
-        var playing = playing;
 
         return (
             <View style={styles.container}>
@@ -71,72 +70,70 @@ export default class Player extends Component {
                     }
                 }}>
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={() => this.props.navigation.goBack()} style={{
+                        <TouchableOpacity onPress={() => navigation.goBack()} style={{
                             height: 32,
                             width: 32,
                             justifyContent: 'center',
                             alignItems: 'center',
                             backgroundColor: 'transparent',
                         }}>
-                            <Icon name="arrow-down" size={14} color="white"></Icon>
+                            <Icon name="arrow-down" size={14} color="white" />
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                        onPress={() => {
-
-                            this.props.openModal([{
-                                title: 'Share',
-                                callback: () => {
-                                    Share.share({
-                                        title: `${song.user.username} - ${song.title}`,
-                                        url: song.shareUrl,
-                                    });
-                                }
-                            }, {
-                                title: `${humanNumber(song.commentCount)} Comments`,
-                                callback: () => {
-                                    this.props.navigation.navigate('Comments', {
-                                        songid: song.id,
-                                        count: song.commentCount,
-                                    });
-                                }
-                            }]);
-                        }}
-                        style={{
-                            height: 32,
-                            width: 32,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            backgroundColor: 'transparent',
-                        }}>
-                            <Icon name="options" size={14} color="white"></Icon>
+                            onPress={() => {
+                                this.props.openModal([{
+                                    title: 'Share',
+                                    callback: () => {
+                                        Share.share({
+                                            title: `${song.user.username} - ${song.title}`,
+                                            url: song.shareUrl,
+                                        });
+                                    }
+                                }, {
+                                    title: `${humanNumber(song.commentCount)} Comments`,
+                                    callback: () => {
+                                        navigation.navigate('Comments', {
+                                            songid: song.id,
+                                            count: song.commentCount,
+                                        });
+                                    }
+                                }]);
+                            }}
+                            style={{
+                                height: 32,
+                                width: 32,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                backgroundColor: 'transparent',
+                            }}>
+                            <Icon name="options" size={14} color="white" />
                         </TouchableOpacity>
                     </View>
 
                     <ScrollView
 
-                    ref="viewport"
+                        ref="viewport"
 
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
 
-                    onMomentumScrollEnd={e => {
+                        onMomentumScrollEnd={e => {
+                            var index = e.nativeEvent.contentOffset.x / width;
 
-                        var index = e.nativeEvent.contentOffset.x / width;
+                            this.setState({
+                                index
+                            });
+                        }}
 
-                        this.setState({
-                            index
-                        });
-                    }}
+                        decelerationRate={0}
+                        snapToInterval={width}
+                        snapToAlignment="start">
 
-                    decelerationRate={0}
-                    snapToInterval={width}
-                    snapToAlignment='start'>
                         <View style={styles.viewport}>
-                            <PlayList
-                            current={song}>
-                            </PlayList>
+                            <PlayList current={song} />
                         </View>
+
                         <View style={styles.viewport}>
                             <Image {...{
                                 source: {
@@ -156,7 +153,7 @@ export default class Player extends Component {
                                                 width: 96,
                                                 height: 96,
                                             }
-                                        }}></Image>
+                                        }} />
                                     </View>
 
                                     <View style={{
@@ -177,18 +174,16 @@ export default class Player extends Component {
                                 </View>
                             </Image>
 
-                            <Bar {...{
-                                passed: progress,
-                            }}></Bar>
+                            <Bar passed={progress} />
                         </View>
                     </ScrollView>
                 </Image>
 
-                <Controller></Controller>
+                <Controller />
 
                 <View style={styles.dots}>
-                    <View style={[styles.dot, this.state.index === 0 && styles.active]}></View>
-                    <View style={[styles.dot, this.state.index === 1 && styles.active]}></View>
+                    <View style={[styles.dot, this.state.index === 0 && styles.active]} />
+                    <View style={[styles.dot, this.state.index === 1 && styles.active]} />
                 </View>
             </View>
         );

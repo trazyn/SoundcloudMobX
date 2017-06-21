@@ -21,9 +21,11 @@ import RippleHeader from '../components/RippleHeader';
     changeType: stores.charts.changeType,
 }))
 export default class Charts extends Component {
+    static propTypes = {
+        navigation: PropTypes.object.isRequired,
+    };
 
     componentWillMount() {
-
         for (var genre of CHART_GENRES_MAP) {
             genre.store = genre.store || new CardStore();
         }
@@ -34,50 +36,48 @@ export default class Charts extends Component {
     }
 
     render() {
-
-        var type = this.props.type;
         var isTop = this.props.type === 'top';
         var isNewHot = this.props.type === 'trending';
 
         return (
             <View style={styles.container}>
                 <View style={styles.nav}>
-                    <RippleHeader></RippleHeader>
+                    <RippleHeader />
 
                     <TouchableOpacity style={styles.type} onPress={e => this.props.changeType('top')}>
                         <Text style={[styles.text, isTop && styles.textActive]}>TOP 50</Text>
-                        <View style={[styles.indicator, isTop && styles.indicatorActive]}></View>
+                        <View style={[styles.indicator, isTop && styles.indicatorActive]} />
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.type} onPress={e => this.props.changeType('trending')}>
                         <Text style={[styles.text, isNewHot && styles.textActive]}>NEW & HOT</Text>
-                        <View style={[styles.indicator, isNewHot && styles.indicatorActive]}></View>
+                        <View style={[styles.indicator, isNewHot && styles.indicatorActive]} />
                     </TouchableOpacity>
                 </View>
 
                 <ScrollView style={styles.categories} showsVerticalScrollIndicator={false}>
                     {
                         new Array(Math.ceil(CHART_GENRES_MAP.length / 2)).fill(0).map((e, index) => {
+                        var offset = index * 2;
 
-                            var offset = index * 2;
-
-                            return (
-                                <View style={styles.row} key={index}>
-                                    {
-                                        [CHART_GENRES_MAP[offset], CHART_GENRES_MAP[offset + 1]].map((genre, index) => {
-
-                                            if (genre) {
-                                                return (
-                                                    <Provider card={genre.store} key={index}>
-                                                        <Card genre={blacklist(genre, 'store')} showChart={this.showChart.bind(this, genre.store)}></Card>
-                                                    </Provider>
-                                                );
-                                            }
-                                        })
-                                    }
-                                </View>
-                            );
-                        })
+                        return (
+                            <View style={styles.row} key={index}>
+                                {
+                                    [CHART_GENRES_MAP[offset], CHART_GENRES_MAP[offset + 1]].map((genre, index) => {
+                                        if (genre) {
+                                            return (
+                                                <Provider card={genre.store} key={index}>
+                                                    <Card
+                                                        genre={blacklist(genre, 'store')}
+                                                        showChart={(data) => this.showChart(data)} />
+                                                </Provider>
+                                            );
+                                        }
+                                    })
+                                }
+                            </View>
+                        );
+                    })
                     }
                 </ScrollView>
             </View>
@@ -85,7 +85,7 @@ export default class Charts extends Component {
     }
 }
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -110,7 +110,6 @@ const styles = StyleSheet.create({
 
     type: {
         width: width / 2,
-        alignItems: 'center',
         alignItems: 'center',
     },
 

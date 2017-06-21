@@ -2,7 +2,6 @@
 import { observable, action } from 'mobx';
 
 class Charts {
-
     @observable type = 'top';
     @observable type4playing;
 

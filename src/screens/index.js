@@ -8,7 +8,6 @@ import {
 import Footer from './components/Footer';
 
 export default class Screen extends Component {
-
     static propTypes = {
         showFooter: PropTypes.bool,
     };
@@ -18,7 +17,6 @@ export default class Screen extends Component {
     };
 
     render() {
-
         var { navigation, showFooter } = this.props;
 
         return (
@@ -33,11 +31,7 @@ export default class Screen extends Component {
                     }
                 </View>
                 {
-                    showFooter && (
-                        <Footer {...{
-                            navigation,
-                        }}></Footer>
-                    )
+                    showFooter && (<Footer navigation={navigation} />)
                 }
             </View>
         );

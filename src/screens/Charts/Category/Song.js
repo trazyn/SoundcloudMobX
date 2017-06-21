@@ -11,7 +11,6 @@ import {
 import FadeImage from '../../../components/FadeImage';
 
 export default class Song extends Component {
-
     static propTypes = {
         artwork: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
@@ -22,7 +21,6 @@ export default class Song extends Component {
     };
 
     render() {
-
         var { artwork, title, user, active, play, rank } = this.props;
 
         return (
@@ -46,7 +44,7 @@ export default class Song extends Component {
                                         width: 128,
                                         marginRight: 15,
                                     }
-                                }}></FadeImage>
+                                }} />
 
                                 <View style={{
                                     width: width - 155,
@@ -79,7 +77,7 @@ export default class Song extends Component {
                                         width: 54,
                                         marginRight: 15,
                                     }
-                                }}></FadeImage>
+                                }} />
 
                                 <View style={{
                                     width: 150,
@@ -103,7 +101,7 @@ export default class Song extends Component {
     }
 }
 
-const { height, width } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         width,
@@ -127,7 +125,7 @@ const styles = StyleSheet.create({
         width,
         marginTop: 20,
         marginBottom: 20,
-        shadowColor: "#000000",
+        shadowColor: '#000',
         shadowOpacity: 0.3,
         shadowRadius: 8,
         flexDirection: 'row',

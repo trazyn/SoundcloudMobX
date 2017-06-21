@@ -1,8 +1,7 @@
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react/native';
 import {
-    View,
     Dimensions,
     Animated,
 } from 'react-native';
@@ -12,24 +11,21 @@ import {
 }))
 @observer
 export default class RippleHeader extends Component {
-
     state = {
         height: new Animated.Value(0),
     };
 
     componentDidMount() {
-
-        this.props.playing &&
-        Animated.timing(this.state.height, {
-            toValue: 60,
-            duration: 1300,
-        }).start();
+        if (this.props.playing) {
+            Animated.timing(this.state.height, {
+                toValue: 60,
+                duration: 1300,
+            }).start();
+        }
     }
 
     componentWillReceiveProps(nextProps) {
-
         if (this.props.playing !== nextProps.playing) {
-
             if (nextProps.playing) {
                 Animated.timing(this.state.height, {
                     toValue: 60,
@@ -45,7 +41,6 @@ export default class RippleHeader extends Component {
     }
 
     render() {
-
         var height = this.state.height;
         var opacity = height.interpolate({
             inputRange: [0, 60],
@@ -63,14 +58,12 @@ export default class RippleHeader extends Component {
                     width,
                     height: 60,
                     opacity,
-                    height,
                     alignItems: 'center',
                     justifyContent: 'center',
                 }, this.props.style]
-            }}>
-            </Animated.Image>
+            }} />
         );
     }
 }
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');

@@ -33,13 +33,12 @@ import FadeImage from '../../components/FadeImage';
 }))
 @observer
 export default class Comments extends Component {
+    static propTypes = {
+        navigation: PropTypes.object.isRequired,
+    };
 
     componentWillMount() {
         this.props.getList(this.props.navigation.state.params.songid);
-    }
-
-    componentDidMount() {
-        StatusBar.setHidden(true);
     }
 
     componentWillUnmount() {
@@ -47,11 +46,11 @@ export default class Comments extends Component {
     }
 
     componentDidMount() {
+        StatusBar.setHidden(true);
         this.props.setCount(this.props.navigation.state.params.count);
     }
 
     render() {
-
         var { list, count, hasNext, loading, loading4loadmore, isLogin } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
@@ -63,9 +62,9 @@ export default class Comments extends Component {
             <View style={styles.container}>
                 <View style={styles.header}>
                     <TouchableOpacity
-                    onPress={() => this.props.navigation.goBack()}
-                    style={styles.icon}>
-                        <Icon name="arrow-down" size={14} color="#000"></Icon>
+                        onPress={() => this.props.navigation.goBack()}
+                        style={styles.icon}>
+                        <Icon name="arrow-down" size={14} color="#000" />
                     </TouchableOpacity>
                     <Text style={styles.title}>
                         {humanNumber(count)} COMMENTS
@@ -73,15 +72,15 @@ export default class Comments extends Component {
                     {
                         isLogin() ? (
                             <TouchableOpacity
-                            onPress={() => {
-                                this.props.navigation.navigate('Reply');
-                            }}
-                            style={styles.icon}>
-                                <Icon name="note" size={14} color="#000"></Icon>
+                                onPress={() => {
+                                    this.props.navigation.navigate('Reply');
+                                }}
+                                style={styles.icon}>
+                                <Icon name="note" size={14} color="#000" />
                             </TouchableOpacity>
                         ) : (
                             <TouchableHighlight style={styles.icon}>
-                                <Icon name="note" size={14} color="#ddd"></Icon>
+                                <Icon name="note" size={14} color="#ddd" />
                             </TouchableHighlight>
                         )
                     }
@@ -89,73 +88,71 @@ export default class Comments extends Component {
 
                 <ListView
 
-                style={styles.comments}
+                    style={styles.comments}
 
-                onEndReachedThreshold={1}
-                onEndReached={() => {
-                    hasNext && list.length >= 20 && this.props.loadMore();
-                }}
+                    onEndReachedThreshold={1}
+                    onEndReached={() => {
+                        hasNext && list.length >= 20 && this.props.loadMore();
+                    }}
 
-                enableEmptySections={true}
-                dataSource={dataSource}
-                renderRow={(comment, sectionId, rowId) => {
+                    enableEmptySections={true}
+                    dataSource={dataSource}
+                    renderRow={(comment, sectionId, rowId) => {
+                        var user = comment.user;
+                        var index = list.indexOf(comment);
 
-                    var user = comment.user;
-                    var index = list.indexOf(comment);
+                        console.log(user.avatar_url);
 
-                    console.log(user.avatar_url);
+                        return (
+                            <View>
+                                <View style={styles.comment}>
 
-                    return (
-                        <View>
-                            <View style={styles.comment}>
-
-                                <View style={styles.avatar}>
-                                    <FadeImage {...{
-                                        style: {
-                                            height: 40,
-                                            width: 40,
-                                        },
-                                        source: {
-                                            uri: `https:${user.avatar_url.split(':')[1]}`,
-                                        },
-                                    }}></FadeImage>
-                                </View>
-
-                                <View style={styles.content}>
-                                    <View style={{
-                                        flexDirection: 'row',
-                                        marginBottom: 8,
-                                    }}>
-                                        <Text style={styles.username} ellipsizeMode="tail">{user.username}</Text>
-                                        <Text style={styles.dot}>&middot;</Text>
-                                        <Text style={styles.date}>{moment(comment.created_at, 'YYYY/MM/DD hh:mm:ss').fromNow()}</Text>
+                                    <View style={styles.avatar}>
+                                        <FadeImage {...{
+                                            style: {
+                                                height: 40,
+                                                width: 40,
+                                            },
+                                            source: {
+                                                uri: `https:${user.avatar_url.split(':')[1]}`,
+                                            },
+                                        }} />
                                     </View>
 
-                                    <Text style={styles.body}>{comment.body}</Text>
+                                    <View style={styles.content}>
+                                        <View style={{
+                                            flexDirection: 'row',
+                                            marginBottom: 8,
+                                        }}>
+                                            <Text style={styles.username} ellipsizeMode="tail">{user.username}</Text>
+                                            <Text style={styles.dot}>&middot;</Text>
+                                            <Text style={styles.date}>{moment(comment.created_at, 'YYYY/MM/DD hh:mm:ss').fromNow()}</Text>
+                                        </View>
+
+                                        <Text style={styles.body}>{comment.body}</Text>
+                                    </View>
+
                                 </View>
 
+                                {
+                                    (!hasNext && index === list.length - 1) && (
+                                        <View style={styles.tail}>
+                                            <View style={styles.line} />
+                                            <Text style={styles.end}>{numberFormat(count)}</Text>
+                                            <Text style={{
+                                                marginRight: 4,
+                                                marginLeft: 4,
+                                                fontWeight: '800',
+                                                color: 'rgba(0,0,0,.8)',
+                                            }}>&middot;</Text>
+                                            <Text style={styles.end}>End</Text>
+                                            <View style={styles.line} />
+                                        </View>
+                                    )
+                                }
                             </View>
-
-                            {
-                                (!hasNext && index === list.length - 1) && (
-                                    <View style={styles.tail}>
-                                        <View style={styles.line}></View>
-                                        <Text style={styles.end}>{numberFormat(count)}</Text>
-                                        <Text style={{
-                                            marginRight: 4,
-                                            marginLeft: 4,
-                                            fontWeight: '800',
-                                            color: 'rgba(0,0,0,.8)',
-                                        }}>&middot;</Text>
-                                        <Text style={styles.end}>End</Text>
-                                        <View style={styles.line}></View>
-                                    </View>
-                                )
-                            }
-                        </View>
-                    );
-                }}
-                ></ListView>
+                        );
+                    }} />
 
                 {
                     (loading || loading4loadmore) && (
@@ -178,7 +175,7 @@ export default class Comments extends Component {
                                         rotate: '0deg'
                                     }]
                                 }
-                            }}></Loader>
+                            }} />
                         </View>
                     )
                 }
@@ -286,4 +283,3 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
 });
-

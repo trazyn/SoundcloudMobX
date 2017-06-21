@@ -2,7 +2,6 @@
 import { observable, action } from 'mobx';
 
 class Options {
-
     @observable show = false;
     @observable items = [];
 
@@ -11,11 +10,9 @@ class Options {
     }
 
     @action open(items) {
-
-        var items = Array.isArray(items) ? items : [items];
+        items = Array.isArray(items) ? items : [items];
 
         for (let item of items) {
-
             let callback = item.callback;
 
             item.callback = action(callback);

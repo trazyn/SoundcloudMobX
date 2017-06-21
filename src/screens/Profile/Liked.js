@@ -17,7 +17,6 @@ import FadeImage from '../../components/FadeImage';
         stores.profile.getLiked(stores.session.user.id);
     },
     isPlaying: () => {
-
         var uuid4player = stores.player.playlist.uuid;
         var uuid = stores.profile.liked.uuid;
 
@@ -28,7 +27,6 @@ import FadeImage from '../../components/FadeImage';
 }))
 @observer
 export default class Liked extends Component {
-
     static propTypes = {
         showList: PropTypes.func.isRequired,
     };
@@ -38,9 +36,7 @@ export default class Liked extends Component {
     }
 
     covers(tracks) {
-
         return tracks.slice().map((track, index) => {
-
             return (
                 <FadeImage key={index} {...{
                     source: {
@@ -50,13 +46,12 @@ export default class Liked extends Component {
                         height: 83.75,
                         width: 83.75,
                     }
-                }}></FadeImage>
+                }} />
             );
         });
     }
 
     render() {
-
         var { list } = this.props;
         var playing = this.props.isPlaying();
 
@@ -67,18 +62,18 @@ export default class Liked extends Component {
                     width: 335,
                     flexDirection: 'row',
                 }}>
-                {
-                    this.covers(list.slice(0, 4))
-                }
+                    {
+                        this.covers(list.slice(0, 4))
+                    }
                 </View>
                 <View style={{
                     height: 83.75,
                     width: 335,
                     flexDirection: 'row',
                 }}>
-                {
-                    this.covers(list.slice(4, 8))
-                }
+                    {
+                        this.covers(list.slice(4, 8))
+                    }
                 </View>
 
                 <View style={{
@@ -103,11 +98,11 @@ export default class Liked extends Component {
                             alignItems: 'center',
                             justifyContent: 'center',
                         }}>
-                            <View style={[styles.line, playing && { backgroundColor: '#f50' }]}></View>
-                                <Text style={[styles.count, playing && styles.playing]}>{
-                                    list.length > 99 ? '99+' : list.length
-                                } Songs In Collection</Text>
-                            <View style={[styles.line, playing && { backgroundColor: '#f50' }]}></View>
+                            <View style={[styles.line, playing && { backgroundColor: '#f50' }]} />
+                            <Text style={[styles.count, playing && styles.playing]}>
+                                { list.length > 99 ? '99+' : list.length } Songs In Collection
+                            </Text>
+                            <View style={[styles.line, playing && { backgroundColor: '#f50' }]} />
                         </View>
                     </View>
                 </View>
@@ -116,7 +111,7 @@ export default class Liked extends Component {
     }
 }
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         marginTop: 40,

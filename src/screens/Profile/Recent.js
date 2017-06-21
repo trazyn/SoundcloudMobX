@@ -16,7 +16,6 @@ import FadeImage from '../../components/FadeImage';
     list: stores.profile.recent.slice(0, 3),
     getList: stores.profile.getRecent,
     isPlaying: () => {
-
         var uuid4player = stores.player.playlist.uuid;
         var uuid = stores.profile.recent.uuid;
 
@@ -27,7 +26,6 @@ import FadeImage from '../../components/FadeImage';
 }))
 @observer
 export default class Recent extends Component {
-
     static propTypes = {
         showList: PropTypes.func.isRequired,
     };
@@ -37,9 +35,7 @@ export default class Recent extends Component {
     }
 
     renderList(list) {
-
         return list.map((track, index) => {
-
             return (
                 <View key={index} style={styles.item}>
                     <View>
@@ -56,7 +52,7 @@ export default class Recent extends Component {
                                 shadowOpacity: 0.3,
                                 shadowRadius: 12,
                             }
-                        }}></FadeImage>
+                        }} />
                     </View>
                 </View>
             );
@@ -64,9 +60,7 @@ export default class Recent extends Component {
     }
 
     renderEmpty() {
-
         return new Array(3).fill('../../images/loading.gif').map((e, index) => {
-
             return (
                 <View key={index} style={{
                     height: 100,
@@ -84,14 +78,13 @@ export default class Recent extends Component {
                             width: 12,
                             zIndex: 1,
                         },
-                    }}></Image>
+                    }} />
                 </View>
             );
         });
     }
 
     render() {
-
         var list = this.props.list;
 
         return (
@@ -102,9 +95,9 @@ export default class Recent extends Component {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                 }}>
-                {
-                    list.length ? this.renderList(list) : this.renderEmpty()
-                }
+                    {
+                        list.length ? this.renderList(list) : this.renderEmpty()
+                    }
                 </View>
 
                 <View style={{
@@ -130,7 +123,7 @@ export default class Recent extends Component {
     }
 }
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         width,

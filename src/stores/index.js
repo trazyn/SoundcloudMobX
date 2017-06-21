@@ -9,8 +9,6 @@ import modal from './modal';
 import profile from './profile';
 import comments from './comments';
 
-import { observable, action } from 'mobx';
-
 export default {
     home,
     player,

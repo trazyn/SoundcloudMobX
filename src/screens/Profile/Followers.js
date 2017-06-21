@@ -1,5 +1,5 @@
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react/native';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import {
@@ -25,13 +25,11 @@ import humanNumber from '../../utils/humanNumber';
 }))
 @observer
 export default class Followers extends Component {
-
     componentWillMount() {
         this.props.getList();
     }
 
     renderList(list) {
-
         return (
             <TouchableOpacity onPress={this.props.open} style={{
                 alignItems: 'center',
@@ -39,7 +37,6 @@ export default class Followers extends Component {
             }}>
                 {
                     list.slice(0, 5).map((user, index) => {
-
                         return (
                             <View style={styles.avatar} key={index}>
                                 <FadeImage {...{
@@ -49,19 +46,19 @@ export default class Followers extends Component {
                                     style: {
                                         width: 25,
                                         height: 25,
-                                        shadowColor: "#000",
-                                        shadowOpacity: 0.3,
+                                        shadowColor: '#000',
+                                        shadowOpacity: .3,
                                         shadowRadius: 8,
                                         zIndex: index + 1,
                                     }
                                 }}>
-                                {
-                                    list.length > 4 && index === 4 && (
-                                        <View style={styles.overlay}>
-                                            <Icon name="options" color="white" size={12}></Icon>
-                                        </View>
-                                    )
-                                }
+                                    {
+                                        list.length > 4 && index === 4 && (
+                                            <View style={styles.overlay}>
+                                                <Icon name="options" color="white" size={12} />
+                                            </View>
+                                        )
+                                    }
                                 </FadeImage>
                             </View>
                         );
@@ -70,11 +67,9 @@ export default class Followers extends Component {
                 <Text style={styles.count}>{humanNumber(this.props.count)} Followers</Text>
             </TouchableOpacity>
         );
-
     }
 
     render() {
-
         var { list } = this.props;
 
         return (

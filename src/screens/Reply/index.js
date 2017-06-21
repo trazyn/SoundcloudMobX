@@ -21,13 +21,15 @@ import Loader from '../../components/Loader';
 }))
 @observer
 export default class Reply extends Component {
+    static propTypes = {
+        navigation: PropTypes.object.isRequired,
+    };
 
     componentDidMount() {
         StatusBar.setHidden(true);
     }
 
     async handleSend() {
-
         var { commit, error } = this.props;
         var comment = this.refs.input._lastNativeText;
 
@@ -45,22 +47,17 @@ export default class Reply extends Component {
     }
 
     render() {
-
         return (
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <TouchableOpacity
-                    onPress={() => this.props.navigation.goBack()}
-                    style={styles.icon}>
-                        <Icon name="arrow-left" size={14} color="#000"></Icon>
+                    <TouchableOpacity onPress={() => this.props.navigation.goBack()} style={styles.icon}>
+                        <Icon name="arrow-left" size={14} color="#000" />
                     </TouchableOpacity>
                     <Text style={styles.title}>
                         WRITE COMMENTS
                     </Text>
-                    <TouchableOpacity
-                    onPress={this.handleSend.bind(this)}
-                    style={styles.icon}>
-                        <Icon name="paper-plane" size={14} color="#000"></Icon>
+                    <TouchableOpacity onPress={() => this.handleSend()} style={styles.icon}>
+                        <Icon name="paper-plane" size={14} color="#000" />
                     </TouchableOpacity>
                 </View>
 
@@ -78,7 +75,7 @@ export default class Reply extends Component {
                         placeholder: 'Write a comment',
 
                         ref: 'input',
-                    }}></TextInput>
+                    }} />
                 </View>
 
                 {
@@ -102,7 +99,7 @@ export default class Reply extends Component {
                                         rotate: '0deg'
                                     }]
                                 }
-                            }}></Loader>
+                            }} />
                         </View>
                     )
                 }

@@ -1,15 +1,13 @@
 
-import { observable, action, autorun } from 'mobx';
+import { observable, action } from 'mobx';
 import Card from './card';
 
 class Category extends Card {
-
     @observable loading4refresh = false;
     @observable loading4loadmore = false;
     @observable hasEnd = false;
 
     @action async doRefresh() {
-
         self.hasEnd = false;
         self.loading4refresh = true;
         self.nextHref = '';
@@ -19,14 +17,12 @@ class Category extends Card {
     }
 
     @action async doLoadmore(updatePlaylist) {
-
         self.loading4loadmore = true;
 
         var playlist = await self.request();
         var remain = 0;
 
         if (self.playlist.length + playlist.length > 50) {
-
             remain = 50 - self.playlist.length;
             playlist = playlist.slice(0, remain);
 

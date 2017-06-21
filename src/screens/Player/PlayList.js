@@ -1,14 +1,11 @@
 
 import React, { Component, PropTypes } from 'react';
-import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Text,
     ListView,
     StyleSheet,
-    Dimensions,
-    InteractionManager,
     TouchableOpacity,
     Image,
 } from 'react-native';
@@ -20,7 +17,6 @@ import parseTimes from '../../utils/parseTimes';
 }))
 @observer
 export default class PlayList extends Component {
-
     static propTypes = {
         current: PropTypes.object.isRequired,
     };
@@ -28,7 +24,6 @@ export default class PlayList extends Component {
     offset = {};
 
     human(number) {
-
         if (number > 1000) {
             return (number / 1000).toFixed(2) + 'K';
         }
@@ -37,12 +32,10 @@ export default class PlayList extends Component {
     }
 
     highlight(offset) {
-
         var container = this.refs.container;
         var activeOffset = this.offset[this.props.current.id];
 
         if (container && activeOffset) {
-
             offset = offset === void 0 ? activeOffset.y : offset;
 
             if (this.contentHeight - offset < this.scrollViewHeight) {
@@ -57,7 +50,6 @@ export default class PlayList extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-
         var offset = this.offset[nextProps.current.id];
 
         if (nextProps.current.id !== this.props.current.id && offset) {
@@ -66,7 +58,6 @@ export default class PlayList extends Component {
     }
 
     render() {
-
         var { list, current = {} } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
@@ -77,62 +68,62 @@ export default class PlayList extends Component {
         return (
             <ListView
 
-            ref="container"
+                ref="container"
 
-            initialListSize={index + 1}
-            removeClippedSubviews={true}
-            onContentSizeChange={(w, h) => this.contentHeight = h}
-            onLayout={(e) => this.scrollViewHeight = e.nativeEvent.layout.height}
+                initialListSize={index + 1}
+                removeClippedSubviews={true}
+                onContentSizeChange={(w, h) => (this.contentHeight = h)}
+                onLayout={(e) => (this.scrollViewHeight = e.nativeEvent.layout.height)}
 
-            style={[styles.container, this.props.style]}
-            enableEmptySections={true}
-            dataSource={dataSource}
-            renderRow={song => {
+                style={[styles.container, this.props.style]}
+                enableEmptySections={true}
+                dataSource={dataSource}
+                renderRow={song => {
+                    var active = song.id === current.id;
+                    var times = parseTimes(song.duration);
 
-                var active = song.id === current.id;
-                var times = parseTimes(song.duration);
-
-                return (
-                    <TouchableOpacity style={styles.item} onLayout={e => {
-                        this.offset[song.id] = e.nativeEvent.layout;
-                    }}
-                    onPress={e => {
-                        this.props.play({ song });
-                    }}
-                    ref="items">
-                        <View>
+                    return (
+                        <TouchableOpacity
+                            style={styles.item}
+                            onLayout={e => {
+                                this.offset[song.id] = e.nativeEvent.layout;
+                            }}
+                            onPress={e => {
+                                this.props.play({ song });
+                            }}
+                            ref="items">
                             <View>
-                                <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.title, active && styles.active]}>{song.title}</Text>
-                            </View>
-                            <View style={styles.meta}>
-                                <View style={styles.avatar}>
-                                    <Image {...{
-                                        source: {
-                                            uri: song.user.avatar_url
-                                        },
+                                <View>
+                                    <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.title, active && styles.active]}>{song.title}</Text>
+                                </View>
+                                <View style={styles.meta}>
+                                    <View style={styles.avatar}>
+                                        <Image {...{
+                                            source: {
+                                                uri: song.user.avatar_url
+                                            },
 
-                                        style: {
-                                            width: 24,
-                                            height: 24,
-                                        }
-                                    }}></Image>
+                                            style: {
+                                                width: 24,
+                                                height: 24,
+                                            }
+                                        }} />
                                     </View>
-                                <Text style={[styles.username, active && styles.active]}>{song.user.username}</Text>
 
-                                <View style={styles.right}>
-                                    <Text style={[styles.duration, active && styles.active]}>{times.minutes}:{times.seconds}</Text>
+                                    <Text style={[styles.username, active && styles.active]}>{song.user.username}</Text>
+
+                                    <View style={styles.right}>
+                                        <Text style={[styles.duration, active && styles.active]}>{times.minutes}:{times.seconds}</Text>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
-                    </TouchableOpacity>
-                );
-            }}>
-            </ListView>
+                        </TouchableOpacity>
+                    );
+                }} />
         );
     }
 }
 
-const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
 
     container: {

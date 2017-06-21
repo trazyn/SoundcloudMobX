@@ -1,18 +1,15 @@
 
 import React, { Component, PropTypes } from 'react';
-import MKIcon from 'react-native-vector-icons/MaterialIcons';
 import {
     View,
     Text,
     TouchableOpacity,
-    Dimensions,
-    StyleSheet,
     Animated,
     Image,
+    StyleSheet,
 } from 'react-native';
 
 export default class Playing extends Component {
-
     static propTypes = {
         title: PropTypes.string.isRequired,
         artwork: PropTypes.string.isRequired,
@@ -29,14 +26,12 @@ export default class Playing extends Component {
     };
 
     rotating() {
-
         var rotate = this.state.rotate;
 
         Animated.timing(rotate, {
             toValue: 360,
             duration: 60000,
         }).start(e => {
-
             if (e.finished) {
                 rotate.setValue(0);
                 this.rotating();
@@ -45,7 +40,6 @@ export default class Playing extends Component {
     }
 
     equalizer() {
-
         var { line1, line2, line3, line4 } = this.state;
 
         Animated.sequence([
@@ -84,7 +78,6 @@ export default class Playing extends Component {
                 duration: 200,
             }),
         ]).start(e => {
-
             if (e.finished) {
                 this.equalizer();
             }
@@ -97,7 +90,6 @@ export default class Playing extends Component {
     }
 
     render() {
-
         var { title, user, artwork } = this.props;
         var { line1, line2, line3, line4 } = this.state;
         var rotate = this.state.rotate.interpolate({
@@ -127,24 +119,23 @@ export default class Playing extends Component {
                                     height: 200,
                                     resizeMode: 'contain'
                                 }
-                            }}>
-                            </Image>
+                            }} />
                         </Animated.View>
                     </TouchableOpacity>
 
                     <View style={styles.equalizer}>
                         <Animated.View style={[styles.line, styles.line1, {
                             height: line1
-                        }]}></Animated.View>
+                        }]} />
                         <Animated.View style={[styles.line, styles.line2, {
                             height: line2
-                        }]}></Animated.View>
+                        }]} />
                         <Animated.View style={[styles.line, styles.line3, {
                             height: line3
-                        }]}></Animated.View>
+                        }]} />
                         <Animated.View style={[styles.line, styles.line4, {
                             height: line4
-                        }]}></Animated.View>
+                        }]} />
                     </View>
 
                     <View style={styles.info}>
@@ -172,7 +163,7 @@ const styles = StyleSheet.create({
         width: 200,
         height: 200,
         borderRadius: 200,
-        shadowColor: "#000000",
+        shadowColor: '#000',
         shadowOpacity: 0.8,
         shadowRadius: 20,
     },

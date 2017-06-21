@@ -1,14 +1,12 @@
 
 export default (collection) => {
-
     return collection
         .map(song => song.origin || song)
         .map(song => {
-
             return {
                 title: song.title,
                 id: song['id'],
-                artwork: (song['artwork_url'] || 'https://unsplash.it/500/500?random').replace(/\large\./, 't500x500.'),
+                artwork: (song['artwork_url'] || 'https://unsplash.it/500/500?random').replace(/large\./, 't500x500.'),
                 duration: song['duration'],
                 kind: song['kind'],
                 commentCount: song['comment_count'],
@@ -35,7 +33,6 @@ export default (collection) => {
             };
         })
         .filter(song => {
-
             var must = song.duration < 600000 && song.id && song.streamable && song.artwork;
             return must;
         });

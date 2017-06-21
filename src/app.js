@@ -1,5 +1,5 @@
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { Provider, observer } from 'mobx-react/native';
 import { View } from 'react-native';
 import {
@@ -42,12 +42,11 @@ const router = TabRouter({
 });
 
 const view = ({ router, navigation }) => {
-
     const ActiveScreen = router.getComponentForState(navigation.state);
 
     return (
         <Layout navigation={navigation}>
-            <ActiveScreen></ActiveScreen>
+            <ActiveScreen />
         </Layout>
     );
 };
@@ -60,10 +59,9 @@ const MainNavigator = StackNavigator({
 
     Player: {
         screen: ({ navigation }) => {
-
             return (
                 <Layout showFooter={false} navigation={navigation}>
-                    <Player></Player>
+                    <Player />
                 </Layout>
             );
         },
@@ -72,10 +70,9 @@ const MainNavigator = StackNavigator({
     Login: {
 
         screen: ({ navigation }) => {
-
             return (
                 <Layout showFooter={false} navigation={navigation}>
-                    <Login></Login>
+                    <Login />
                 </Layout>
             );
         },
@@ -84,10 +81,9 @@ const MainNavigator = StackNavigator({
     Comments: {
 
         screen: ({ navigation }) => {
-
             return (
                 <Layout showFooter={false} navigation={navigation}>
-                    <Comments></Comments>
+                    <Comments />
                 </Layout>
             );
         },
@@ -104,10 +100,9 @@ const Sketch = StackNavigator({
 
     Category: {
         screen: ({ navigation }) => {
-
             return (
                 <Layout showFooter={false} navigation={navigation}>
-                    <Category></Category>
+                    <Category />
                 </Layout>
             );
         },
@@ -115,10 +110,9 @@ const Sketch = StackNavigator({
 
     RecentPlaylist: {
         screen: ({ navigation }) => {
-
             return (
                 <Layout showFooter={false} navigation={navigation}>
-                    <RecentPlaylist></RecentPlaylist>
+                    <RecentPlaylist />
                 </Layout>
             );
         },
@@ -126,10 +120,9 @@ const Sketch = StackNavigator({
 
     LikedPlaylist: {
         screen: ({ navigation }) => {
-
             return (
                 <Layout showFooter={false} navigation={navigation}>
-                    <LikedPlaylist></LikedPlaylist>
+                    <LikedPlaylist />
                 </Layout>
             );
         },
@@ -137,10 +130,9 @@ const Sketch = StackNavigator({
 
     Reply: {
         screen: ({ navigation }) => {
-
             return (
                 <Layout showFooter={false} navigation={navigation}>
-                    <Reply></Reply>
+                    <Reply />
                 </Layout>
             );
         },
@@ -159,15 +151,12 @@ const Sketch = StackNavigator({
 
 @observer
 export default class App extends Component {
-
     async componentWillMount() {
-
         await stores.session.init();
         await stores.player.init();
     }
 
     render() {
-
         var { toast, modal } = stores;
 
         return (
@@ -185,15 +174,15 @@ export default class App extends Component {
                         show: modal.show,
                         items: modal.items.slice(),
                         close: () => modal.toggle(false),
-                    }}></Modal>
+                    }} />
                     <Toast {...{
                         message: toast.message,
                         show: toast.show,
                         color: toast.color,
                         close: () => toast.toggle(false),
-                    }}></Toast>
+                    }} />
 
-                    <Sketch></Sketch>
+                    <Sketch />
                 </View>
             </Provider>
         );

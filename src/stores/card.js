@@ -10,7 +10,6 @@ function filter(data) {
 }
 
 export default class Card {
-
     @observable playlist = [];
     @observable genre = {};
     @observable type;
@@ -18,9 +17,7 @@ export default class Card {
     nextHref = '';
 
     request() {
-
-        return new Promise(async (resolve, reject) => {
-
+        return new Promise(async(resolve, reject) => {
             var url = this.nextHref || `https://api-v2.soundcloud.com/charts?kind=${this.type}&genre=soundcloud%3Agenres%3A${this.genre.key}&client_id=${CLIENT_ID}&limit=20&offset=0&linked_partitioning=1&app_version=1484129465`;
             var response = await axios.get(url);
 
@@ -31,14 +28,12 @@ export default class Card {
     }
 
     async refresh() {
-
         this.nextHref = '';
         this.playlist.clear();
         this.playlist.replace((await this.request()));
     }
 
     @action async getPlaylist() {
-
         this.playlist.clear();
         this.nextHref = '';
 

@@ -7,11 +7,9 @@ const axios = _axios.create({
 
     timeout: 12000,
     transformRequest: [data => {
-
         var str = [];
 
         for (let key in data) {
-
             let value = data[key];
 
             if (data.hasOwnProperty(key) && value) {
@@ -24,7 +22,6 @@ const axios = _axios.create({
 });
 
 class Comments {
-
     @observable count = 0;
     @observable list = [];
     @observable loading = false;
@@ -40,7 +37,6 @@ class Comments {
     }
 
     @action async getList(songid) {
-
         self.loading = true;
 
         var response = await axios(`https://api.soundcloud.com/app/v2/tracks/${songid}/comments?client_id=${CLIENT_ID}&limit=20&offset=0`);
@@ -54,7 +50,6 @@ class Comments {
     }
 
     @action async loadMore() {
-
         if (!self.hasNext) {
             return;
         }
@@ -71,14 +66,13 @@ class Comments {
     }
 
     @action async commit(comment) {
-
         self.loading4send = true;
 
         var response = await axios.post(`https://api.soundcloud.com/tracks/${self.songid}/comments?client_id=${CLIENT_ID}`, {
             'comment[body]': comment,
             'comment[timestamp]': 0,
         });
-        var comment = response.data;
+        var res = response.data;
 
         self.loading4send = false;
 
@@ -89,7 +83,7 @@ class Comments {
             });
         }
 
-        return comment;
+        return res;
     }
 };
 

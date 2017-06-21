@@ -5,8 +5,6 @@ import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Text,
-    Dimensions,
-    StatusBar,
     Image,
     TouchableOpacity,
     StyleSheet,
@@ -19,7 +17,6 @@ import FadeImage from '../../components/FadeImage';
     card: stores.card,
     type: stores.charts.type,
     isPlaying: () => {
-
         var player = stores.player;
         return player.playing
             && player.playlist.uuid === stores.card.playlist.uuid
@@ -28,14 +25,12 @@ import FadeImage from '../../components/FadeImage';
 }))
 @observer
 export default class Card extends Component {
-
     static propTypes = {
         genre: PropTypes.object.isRequired,
         showChart: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
-
         var { card, genre, type } = this.props;
 
         card.setGenre(genre);
@@ -47,8 +42,7 @@ export default class Card extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-
-        var { card, genre, type } = this.props;
+        var { card } = this.props;
 
         if (this.props.type !== nextProps.type) {
             card.setType(nextProps.type);
@@ -57,7 +51,6 @@ export default class Card extends Component {
     }
 
     renderContent() {
-
         var playing = this.props.isPlaying();
 
         return (
@@ -78,7 +71,7 @@ export default class Card extends Component {
                             <MKIcon name="equalizer" style={{
                                 fontSize: 18,
                                 color: '#f50',
-                            }}></MKIcon>
+                            }} />
                         </View>
                     )
                 }
@@ -87,7 +80,6 @@ export default class Card extends Component {
     }
 
     render() {
-
         var { card, showChart } = this.props;
         var song = card.playlist.slice()[0];
 
@@ -95,31 +87,30 @@ export default class Card extends Component {
             <TouchableOpacity style={styles.container} onPress={e => card.playlist.length && showChart(card)}>
                 {
                     song
-                    ? (
-                        <FadeImage {...{
-                            source: {
-                                uri: song.artwork,
-                            },
+                        ? (
+                            <FadeImage {...{
+                                source: {
+                                    uri: song.artwork,
+                                },
 
-                            style: {
-                                height: 150,
-                                width: 150,
-                            },
-                        }}>
-                            {this.renderContent()}
-                        </FadeImage>
-                    )
-                    : (
-                        <Image {...{
-                            source: require('../../images/loading.gif'),
+                                style: {
+                                    height: 150,
+                                    width: 150,
+                                },
+                            }}>
+                                {this.renderContent()}
+                            </FadeImage>
+                        )
+                        : (
+                            <Image {...{
+                                source: require('../../images/loading.gif'),
 
-                            style: {
-                                height: 12,
-                                width: 12,
-                            },
-                        }}>
-                        </Image>
-                    )
+                                style: {
+                                    height: 12,
+                                    width: 12,
+                                },
+                            }} />
+                        )
                 }
             </TouchableOpacity>
         );

@@ -1,6 +1,5 @@
 
 export default (num) => {
-
     var minutes = 0;
     var seconds = 0;
 

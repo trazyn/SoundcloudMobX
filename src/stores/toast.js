@@ -2,7 +2,6 @@
 import { observable, action } from 'mobx';
 
 class Toast {
-
     timer;
 
     @observable message;
@@ -13,7 +12,6 @@ class Toast {
         self.show = state;
 
         if (state) {
-
             clearTimeout(self.timer);
 
             self.timer = setTimeout(() => {
@@ -23,7 +21,6 @@ class Toast {
     }
 
     @action showMessage(message, color) {
-
         self.message = message;
         self.color = color;
 
@@ -31,8 +28,9 @@ class Toast {
             self.show = false;
             clearTimeout(self.timer);
             setTimeout(self.toggle);
-        } else
+        } else {
             self.toggle();
+        }
     }
 
     @action showError(message) {

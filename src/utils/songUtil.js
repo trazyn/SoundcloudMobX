@@ -5,9 +5,8 @@ import { CLIENT_ID } from '../config';
 var favCache = {};
 
 export async function isFavorited({ userid, songid, value }) {
-
     if (void 0 !== value) {
-        return favCache[songid] = value;
+        return (favCache[songid] = value);
     }
 
     if (favCache.hasOwnProperty(songid)) {
@@ -19,7 +18,7 @@ export async function isFavorited({ userid, songid, value }) {
         var res = favCache[songid] = !!response.data.user_favorite;
 
         return res;
-    } catch(ex) {
+    } catch (ex) {
         favCache[songid] = false;
         return false;
     }
@@ -28,7 +27,6 @@ export async function isFavorited({ userid, songid, value }) {
 isFavorited.cache = {};
 
 export async function addFavorited(userid, songid) {
-
     var response = await axios({
         url: `https://api.soundcloud.com/users/${userid}/favorites/${songid}?client_id=${CLIENT_ID}`,
         method: 'put',
@@ -37,10 +35,10 @@ export async function addFavorited(userid, songid) {
 }
 
 export async function removeFavorited(userid, songid) {
-
     var response = await axios({
         url: `https://api.soundcloud.com/users/${userid}/favorites/${songid}?client_id=${CLIENT_ID}`,
         method: 'delete',
     });
+
     return response.data.user_favorite;
 }

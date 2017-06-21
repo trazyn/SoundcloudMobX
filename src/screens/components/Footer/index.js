@@ -20,13 +20,11 @@ import FadeImage from '../../../components/FadeImage';
 }))
 @observer
 export default class Footer extends Component {
-
     static propTypes = {
         navigation: PropTypes.object.isRequired,
     };
 
     highlight(props = this.props) {
-
         var { navigation } = props;
         var { index, routes } = navigation.state;
         var current = routes[index];
@@ -34,7 +32,6 @@ export default class Footer extends Component {
         var ele = this.refs[name];
 
         if (ele) {
-
             ele.setNativeProps({
                 style: {
                     color: 'red'
@@ -42,9 +39,7 @@ export default class Footer extends Component {
             });
 
             for (var key in this.refs) {
-
                 if (key !== name) {
-
                     this.refs[key].setNativeProps({
 
                         style: {
@@ -63,7 +58,6 @@ export default class Footer extends Component {
     }
 
     caninavigate(routeName) {
-
         var { navigate, state } = this.props.navigation;
         var current = state.routes[state.index];
 
@@ -73,8 +67,7 @@ export default class Footer extends Component {
     }
 
     render() {
-
-        var { navigation, playing, paused, song } = this.props;
+        var { playing, paused, song } = this.props;
 
         return (
             <Animated.View style={[styles.container, this.props.style]}>
@@ -82,24 +75,23 @@ export default class Footer extends Component {
                 <TouchableOpacity style={styles.item} onPress={e => {
                     this.caninavigate('Home');
                 }}>
-                    <Icon name="playlist" ref="Home" size={20}></Icon>
+                    <Icon name="playlist" ref="Home" size={20} />
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.item} onPress={e => {
                     this.caninavigate('Charts');
                 }}>
-                    <Icon name="magnifier" ref="Charts" size={20}></Icon>
+                    <Icon name="magnifier" ref="Charts" size={20} />
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.item} onPress={e => {
-
                     if (this.props.isLogin()) {
                         this.caninavigate('Profile');
                     } else {
                         this.caninavigate('Login');
                     }
                 }}>
-                    <Icon name="heart" ref="Profile" size={20}></Icon>
+                    <Icon name="heart" ref="Profile" size={20} />
                 </TouchableOpacity>
 
                 {
@@ -116,12 +108,12 @@ export default class Footer extends Component {
                                 style: {
                                     height: 30,
                                     width: 30,
-                                    shadowColor: "#000000",
-                                    shadowOpacity: 0.6,
+                                    shadowColor: '#000',
+                                    shadowOpacity: .6,
                                     shadowRadius: 8,
                                     shadowOffset: {
                                         height: 8,
-                                            width: -2
+                                        width: -2
                                     },
                                 },
                             }}>
@@ -134,8 +126,8 @@ export default class Footer extends Component {
                                 }}>
                                     {
                                         !paused
-                                            ? <Icon name="control-pause" size={10} color="white"></Icon>
-                                            : <Icon name="control-play" size={10} color="white"></Icon>
+                                            ? <Icon name="control-pause" size={10} color="white" />
+                                            : <Icon name="control-play" size={10} color="white" />
                                     }
                                 </View>
                             </FadeImage>
@@ -147,7 +139,7 @@ export default class Footer extends Component {
     }
 }
 
-const { height, width } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
 
     container: {

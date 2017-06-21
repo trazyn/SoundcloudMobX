@@ -1,7 +1,6 @@
 
 import React, { Component, PropTypes } from 'react';
-import { observer, inject } from 'mobx-react/native';
-import Icon from 'react-native-vector-icons/SimpleLineIcons';
+import { inject } from 'mobx-react/native';
 import {
     View,
     Text,
@@ -14,7 +13,6 @@ import {
     InteractionManager,
 } from 'react-native';
 
-import { CLIENT_ID, SECRET } from '../../config';
 import Loader from '../../components/Loader';
 import FadeImage from '../../components/FadeImage';
 
@@ -25,9 +23,11 @@ import FadeImage from '../../components/FadeImage';
     error: stores.error,
 }))
 export default class Login extends Component {
+    static propTypes = {
+        navigation: PropTypes.object.isRequired,
+    };
 
     handleLogin() {
-
         var { info, error } = this.props;
         var { username, password } = this.refs;
 
@@ -55,16 +55,16 @@ export default class Login extends Component {
     }
 
     render() {
-
         var { loading } = this.props;
 
         return (
             <View style={styles.container}>
-                <FadeImage showLoading={true} source={{
-                    uri: 'https://unsplash.it/375/667?random'
-                }}
-                style={styles.background}>
-                </FadeImage>
+                <FadeImage
+                    showLoading={true}
+                    source={{
+                        uri: 'https://unsplash.it/375/667?random'
+                    }}
+                    style={styles.background} />
 
                 <View style={styles.content}>
                     {
@@ -89,7 +89,7 @@ export default class Login extends Component {
                                             rotate: '0deg'
                                         }]
                                     }
-                                }}></Loader>
+                                }} />
                             </View>
                         )
                     }
@@ -109,25 +109,23 @@ export default class Login extends Component {
 
                     <View style={styles.form}>
                         <TextInput
-                        style={styles.input}
-                        autoCapitalize='none'
-                        autoCorrect={false}
-                        maxLength={40}
-                        placeholderTextColor='rgba(0,0,0,.45)'
-                        ref="username"
-                        placeholder='Email'>
-                        </TextInput>
+                            style={styles.input}
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                            maxLength={40}
+                            placeholderTextColor="rgba(0,0,0,.45)"
+                            ref="username"
+                            placeholder="Email" />
 
                         <TextInput
-                        style={styles.input}
-                        secureTextEntry={true}
-                        maxLength={20}
-                        placeholderTextColor='rgba(0,0,0,.45)'
-                        ref="password"
-                        placeholder='Password'>
-                        </TextInput>
+                            style={styles.input}
+                            secureTextEntry={true}
+                            maxLength={20}
+                            placeholderTextColor="rgba(0,0,0,.45)"
+                            ref="password"
+                            placeholder="Password" />
 
-                        <TouchableOpacity onPress={this.handleLogin.bind(this)}>
+                        <TouchableOpacity onPress={() => this.handleLogin()}>
                             <Text style={styles.login}>Login</Text>
                         </TouchableOpacity>
                     </View>

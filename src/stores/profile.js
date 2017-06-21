@@ -1,12 +1,11 @@
 
-import { observable, action, computed } from 'mobx';
+import { observable, action } from 'mobx';
 import axios from 'axios';
 import { CLIENT_ID } from '../config';
 import songsFilter from '../utils/songsFilter';
 import uuid from 'uuid';
 
 class Profile {
-
     @observable loading = false;
     @observable followers = [];
     @observable suggestions = [];
@@ -22,7 +21,6 @@ class Profile {
     likedHrefNext;
 
     @action async getFollowers(userid) {
-
         var response = await axios.get(`https://api.soundcloud.com/users/${userid}/followings?
             &client_id=${CLIENT_ID}
             &limit=5
@@ -35,7 +33,6 @@ class Profile {
     }
 
     @action async loadMoreFollowers() {
-
         var response = await axios.get(self.followersHrefNext);
 
         self.followers.push(...response.data.collection);
@@ -43,7 +40,6 @@ class Profile {
     }
 
     @action async getSuggestion() {
-
         var response = await axios.get(`https://api-v2.soundcloud.com/me/personalized-tracks?
             &linked_partitioning=0
             &limit=5
@@ -56,7 +52,6 @@ class Profile {
     }
 
     @action async loadMoreSuggestion() {
-
         self.loading4suggestion = true;
 
         var response = await axios.get(self.suggestionHrefNext);
@@ -68,7 +63,6 @@ class Profile {
     }
 
     @action async getRecent() {
-
         self.loading = true;
 
         var response = await axios.get(`https://api-v2.soundcloud.com/me/play-history/tracks?
@@ -87,7 +81,6 @@ class Profile {
     }
 
     @action async loadMoreRecent() {
-
         self.loading4recent = true;
 
         var response = await axios.get(self.recentHrefNext);
@@ -99,7 +92,6 @@ class Profile {
     }
 
     @action async getLiked(userid) {
-
         self.loading = true;
         var response = await axios.get(`https://api-v2.soundcloud.com/users/${userid}/track_likes?
             &client_id=${CLIENT_ID}
@@ -117,7 +109,6 @@ class Profile {
     }
 
     @action async loadMoreLiked() {
-
         if (!self.likedHrefNext) {
             return [];
         }

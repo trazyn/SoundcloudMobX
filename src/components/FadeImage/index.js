@@ -4,17 +4,14 @@ import { View, Animated } from 'react-native';
 import blacklist from '../../utils/blacklist';
 
 export default class FadeImage extends Component {
-
     static propTypes = {
         showLoading: PropTypes.bool,
-        duration: PropTypes.number,
         onLoadEnd: PropTypes.func,
     };
 
     static defaultProps = {
         showLoading: false,
-        duration: 400,
-        onLoadEnd: new Function(),
+        onLoadEnd: Function,
     };
 
     state = {
@@ -23,7 +20,6 @@ export default class FadeImage extends Component {
     };
 
     render() {
-
         var opacity = this.state.opacity;
         var styles = this.props.style;
         var loadingOpacity = opacity.interpolate({
@@ -58,30 +54,29 @@ export default class FadeImage extends Component {
                                     height: 12,
                                     width: 12,
                                 },
-                            }}></Animated.Image>
+                            }} />
                         </Animated.View>
                     )
                 }
                 <Animated.Image {...blacklist(this.props, 'onLoadEnd', 'style')}
 
-                style={[...styles, {
-                    opacity,
-                }]}
+                    style={[...styles, {
+                        opacity,
+                    }]}
 
-                onLoadEnd={e => {
+                    onLoadEnd={e => {
+                        this.setState({
+                            ...this.state,
+                            loaded: true,
+                        });
+                        this.props.onLoadEnd();
 
-                    this.setState({
-                        ...this.state,
-                        loaded: true,
-                    });
-                    this.props.onLoadEnd();
-
-                    Animated.timing(opacity, {
-                        toValue: 1,
-                        duration: 400
-                    }).start();
-                }}>
-                {this.props.children}
+                        Animated.timing(opacity, {
+                            toValue: 1,
+                            duration: 400
+                        }).start();
+                    }}>
+                    {this.props.children}
                 </Animated.Image>
             </View>
         );

@@ -2,7 +2,7 @@
 import React, { Component, PropTypes } from 'react';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import MKIcon from 'react-native-vector-icons/MaterialIcons';
-import { inject, observer } from 'mobx-react/native';
+import { inject } from 'mobx-react/native';
 import {
     View,
     Text,
@@ -18,7 +18,6 @@ import humanNumber from '../../../utils/humanNumber';
 import Playing from './Playing';
 
 @inject(stores => {
-
     var player = stores.player;
 
     return {
@@ -30,39 +29,19 @@ import Playing from './Playing';
     };
 })
 export default class Song extends Component {
-
     static propTypes = {
         title: PropTypes.string.isRequired,
         id: PropTypes.number.isRequired,
-        duration: PropTypes.number.isRequired,
         commentCount: PropTypes.number.isRequired,
         likedCount: PropTypes.number.isRequired,
         playbackCount: PropTypes.number.isRequired,
-        created: PropTypes.number.isRequired,
-        genre: PropTypes.string.isRequired,
-        streamable: PropTypes.bool.isRequired,
-        streamUrl: PropTypes.string.isRequired,
-        taglist: PropTypes.string.isRequired,
-        uri: PropTypes.string.isRequired,
-        fav: PropTypes.bool.isRequired,
         user: PropTypes.object.isRequired,
-        waveform: PropTypes.string.isRequired,
-        labelId: PropTypes.number,
-        lableNumber: PropTypes.string,
-        release: PropTypes.string,
-        releaseDay: PropTypes.number,
-        releaseMonth: PropTypes.number,
-        releaseYear: PropTypes.number,
-        desc: PropTypes.string,
         artwork: PropTypes.string,
-
         play: PropTypes.func.isRequired,
     };
 
     render() {
-
-        const { title, id, user, artwork, likedCount, commentCount, playbackCount, play } = this.props;
-
+        var { title, id, user, artwork, likedCount, commentCount, playbackCount, play } = this.props;
         var playing = this.props.isPlaying(id);
 
         return (
@@ -72,48 +51,48 @@ export default class Song extends Component {
                     {
                         playing
 
-                        ? <Playing artwork={artwork} title={title} user={user} enter={() => play({...blacklist(this.props, 'play')})}></Playing>
-                        : (
-                            <View style={{
-                                overflow: 'hidden'
-                            }}>
-                                <View style={[styles.placeholder, {
-                                    backgroundColor: `#${('00' + (Math.random() * 1000 | 0)).slice(-3)}`
-                                }]}>
-                                    <Image source={{
-                                        uri: artwork,
-                                    }}
-                                    style={styles.artwork}>
-                                    </Image>
-                                </View>
+                            ? <Playing artwork={artwork} title={title} user={user} enter={() => play({...blacklist(this.props, 'play')})} />
+                            : (
+                                <View style={{
+                                    overflow: 'hidden'
+                                }}>
+                                    <View style={[styles.placeholder, {
+                                        backgroundColor: `#${('00' + (Math.random() * 1000 | 0)).slice(-3)}`
+                                    }]}>
+                                        <Image
+                                            source={{
+                                                uri: artwork,
+                                            }}
+                                            style={styles.artwork} />
+                                    </View>
 
-                                <View>
-                                    <Text style={styles.title} ellipsizeMode="tail" numberOfLines={1}>{title}</Text>
-                                    <Text style={styles.username}>{user ? user.username : 'UNKNOW'}</Text>
+                                    <View>
+                                        <Text style={styles.title} ellipsizeMode="tail" numberOfLines={1}>{title}</Text>
+                                        <Text style={styles.username}>{user ? user.username : 'UNKNOW'}</Text>
 
-                                    <View style={styles.meta}>
-                                        <TouchableOpacity style={styles.metaItem}>
-                                            <Icon name="heart" style={styles.metaIcon}></Icon>
-                                            <Text style={styles.metaText}>{humanNumber(likedCount)}</Text>
-                                        </TouchableOpacity>
+                                        <View style={styles.meta}>
+                                            <TouchableOpacity style={styles.metaItem}>
+                                                <Icon name="heart" style={styles.metaIcon} />
+                                                <Text style={styles.metaText}>{humanNumber(likedCount)}</Text>
+                                            </TouchableOpacity>
 
-                                        <TouchableOpacity style={styles.metaItem}>
-                                            <Icon name="bubble" style={styles.metaIcon}></Icon>
-                                            <Text style={styles.metaText}>{humanNumber(commentCount)}</Text>
-                                        </TouchableOpacity>
+                                            <TouchableOpacity style={styles.metaItem}>
+                                                <Icon name="bubble" style={styles.metaIcon} />
+                                                <Text style={styles.metaText}>{humanNumber(commentCount)}</Text>
+                                            </TouchableOpacity>
 
-                                        <TouchableOpacity style={styles.metaItem}>
-                                            <Icon name="music-tone-alt" style={styles.metaIcon}></Icon>
-                                            <Text style={styles.metaText}>{humanNumber(playbackCount)}</Text>
-                                        </TouchableOpacity>
+                                            <TouchableOpacity style={styles.metaItem}>
+                                                <Icon name="music-tone-alt" style={styles.metaIcon} />
+                                                <Text style={styles.metaText}>{humanNumber(playbackCount)}</Text>
+                                            </TouchableOpacity>
 
                                             <TouchableHighlight style={styles.play} onPress={() => play({...blacklist(this.props, 'play')})}>
-                                                <MKIcon name="play-arrow" style={styles.playIcon}></MKIcon>
+                                                <MKIcon name="play-arrow" style={styles.playIcon} />
                                             </TouchableHighlight>
+                                        </View>
                                     </View>
                                 </View>
-                            </View>
-                        )
+                            )
                     }
 
                 </View>
@@ -122,7 +101,7 @@ export default class Song extends Component {
     }
 }
 
-const { height, width } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         width: 300,
@@ -136,7 +115,7 @@ const styles = StyleSheet.create({
 
     shadow: {
         width: 300,
-        shadowColor: "#000000",
+        shadowColor: '#000',
         shadowOpacity: 0.3,
         shadowRadius: 8,
         shadowOffset: {
@@ -203,7 +182,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'row',
         backgroundColor: 'rgba(0,0,0,.9)',
-        shadowColor: "#000000",
+        shadowColor: '#000',
         shadowOpacity: 0.8,
         shadowRadius: 8,
         shadowOffset: {

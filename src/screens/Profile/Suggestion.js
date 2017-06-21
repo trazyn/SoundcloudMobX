@@ -5,7 +5,6 @@ import {
     View,
     Text,
     TouchableOpacity,
-    Dimensions,
     StyleSheet,
 } from 'react-native';
 
@@ -19,7 +18,6 @@ import humanNumber from '../../utils/humanNumber';
 }))
 @observer
 export default class Suggestion extends Component {
-
     static propTypes = {
         seed: PropTypes.object.isRequired,
         tracks: PropTypes.array.isRequired,
@@ -27,11 +25,9 @@ export default class Suggestion extends Component {
     };
 
     renderContent(tracks) {
-
         var { uuid, songid, seed } = this.props;
 
         return songsFilter(tracks).map((track, index) => {
-
             var playing = uuid === seed.id && songid === track.id;
 
             return (
@@ -50,7 +46,7 @@ export default class Suggestion extends Component {
                             height: 115,
                             width: 335,
                         }
-                    }}></FadeImage>
+                    }} />
 
                     <View style={[styles.overlay, playing && {
                         backgroundColor: 'rgba(255,255,255,.8)',
@@ -69,7 +65,7 @@ export default class Suggestion extends Component {
                             justifyContent: 'center',
                             alignItems: 'center',
                         }}>
-                            <View style={[styles.line, playing && { backgroundColor: '#f50' }]}></View>
+                            <View style={[styles.line, playing && { backgroundColor: '#f50' }]} />
                             <Text style={[{
                                 marginRight: 10,
                                 marginLeft: 10,
@@ -77,7 +73,7 @@ export default class Suggestion extends Component {
                                 color: '#fff',
                                 fontWeight: '100',
                             }, playing && styles.playing]}>{track.user.username}</Text>
-                            <View style={[styles.line, playing && { backgroundColor: '#f50' }]}></View>
+                            <View style={[styles.line, playing && { backgroundColor: '#f50' }]} />
                         </View>
 
                         <View style={{
@@ -100,7 +96,6 @@ export default class Suggestion extends Component {
     }
 
     render() {
-
         var seed = this.props.seed;
 
         return (

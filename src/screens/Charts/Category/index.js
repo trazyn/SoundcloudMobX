@@ -12,14 +12,11 @@ import {
     StyleSheet,
 } from 'react-native';
 
-import { CHART_GENRES_MAP } from '../../../config';
-import parseTimes from '../../../utils/parseTimes';
 import Loader from '../../../components/Loader';
 import FadeImage from '../../../components/FadeImage';
 import SongCard from './Song';
 
 @inject(stores => {
-
     return {
         playlist: stores.category.playlist,
         genre: stores.category.genre,
@@ -37,14 +34,12 @@ import SongCard from './Song';
         player: stores.player,
 
         isPlaying: () => {
-
             var player = stores.player;
             return player.playing
                 && player.playlist.uuid === stores.category.playlist.uuid;
         },
 
         updatePlaylist: (playlist) => {
-
             var player = stores.player;
 
             /** When load more update the playlist of player */
@@ -57,6 +52,9 @@ import SongCard from './Song';
 })
 @observer
 export default class Category extends Component {
+    static propTypes = {
+        navigation: PropTypes.object.isRequired,
+    };
 
     componentWillMount() {
         this.props.init(this.props.navigation.state.params.data);
@@ -67,7 +65,6 @@ export default class Category extends Component {
     }
 
     renderCoverWall(start = 0, end = 5) {
-
         var playlist = this.props.playlist;
 
         if (!playlist.length) {
@@ -75,7 +72,6 @@ export default class Category extends Component {
         }
 
         return new Array(end - start).fill(0).map((e, index) => {
-
             var song = playlist[start + index];
 
             return (
@@ -88,13 +84,12 @@ export default class Category extends Component {
                         height: 75,
                         width: 75,
                     }
-                }}></FadeImage>
+                }} />
             );
         });
     }
 
     showPlaying(song) {
-
         this.props.mark4playing();
         this.props.navigation.navigate('Player');
         this.props.player.start({
@@ -104,7 +99,6 @@ export default class Category extends Component {
     }
 
     togglePlayer() {
-
         var { playlist, player, isPlaying } = this.props;
 
         if (!isPlaying()) {
@@ -119,7 +113,6 @@ export default class Category extends Component {
     };
 
     render() {
-
         var { playlist, genre, doRefresh, loading4refresh, doLoadmore, loading4loadmore, hasEnd, player } = this.props;
         var playing = this.props.isPlaying();
         var ds = new ListView.DataSource({
@@ -146,7 +139,7 @@ export default class Category extends Component {
                             rotate: '0deg'
                         }]
                     }
-                }}></Loader>
+                }} />
 
                 <View style={styles.header}>
                     <View style={styles.coverWall}>
@@ -160,7 +153,7 @@ export default class Category extends Component {
                         }
                     </View>
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()} style={styles.back}>
-                        <Icon name="arrow-left" color="white" size={14}></Icon>
+                        <Icon name="arrow-left" color="white" size={14} />
                     </TouchableOpacity>
 
                     <View style={styles.hero}>
@@ -173,11 +166,11 @@ export default class Category extends Component {
                             </Text>
                         </View>
 
-                        <TouchableOpacity onPress={this.togglePlayer.bind(this)}>
+                        <TouchableOpacity onPress={() => this.togglePlayer()}>
                             {
                                 playing && !player.paused
-                                    ? (<Icon name="control-pause" size={20} color="red"></Icon>)
-                                    : (<Icon name="control-play" size={20} color="red"></Icon>)
+                                    ? <Icon name="control-pause" size={20} color="red" />
+                                    : <Icon name="control-play" size={20} color="red" />
                             }
                         </TouchableOpacity>
                     </View>
@@ -185,79 +178,73 @@ export default class Category extends Component {
 
                 <ListView
 
-                onScrollEndDrag={e => {
-
-                    if (e.nativeEvent.contentOffset.y < -40) {
-                        doRefresh();
-                    }
-                }}
-
-                onEndReachedThreshold={1}
-                onEndReached={() => {
-
-                    if (hasEnd === false) {
-                        doLoadmore();
-                    }
-                }}
-
-                scrollEventThrottle={16}
-                onScroll={Animated.event(
-                    [{
-                        nativeEvent: {
-                            contentOffset: {
-                                y: this.state.opacity
-                            }
+                    onScrollEndDrag={e => {
+                        if (e.nativeEvent.contentOffset.y < -40) {
+                            doRefresh();
                         }
-                    }]
-                )}
+                    }}
 
-                style={[styles.playlist, loading4refresh && {
-                    paddingTop: 40
-                }]}
+                    onEndReachedThreshold={1}
+                    onEndReached={() => {
+                        if (hasEnd === false) {
+                            doLoadmore();
+                        }
+                    }}
 
-                enableEmptySections={true}
-                dataSource={dataSource}
-                renderRow={(song, sectionId, rowId) => {
-
-                    var times = parseTimes(song.duration);
-                    var active = playing && song.id === player.song.id;
-
-                    return (
-                        <View>
-                            <SongCard {...{
-                                artwork: song.artwork,
-                                title: song.title,
-                                user: song.user,
-                                active: !!active,
-                                play: () => {
-                                    this.showPlaying(song);
-                                },
-                                rank: +rowId + 1,
-                            }}></SongCard>
-
-                            {
-                                ++rowId === 50 && (
-                                    <View style={{
-                                        width,
-                                        marginTop: 10,
-                                        marginBottom: 10,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        flexDirection: 'row',
-                                    }}>
-                                        <View style={styles.line}></View>
-
-                                        <Text style={styles.end}>END</Text>
-
-                                        <View style={styles.line}></View>
-                                    </View>
-                                )
+                    scrollEventThrottle={16}
+                    onScroll={Animated.event(
+                        [{
+                            nativeEvent: {
+                                contentOffset: {
+                                    y: this.state.opacity
+                                }
                             }
-                        </View>
-                    );
-                }}>
-                </ListView>
+                        }]
+                    )}
 
+                    style={[styles.playlist, loading4refresh && {
+                        paddingTop: 40
+                    }]}
+
+                    enableEmptySections={true}
+                    dataSource={dataSource}
+                    renderRow={(song, sectionId, rowId) => {
+                        var active = playing && song.id === player.song.id;
+
+                        return (
+                            <View>
+                                <SongCard {...{
+                                    artwork: song.artwork,
+                                    title: song.title,
+                                    user: song.user,
+                                    active: !!active,
+                                    play: () => {
+                                        this.showPlaying(song);
+                                    },
+                                    rank: +rowId + 1,
+                                }} />
+
+                                {
+                                    ++rowId === 50 && (
+                                        <View style={{
+                                            width,
+                                            marginTop: 10,
+                                            marginBottom: 10,
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            flexDirection: 'row',
+                                        }}>
+                                            <View style={styles.line} />
+
+                                            <Text style={styles.end}>END</Text>
+
+                                            <View style={styles.line} />
+                                        </View>
+                                    )
+                                }
+                            </View>
+                        );
+                    }} />
                 {
                     loading4loadmore && (
 
@@ -280,7 +267,7 @@ export default class Category extends Component {
                                         rotate: '0deg'
                                     }]
                                 }
-                            }}></Loader>
+                            }} />
                         </View>
                     )
                 }
@@ -323,7 +310,7 @@ const styles = StyleSheet.create({
         height: 75,
         width,
         flexDirection: 'row',
-        shadowColor: "#000000",
+        shadowColor: '#000',
         shadowOpacity: 0.3,
         shadowRadius: 8,
         shadowOffset: {

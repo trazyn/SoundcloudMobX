@@ -1,14 +1,11 @@
 
 import { observable, action } from 'mobx';
-import Sound from 'react-native-audio-streaming';
-import { ReactNativeAudioStreaming } from "react-native-audio-streaming";
+import { ReactNativeAudioStreaming } from 'react-native-audio-streaming';
 import axios from 'axios';
-import { AsyncStorage } from 'react-native';
 import { CLIENT_ID, PLAYER_MODE } from '../config';
-import { DeviceEventEmitter } from 'react-native';
+import { AsyncStorage, DeviceEventEmitter } from 'react-native';
 
 class Player {
-
     @observable song = {};
     @observable playlist = [];
     @observable progress = 0;
@@ -26,7 +23,6 @@ class Player {
     }
 
     @action toggle() {
-
         if (self.paused) {
             ReactNativeAudioStreaming.resume();
         } else {
@@ -37,13 +33,11 @@ class Player {
     }
 
     @action updatePlaylist(playlist) {
-
         self.playlist.clear();
         self.playlist.push(...playlist.slice());
     }
 
     @action async start({ song, playlist = self.playlist, needTrack = true }) {
-
         var prev = self.song;
 
         /** Keep playlist always reaction */
@@ -51,7 +45,6 @@ class Player {
 
         if (prev.id === song.id
             && self.playlist.uuid === playlist.uuid) {
-
             if (self.paused) {
                 self.toggle();
             }
@@ -92,7 +85,6 @@ class Player {
     }
 
     @action async changeMode() {
-
         var index = PLAYER_MODE.indexOf(self.mode);
 
         if (index === -1 || index === PLAYER_MODE.length - 1) {
@@ -105,13 +97,11 @@ class Player {
     }
 
     @action next() {
-
         var playlist = self.playlist;
         var index = playlist.findIndex(e => e.id === self.song.id);
         var song;
 
         if (self.mode === PLAYER_MODE[0]) {
-
             if (index === playlist.length - 1) {
                 song = playlist[0];
             } else {
@@ -132,7 +122,6 @@ class Player {
     }
 
     @action prev() {
-
         var song = self.history[self.history.length - 2];
 
         if (!song) {
@@ -153,10 +142,9 @@ class Player {
         }
 
         DeviceEventEmitter.addListener('AudioBridgeEvent', e => {
+            var { status, duration, progress } = e;
 
-            var { status, duration, progress, url } = e;
-
-            if ('ERROR' === status) {
+            if (status === 'ERROR') {
                 throw e;
             }
 
@@ -166,12 +154,12 @@ class Player {
                 self.progress = 0;
             }
 
-            if ('STOPPED' === status && self.playing === false) {
+            if (status === 'STOPPED' && self.playing === false) {
                 return self.next();
             }
 
-            if ('STREAMING' === status) {
-                return self.progress = progress / duration;
+            if (status === 'STREAMING') {
+                return (self.progress = progress / duration);
             }
         });
     }

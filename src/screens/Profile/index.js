@@ -6,7 +6,6 @@ import {
     View,
     Text,
     ListView,
-    ScrollView,
     TouchableOpacity,
     StyleSheet,
     StatusBar,
@@ -15,7 +14,6 @@ import {
 } from 'react-native';
 
 import FadeImage from '../../components/FadeImage';
-import Loader from '../../components/Loader';
 import Followers from './Followers';
 import Recent from './Recent';
 import Liked from './Liked';
@@ -36,6 +34,9 @@ import Suggestion from './Suggestion';
 }))
 @observer
 export default class Profile extends Component {
+    static propTypes = {
+        navigation: PropTypes.object.isRequired,
+    };
 
     componentWillMount() {
         this.props.getList();
@@ -46,11 +47,9 @@ export default class Profile extends Component {
     }
 
     renderHeader() {
-
-        var { user, recent, liked } = this.props;
+        var { user } = this.props;
 
         return (
-
             <View style={{
                 flex: 1,
             }}>
@@ -67,7 +66,7 @@ export default class Profile extends Component {
                         width,
                         height: 210,
                         backgroundColor: 'rgba(0,0,0,.4)',
-                    }}></View>
+                    }} />
 
                     <View style={{
                         justifyContent: 'space-between',
@@ -82,7 +81,7 @@ export default class Profile extends Component {
                                     height: 100,
                                     width: 100,
                                 }
-                            }}></FadeImage>
+                            }} />
                         </View>
 
                         <View style={{
@@ -94,37 +93,37 @@ export default class Profile extends Component {
                                 <Text style={styles.desc} numberOfLines={1} ellipsizeMode="tail">{user.description}</Text>
                             </View>
 
-                            <Followers></Followers>
+                            <Followers />
                         </View>
                     </View>
 
-                    <TouchableOpacity style={{
-                        height: 24,
-                        width: 24,
-                        flexDirection: 'row',
-                        justifyContent: 'flex-end',
-                    }}
-                    onPress={() => {
-
-                        this.props.openModal([{
-                            title: 'Logout',
-                            callback: () => {
-                                this.props.logout();
-                                this.props.navigation.navigate('Home');
-                            },
-                        }, {
-                            title: 'View Home Page',
-                            callback: this.props.openHomePage,
-                        }]);
-                    }}>
+                    <TouchableOpacity
+                        style={{
+                            height: 24,
+                            width: 24,
+                            flexDirection: 'row',
+                            justifyContent: 'flex-end',
+                        }}
+                        onPress={() => {
+                            this.props.openModal([{
+                                title: 'Logout',
+                                callback: () => {
+                                    this.props.logout();
+                                    this.props.navigation.navigate('Home');
+                                },
+                            }, {
+                                title: 'View Home Page',
+                                callback: this.props.openHomePage,
+                            }]);
+                        }}>
                         <Icon name="options-vertical" size={18} color="white" style={{
                             backgroundColor: 'transparent',
-                        }}></Icon>
+                        }} />
                     </TouchableOpacity>
                 </FadeImage>
 
-                <Recent showList={e => this.props.navigation.navigate('RecentPlaylist')}></Recent>
-                <Liked showList={e => this. props.navigation.navigate('LikedPlaylist')}></Liked>
+                <Recent showList={e => this.props.navigation.navigate('RecentPlaylist')} />
+                <Liked showList={e => this.props.navigation.navigate('LikedPlaylist')} />
             </View>
         );
     }
@@ -138,52 +137,48 @@ export default class Profile extends Component {
 
         return (
             <ListView
+                renderHeader={() => this.renderHeader()}
 
-            renderHeader={this.renderHeader.bind(this)}
+                initialListSize={1}
+                onEndReachedThreshold={1}
+                pageSize={1}
+                onEndReached={() => {
+                    list.length && this.props.loadMore();
+                }}
 
-            initialListSize={1}
-            onEndReachedThreshold={1}
-            pageSize={1}
-            onEndReached={() => {
-                list.length && this.props.loadMore();
-            }}
+                enableEmptySections={true}
+                dataSource={dataSource}
+                renderRow={(collection, sectionId, rowId) => {
+                    var seed = collection.seed_sound;
+                    var tracks = collection.recommended;
 
-            enableEmptySections={true}
-            dataSource={dataSource}
-            renderRow={(collection, sectionId, rowId) => {
-
-                var seed = collection.seed_sound;
-                var tracks = collection.recommended;
-
-                return (
-                    <View style={styles.suggestions}>
-                        <Suggestion {...{
-                            play: (song) => {
-
-                                tracks.uuid = seed.id;
-                                this.props.play({
-                                    song,
-                                    playlist: tracks,
-                                });
-                                this.props.navigation.navigate('Player');
-                            },
-                            seed,
-                            tracks: tracks.slice(),
-                        }}></Suggestion>
-                    </View>
-                );
-            }}
-            style={styles.container}>
-            </ListView>
+                    return (
+                        <View style={styles.suggestions}>
+                            <Suggestion {...{
+                                play: (song) => {
+                                    tracks.uuid = seed.id;
+                                    this.props.play({
+                                        song,
+                                        playlist: tracks,
+                                    });
+                                    this.props.navigation.navigate('Player');
+                                },
+                                seed,
+                                tracks: tracks.slice(),
+                            }} />
+                        </View>
+                    );
+                }}
+                style={styles.container} />
         );
     }
 }
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        shadowColor: "#000",
+        shadowColor: '#000',
         shadowOpacity: 0.3,
         shadowRadius: 12,
         shadowOffset: {

@@ -4,18 +4,15 @@ import { inject, observer } from 'mobx-react/native';
 import {
     ListView,
     StyleSheet,
-    Text,
     View,
     Dimensions,
     Animated,
-    TouchableOpacity,
 } from 'react-native';
 
 import Loader from '../../components/Loader';
 import Song from './Song';
 
 @inject(stores => {
-
     var { playlist, doRefresh, loading4refresh, doLoadmore, loading4loadmore } = stores.home;
 
     return {
@@ -25,7 +22,6 @@ import Song from './Song';
         doLoadmore,
         loading4loadmore,
         updatePlaylist: (playlist) => {
-
             var player = stores.player;
 
             /** When load more update the playlist of player */
@@ -38,7 +34,6 @@ import Song from './Song';
 })
 @observer
 export default class Songs extends Component {
-
     static propTypes = {
         play: PropTypes.func.isRequired,
     };
@@ -52,7 +47,6 @@ export default class Songs extends Component {
     }
 
     render() {
-
         var { playlist, doRefresh, loading4refresh, doLoadmore, loading4loadmore, play } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
@@ -78,7 +72,7 @@ export default class Songs extends Component {
                         left: -40,
                         opacity,
                     }
-                }}></Loader>
+                }} />
 
                 {
                     loading4loadmore && (
@@ -101,62 +95,58 @@ export default class Songs extends Component {
                                         rotate: '0deg'
                                     }]
                                 }
-                            }}></Loader>
+                            }} />
                         </View>
                     )
                 }
 
                 <ListView
 
-                onScrollEndDrag={e => {
-
-                    if (e.nativeEvent.contentOffset.x < -30) {
-                        setTimeout(doRefresh);
-                    }
-                }}
-
-                style={styles.container}
-                showsHorizontalScrollIndicator={false}
-                horizontal={true}
-
-                decelerationRate={0}
-                snapToInterval={width - (width - 300) / 2 - 20}
-                snapToAlignment='start'
-
-                scrollEventThrottle={16}
-                onScroll={Animated.event(
-                    [{
-                        nativeEvent: {
-                            contentOffset: {
-                                x: this.state.opacity
-                            }
+                    onScrollEndDrag={e => {
+                        if (e.nativeEvent.contentOffset.x < -30) {
+                            setTimeout(doRefresh);
                         }
-                    }]
-                )}
+                    }}
 
-                automaticallyAdjustContentInsets={false}
-                onEndReachedThreshold={1}
-                onEndReached={doLoadmore}
+                    style={styles.container}
+                    showsHorizontalScrollIndicator={false}
+                    horizontal={true}
 
-                enableEmptySections={true}
-                dataSource={dataSource}
-                renderRow={song => {
+                    decelerationRate={0}
+                    snapToInterval={width - (width - 300) / 2 - 20}
+                    snapToAlignment="start"
 
-                    var index = playlist.findIndex(e => e.id === song.id);
-                    return (
-                        <Song {...{
+                    scrollEventThrottle={16}
+                    onScroll={Animated.event(
+                        [{
+                            nativeEvent: {
+                                contentOffset: {
+                                    x: this.state.opacity
+                                }
+                            }
+                        }]
+                    )}
 
-                            ...song,
-                            play,
+                    automaticallyAdjustContentInsets={false}
+                    onEndReachedThreshold={1}
+                    onEndReached={doLoadmore}
 
-                            style: [(index === playlist.length - 1 && styles.pad), {
-                                left: -index * .5 - .5
-                            }]
-                        }}></Song>
-                    );
+                    enableEmptySections={true}
+                    dataSource={dataSource}
+                    renderRow={song => {
+                        var index = playlist.findIndex(e => e.id === song.id);
+                        return (
+                            <Song {...{
 
-                }}>
-                </ListView>
+                                ...song,
+                                play,
+
+                                style: [(index === playlist.length - 1 && styles.pad), {
+                                    left: -index * .5 - .5
+                                }]
+                            }} />
+                        );
+                    }} />
             </View>
         );
     }

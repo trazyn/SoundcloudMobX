@@ -17,7 +17,6 @@ import humanNumber from '../../../utils/humanNumber';
     openModal: stores.openModal,
 }))
 export default class Song extends Component {
-
     static propTypes = {
         artwork: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
@@ -30,7 +29,6 @@ export default class Song extends Component {
     };
 
     render() {
-
         var { artwork, title, user, actived, play, paused, commentCount } = this.props;
 
         return (
@@ -64,8 +62,8 @@ export default class Song extends Component {
                                     }}>
                                         {
                                             !paused
-                                                ? <Icon name="control-pause" size={10} color="white"></Icon>
-                                                : <Icon name="control-play" size={10} color="white"></Icon>
+                                                ? <Icon name="control-pause" size={10} color="white" />
+                                                : <Icon name="control-play" size={10} color="white" />
                                         }
                                     </View>
                                 )
@@ -86,7 +84,6 @@ export default class Song extends Component {
                     </View>
 
                     <TouchableOpacity style={styles.options} onPress={() => {
-
                         this.props.openModal([{
                             title: 'Play',
                             callback: play
@@ -97,19 +94,19 @@ export default class Song extends Component {
                             }
                         }]);
                     }}>
-                        <Icon name="options" color="#f50" size={14}></Icon>
+                        <Icon name="options" color="#f50" size={14} />
                     </TouchableOpacity>
                 </View>
 
                 <View style={[styles.line, actived && {
                     backgroundColor: '#f50',
-                }]}></View>
+                }]} />
             </TouchableOpacity>
         );
     }
 }
 
-const { height, width } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         width,
