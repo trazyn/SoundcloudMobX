@@ -1,29 +1,29 @@
 
 import React, { Component, PropTypes } from 'react';
-import Icon from 'react-native-vector-icons/SimpleLineIcons';
+import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Text,
     ListView,
     StyleSheet,
-    Dimensions,
-    InteractionManager,
     TouchableOpacity,
     Image,
 } from 'react-native';
+import parseTimes from '../../utils/parseTimes';
 
+@inject(stores => ({
+    list: stores.player.playlist.slice(),
+    play: stores.player.start,
+}))
+@observer
 export default class PlayList extends Component {
-
     static propTypes = {
-        list: PropTypes.array.isRequired,
         current: PropTypes.object.isRequired,
-        play: PropTypes.func.isRequired,
     };
 
     offset = {};
 
     human(number) {
-
         if (number > 1000) {
             return (number / 1000).toFixed(2) + 'K';
         }
@@ -31,13 +31,11 @@ export default class PlayList extends Component {
         return number;
     }
 
-    highlight(offset = this.offset[this.props.current.id].y) {
-
+    highlight(offset) {
         var container = this.refs.container;
         var activeOffset = this.offset[this.props.current.id];
 
         if (container && activeOffset) {
-
             offset = offset === void 0 ? activeOffset.y : offset;
 
             if (this.contentHeight - offset < this.scrollViewHeight) {
@@ -52,7 +50,6 @@ export default class PlayList extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-
         var offset = this.offset[nextProps.current.id];
 
         if (nextProps.current.id !== this.props.current.id && offset) {
@@ -60,12 +57,7 @@ export default class PlayList extends Component {
         }
     }
 
-    componentDidMount() {
-        InteractionManager.runAfterInteractions(this.highlight.bind(this));
-    }
-
     render() {
-
         var { list, current = {} } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.id !== r2.id
@@ -76,63 +68,62 @@ export default class PlayList extends Component {
         return (
             <ListView
 
-            ref="container"
+                ref="container"
 
-            initialListSize={index + 1}
-            removeClippedSubviews={true}
-            onContentSizeChange={(w, h) => this.contentHeight = h}
-            onLayout={(e) => this.scrollViewHeight = e.nativeEvent.layout.height}
+                initialListSize={index + 1}
+                removeClippedSubviews={true}
+                onContentSizeChange={(w, h) => (this.contentHeight = h)}
+                onLayout={(e) => (this.scrollViewHeight = e.nativeEvent.layout.height)}
 
-            style={[styles.container, this.props.style]}
-            enableEmptySections={true}
-            dataSource={dataSource}
-            renderRow={song => {
+                style={[styles.container, this.props.style]}
+                enableEmptySections={true}
+                dataSource={dataSource}
+                renderRow={song => {
+                    var active = song.id === current.id;
+                    var times = parseTimes(song.duration);
 
-                var active = song.id === current.id;
-
-                return (
-                    <TouchableOpacity style={styles.item} onLayout={e => {
-                        this.offset[song.id] = e.nativeEvent.layout;
-                    }}
-                    onPress={e => this.props.play(song)}
-                    ref="items">
-                        <View>
+                    return (
+                        <TouchableOpacity
+                            style={styles.item}
+                            onLayout={e => {
+                                this.offset[song.id] = e.nativeEvent.layout;
+                            }}
+                            onPress={e => {
+                                this.props.play({ song });
+                            }}
+                            ref="items">
                             <View>
-                                <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.title, active && styles.active]}>{song.title}</Text>
-                            </View>
-                            <View style={styles.meta}>
-                                <View style={styles.avatar}>
-                                    <Image {...{
-                                        source: {
-                                            uri: song.user.avatar_url
-                                        },
+                                <View>
+                                    <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.title, active && styles.active]}>{song.title}</Text>
+                                </View>
+                                <View style={styles.meta}>
+                                    <View style={styles.avatar}>
+                                        <Image {...{
+                                            source: {
+                                                uri: song.user.avatar_url
+                                            },
 
-                                        style: {
-                                            width: 24,
-                                            height: 24,
-                                        }
-                                    }}></Image>
+                                            style: {
+                                                width: 24,
+                                                height: 24,
+                                            }
+                                        }} />
                                     </View>
-                                <Text style={[styles.username, active && styles.active]}>{song.user.username}</Text>
 
-                                <View style={styles.right}>
-                                    <Icon name="heart" size={12} style={active && styles.active} color="rgba(255,255,255,.5)"></Icon>
-                                    <Text style={[styles.text, active && styles.active]}>{this.human(song.likes_count)}</Text>
+                                    <Text style={[styles.username, active && styles.active]}>{song.user.username}</Text>
 
-                                    <Icon name="bubble" style={active && styles.active} size={12} color="rgba(255,255,255,.5)"></Icon>
-                                    <Text style={[styles.text, active && styles.active]}>{this.human(song.comment_count)}</Text>
+                                    <View style={styles.right}>
+                                        <Text style={[styles.duration, active && styles.active]}>{times.minutes}:{times.seconds}</Text>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
-                    </TouchableOpacity>
-                );
-            }}>
-            </ListView>
+                        </TouchableOpacity>
+                    );
+                }} />
         );
     }
 }
 
-const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
 
     container: {
@@ -160,6 +151,12 @@ const styles = StyleSheet.create({
 
     title: {
         color: 'rgba(255,255,255,.7)'
+    },
+
+    duration: {
+        fontSize: 11,
+        fontWeight: '100',
+        color: 'rgba(0,0,0,.2)'
     },
 
     username: {

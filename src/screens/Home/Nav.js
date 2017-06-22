@@ -1,5 +1,6 @@
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import { inject } from 'mobx-react/native';
 import {
     ListView,
     StyleSheet,
@@ -11,15 +12,12 @@ import {
 
 import { GENRES_MAP } from '../../config';
 
+@inject(stores => ({
+    genre: stores.home.genre,
+    changeGenre: stores.home.changeGenre,
+}))
 export default class Nav extends Component {
-
-    static propTypes = {
-        genre: PropTypes.string.isRequired,
-        changeGenre: PropTypes.func.isRequired,
-    };
-
     render() {
-
         const ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1 !== r2
         });
@@ -30,40 +28,38 @@ export default class Nav extends Component {
 
                 <ListView
 
-                showsHorizontalScrollIndicator={false}
-                horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    horizontal={true}
 
-                decelerationRate={0}
-                snapToInterval={width / 2}
-                snapToAlignment='start'
+                    decelerationRate={0}
+                    snapToInterval={width / 2}
+                    snapToAlignment="start"
 
-                enableEmptySections={true}
-                dataSource={dataSource}
+                    enableEmptySections={true}
+                    dataSource={dataSource}
 
-                renderRow={genre => {
+                    renderRow={genre => {
+                        const active = genre === this.props.genre;
 
-                    const active = genre === this.props.genre;
-
-                    return (
-                        <TouchableOpacity style={{
-                            width: width / 2,
-                            alignItems: 'center',
-                            flex: 1,
-                            alignItems: 'center',
-                        }}
-                        onPress={() => this.props.changeGenre(genre)}>
-                            <Text style={[styles.genre, active && styles.genreActive]}>{genre.toUpperCase()}</Text>
-                            <View style={[styles.indicator, active && styles.indicatorActive]}></View>
-                        </TouchableOpacity>
-                    );
-                }}>
-                </ListView>
+                        return (
+                            <TouchableOpacity
+                                style={{
+                                    width: width / 2,
+                                    flex: 1,
+                                    alignItems: 'center',
+                                }}
+                                onPress={() => this.props.changeGenre(genre)}>
+                                <Text style={[styles.genre, active && styles.genreActive]}>{genre.toUpperCase()}</Text>
+                                <View style={[styles.indicator, active && styles.indicatorActive]} />
+                            </TouchableOpacity>
+                        );
+                    }} />
             </View>
         );
     }
 }
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
 
     container: {
@@ -72,6 +68,7 @@ const styles = StyleSheet.create({
         top: 0,
         height: 100,
         width,
+        backgroundColor: 'transparent',
         alignItems: 'center',
         justifyContent: 'space-around',
         flexDirection: 'row',

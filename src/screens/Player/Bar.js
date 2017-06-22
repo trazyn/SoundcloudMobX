@@ -2,16 +2,12 @@
 import React, { Component, PropTypes } from 'react';
 import {
     View,
-    Text,
-    Image,
-    TouchableHighlight,
     Dimensions,
     Animated,
     StyleSheet,
 } from 'react-native';
 
 export default class Bar extends Component {
-
     static propTypes = {
         passed: PropTypes.number.isRequired,
     };
@@ -21,7 +17,6 @@ export default class Bar extends Component {
     };
 
     componentWillReceiveProps(nextProps) {
-
         Animated.timing(this.state.passed, {
             toValue: width * nextProps.passed,
             duration: 100
@@ -29,7 +24,6 @@ export default class Bar extends Component {
     }
 
     render() {
-
         var left = this.state.passed.interpolate({
             inputRange: [0, width],
             outputRange: [0, width],
@@ -43,7 +37,7 @@ export default class Bar extends Component {
                     <Animated.View style={[styles.indicator, {
                         left
                     }]}>
-                        <View style={styles.indicatorShadow}></View>
+                        <View style={styles.indicatorShadow} />
                     </Animated.View>
                 </Animated.View>
             </View>
@@ -51,7 +45,7 @@ export default class Bar extends Component {
     }
 }
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
 
     container: {

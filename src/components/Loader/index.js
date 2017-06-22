@@ -1,7 +1,6 @@
 
 import React, { Component, PropTypes } from 'react';
 import {
-    View,
     Text,
     StyleSheet,
     Animated,
@@ -9,7 +8,6 @@ import {
 } from 'react-native';
 
 export default class Loader extends Component {
-
     static propTypes = {
         show: PropTypes.bool.isRequired,
         animate: PropTypes.bool,
@@ -28,7 +26,6 @@ export default class Loader extends Component {
     };
 
     animating() {
-
         var width = this.state.width;
 
         Animated.sequence([
@@ -41,7 +38,6 @@ export default class Loader extends Component {
                 duration: 400
             }),
         ]).start(e => {
-
             if (this.props.show && this.props.animate && e.finished) {
                 this.animating();
             } else {
@@ -63,7 +59,6 @@ export default class Loader extends Component {
     }
 
     render() {
-
         const { show, text, style4text, style4container } = this.props;
 
         if (!show) {
@@ -72,15 +67,15 @@ export default class Loader extends Component {
 
         return (
             <Animated.View style={[styles.container, style4container]}>
-                <Animated.View style={[styles.line, { width: this.state.width }]}></Animated.View>
+                <Animated.View style={[styles.line, { width: this.state.width }]} />
                 <Text style={[styles.text, style4text]}>{text}</Text>
-                <Animated.View style={[styles.line, { width: this.state.width }]}></Animated.View>
+                <Animated.View style={[styles.line, { width: this.state.width }]} />
             </Animated.View>
         );
     }
 }
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
 
     container: {

@@ -11,71 +11,48 @@ import {
     ScrollView,
     Dimensions,
     StyleSheet,
+    Share,
 } from 'react-native';
 
 import Bar from './Bar';
 import PlayList from './PlayList';
 import Controller from './Controller';
 import parseTimes from '../../utils/parseTimes';
+import humanNumber from '../../utils/humanNumber';
 
-@inject(stores => ({
-    user: stores.session.user,
-    playing: stores.player.playing,
-    playlist: stores.player.playlist,
-    song: stores.player.song,
-    toggle: stores.player.toggle,
-    start: stores.player.start,
-    next: stores.player.next,
-    prev: stores.player.prev,
-    tick: stores.player.tick,
-    mode: stores.player.mode,
-    changeMode: stores.player.changeMode,
-    setup: stores.player.setup,
-}))
+@inject(stores => {
+    var { song, playing, progress, start } = stores.player;
+
+    return {
+        song,
+        playing,
+        start,
+        progress,
+        openModal: stores.openModal,
+    };
+})
 @observer
 export default class Player extends Component {
-
     static propTypes = {
-        user: PropTypes.object,
-        playing: PropTypes.bool.isRequired,
-        playlist: PropTypes.object.isRequired,
-        song: PropTypes.object.isRequired,
-        toggle: PropTypes.func.isRequired,
-        start: PropTypes.func.isRequired,
-        next: PropTypes.func.isRequired,
-        prev: PropTypes.func.isRequired,
-        tick: PropTypes.number.isRequired,
-        mode: PropTypes.string.isRequired,
-        changeMode: PropTypes.func.isRequired,
-        setup: PropTypes.func.isRequired,
+        navigation: PropTypes.object.isRequired,
     };
 
     state = {
         index: 1,
     };
 
-    async componentDidMount() {
-
+    componentDidMount() {
         this.refs.viewport.scrollTo({
             x: width,
             animated: false
         });
-        await this.props.start();
-    }
-
-    componentWillReceiveProps(nextProps) {
-
-        if (nextProps.song.id !== this.props.song.id && this.state.index !== 0) {
-            this.refs.playList.highlight();
-        }
     }
 
     render() {
-
-        var { playing, toggle, next, prev, song, playlist, tick, mode, changeMode, user } = this.props;
+        var { navigation, song, progress } = this.props;
         var cover = song.artwork.replace(/large\./, 't500x500.');
         var times = parseTimes(song.duration);
-        var current = parseTimes(tick);
+        var current = parseTimes(song.duration * progress);
 
         return (
             <View style={styles.container}>
@@ -93,58 +70,70 @@ export default class Player extends Component {
                     }
                 }}>
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={() => this.props.navigator.pop()} style={{
+                        <TouchableOpacity onPress={() => navigation.goBack()} style={{
+                            height: 32,
+                            width: 32,
+                            justifyContent: 'center',
+                            alignItems: 'center',
                             backgroundColor: 'transparent',
                         }}>
-                            <Icon name="arrow-down" size={14} color="white"></Icon>
+                            <Icon name="arrow-down" size={14} color="white" />
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={{
-                            backgroundColor: 'transparent',
-                        }}>
-                            <Icon name="options" size={14} color="white"></Icon>
+                        <TouchableOpacity
+                            onPress={() => {
+                                this.props.openModal([{
+                                    title: 'Share',
+                                    callback: () => {
+                                        Share.share({
+                                            title: `${song.user.username} - ${song.title}`,
+                                            url: song.shareUrl,
+                                        });
+                                    }
+                                }, {
+                                    title: `${humanNumber(song.commentCount)} Comments`,
+                                    callback: () => {
+                                        navigation.navigate('Comments', {
+                                            songid: song.id,
+                                            count: song.commentCount,
+                                        });
+                                    }
+                                }]);
+                            }}
+                            style={{
+                                height: 32,
+                                width: 32,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                backgroundColor: 'transparent',
+                            }}>
+                            <Icon name="options" size={14} color="white" />
                         </TouchableOpacity>
                     </View>
 
                     <ScrollView
 
-                    ref="viewport"
+                        ref="viewport"
 
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
 
-                    onMomentumScrollEnd={e => {
+                        onMomentumScrollEnd={e => {
+                            var index = e.nativeEvent.contentOffset.x / width;
 
-                        var index = e.nativeEvent.contentOffset.x / width;
+                            this.setState({
+                                index
+                            });
+                        }}
 
-                        if (index === 1) {
-                            this.refs.playList.highlight();
-                        }
+                        decelerationRate={0}
+                        snapToInterval={width}
+                        snapToAlignment="start">
 
-                        this.setState({
-                            index
-                        });
-                    }}
-
-                    decelerationRate={0}
-                    snapToInterval={width}
-                    snapToAlignment='start'>
                         <View style={styles.viewport}>
-                            <PlayList
-                            ref="playList"
-                            list={playlist.slice()}
-                            play={async song => {
-
-                                var { setup, start } = this.props;
-
-                                setup({
-                                    song,
-                                });
-                                await start();
-                            }}
-                            current={song}>
-                            </PlayList>
+                            <PlayList current={song} />
                         </View>
+
                         <View style={styles.viewport}>
                             <Image {...{
                                 source: {
@@ -164,7 +153,7 @@ export default class Player extends Component {
                                                 width: 96,
                                                 height: 96,
                                             }
-                                        }}></Image>
+                                        }} />
                                     </View>
 
                                     <View style={{
@@ -185,28 +174,16 @@ export default class Player extends Component {
                                 </View>
                             </Image>
 
-                            <Bar {...{
-                                passed: tick / song.duration,
-                            }}></Bar>
+                            <Bar passed={progress} />
                         </View>
                     </ScrollView>
                 </Image>
 
-                <Controller
-                userid={user.id}
-                songid={song.id}
-                toggle={toggle}
-                next={next}
-                prev={prev}
-                mode={mode}
-                changeMode={changeMode}
-                fav={song.fav}
-                playing={playing}>
-                </Controller>
+                <Controller />
 
                 <View style={styles.dots}>
-                    <View style={[styles.dot, this.state.index === 0 && styles.active]}></View>
-                    <View style={[styles.dot, this.state.index === 1 && styles.active]}></View>
+                    <View style={[styles.dot, this.state.index === 0 && styles.active]} />
+                    <View style={[styles.dot, this.state.index === 1 && styles.active]} />
                 </View>
             </View>
         );
@@ -232,8 +209,8 @@ const styles = StyleSheet.create({
         left: 0,
         width,
         height: 100,
-        paddingLeft: 20,
-        paddingRight: 20,
+        paddingLeft: 10,
+        paddingRight: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',

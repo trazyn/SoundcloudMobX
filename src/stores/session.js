@@ -8,11 +8,9 @@ const axios = _axios.create({
 
     timeout: 12000,
     transformRequest: [data => {
-
         var str = [];
 
         for (let key in data) {
-
             let value = data[key];
 
             if (data.hasOwnProperty(key) && value) {
@@ -25,25 +23,19 @@ const axios = _axios.create({
 });
 
 class Session {
-
-    auth;
-    user;
+    auth = '';
+    user = {};
 
     @observable loading = false;
 
     async init() {
-
         var auth = await AsyncStorage.getItem('@Session:auth');
 
         if (auth) {
-
             self.auth = JSON.parse(auth);
-            self.getUserInfo();
 
-            if (self.auth.expires - new Date() < 10000) {
-
+            if (self.auth.expires - new Date() < 100000) {
                 try {
-
                     var response = await axios.post('https://api.soundcloud.com/oauth2/token', {
                         client_id: CLIENT_ID,
                         client_secret: SECRET,
@@ -51,24 +43,38 @@ class Session {
                         refresh_token: self.auth.refresh_token
                     });
 
-                    self.create(response.data);
-                    self.getUserInfo();
-
-                } catch(ex) {
+                    await self.create(response.data);
+                    await self.getUserInfo();
+                } catch (ex) {
                     self.auth = 0;
                 }
+            } else {
+                await self.getUserInfo();
             }
+
+            console.log(`SET AUTH: ${self.auth.access_token}`);
+            axios.defaults.headers.common['Authorization'] = `OAuth ${self.auth.access_token}`;
+
+            return self.user;
         }
     }
 
-    async getUserInfo() {
+    async logout() {
+        await AsyncStorage.removeItem('@Session:auth');
 
+        self.user = {};
+        self.auth = 0;
+        delete axios.defaults.headers.common['Authorization'];
+    }
+
+    async getUserInfo() {
         var response = await axios.get(`https://api.soundcloud.com/me?oauth_token=${self.auth.access_token}`);
         self.user = response.data;
+
+        return self.user;
     }
 
     @action async create(auth) {
-
         auth.expires = +new Date() + auth.expires_in * 1000;
 
         if (auth.access_token) {
@@ -76,24 +82,29 @@ class Session {
         }
 
         self.auth = auth;
-        self.loading = false;
 
         return auth;
     }
 
-    login(username, password) {
-
+    async login(username, password) {
         self.loading = true;
 
-        return axios.post('https://api.soundcloud.com/oauth2/token', {
+        var response = await axios.post('https://api.soundcloud.com/oauth2/token', {
             client_id: CLIENT_ID,
             client_secret: SECRET,
             grant_type: 'password',
-            username,
-            password,
-        }).then((response) => {
-            self.create(response.data);
-        }).catch(ex => console.error('Failed login to Soundcloud:', ex));
+            username: username,
+            password: password,
+        }).catch(ex => {
+            console.error('Failed login to Soundcloud:', ex);
+        });
+
+        await self.create(response.data);
+        await self.init();
+
+        self.loading = false;
+
+        return response;
     }
 
     isLogin() {

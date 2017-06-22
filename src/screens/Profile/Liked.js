@@ -1,5 +1,6 @@
 
 import React, { Component, PropTypes } from 'react';
+import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Text,
@@ -10,17 +11,32 @@ import {
 
 import FadeImage from '../../components/FadeImage';
 
-export default class Liked extends Component {
+@inject(stores => ({
+    list: stores.profile.liked,
+    getList: () => {
+        stores.profile.getLiked(stores.session.user.id);
+    },
+    isPlaying: () => {
+        var uuid4player = stores.player.playlist.uuid;
+        var uuid = stores.profile.liked.uuid;
 
+        return uuid4player
+            && uuid
+            && uuid === uuid4player;
+    },
+}))
+@observer
+export default class Liked extends Component {
     static propTypes = {
-        tracks: PropTypes.array.isRequired,
         showList: PropTypes.func.isRequired,
     };
 
+    componentWillMount() {
+        this.props.getList();
+    }
+
     covers(tracks) {
-
-        return tracks.map((track, index) => {
-
+        return tracks.slice().map((track, index) => {
             return (
                 <FadeImage key={index} {...{
                     source: {
@@ -30,14 +46,14 @@ export default class Liked extends Component {
                         height: 83.75,
                         width: 83.75,
                     }
-                }}></FadeImage>
+                }} />
             );
         });
     }
 
     render() {
-
-        var { tracks } = this.props;
+        var { list } = this.props;
+        var playing = this.props.isPlaying();
 
         return (
             <TouchableOpacity style={styles.container} onPress={this.props.showList}>
@@ -46,18 +62,18 @@ export default class Liked extends Component {
                     width: 335,
                     flexDirection: 'row',
                 }}>
-                {
-                    this.covers(tracks.slice(0, 4))
-                }
+                    {
+                        this.covers(list.slice(0, 4))
+                    }
                 </View>
                 <View style={{
                     height: 83.75,
                     width: 335,
                     flexDirection: 'row',
                 }}>
-                {
-                    this.covers(tracks.slice(4, 8))
-                }
+                    {
+                        this.covers(list.slice(4, 8))
+                    }
                 </View>
 
                 <View style={{
@@ -70,11 +86,11 @@ export default class Liked extends Component {
                     justifyContent: 'center',
                 }}>
                     <View style={styles.overlay}>
-                        <Text style={{
+                        <Text style={[{
                             color: '#fff',
                             fontSize: 18,
                             fontWeight: '100',
-                        }}>LIKED SONGS</Text>
+                        }, playing && styles.playing]}>LIKED SONGS</Text>
 
                         <View style={{
                             marginTop: 40,
@@ -82,11 +98,11 @@ export default class Liked extends Component {
                             alignItems: 'center',
                             justifyContent: 'center',
                         }}>
-                            <View style={styles.line}></View>
-                                <Text style={styles.count}>{
-                                    tracks.length > 99 ? '99+' : tracks.length
-                                } Songs In Collection</Text>
-                            <View style={styles.line}></View>
+                            <View style={[styles.line, playing && { backgroundColor: '#f50' }]} />
+                            <Text style={[styles.count, playing && styles.playing]}>
+                                { list.length > 99 ? '99+' : list.length } Songs In Collection
+                            </Text>
+                            <View style={[styles.line, playing && { backgroundColor: '#f50' }]} />
                         </View>
                     </View>
                 </View>
@@ -95,7 +111,7 @@ export default class Liked extends Component {
     }
 }
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         marginTop: 40,
@@ -127,5 +143,9 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '100',
         color: '#fff',
+    },
+
+    playing: {
+        color: '#f50',
     },
 });

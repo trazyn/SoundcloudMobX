@@ -1,65 +1,77 @@
 
 import { observable, action } from 'mobx';
-import Sound from 'react-native-sound';
+import { ReactNativeAudioStreaming } from 'react-native-audio-streaming';
 import axios from 'axios';
-import { AsyncStorage } from 'react-native';
 import { CLIENT_ID, PLAYER_MODE } from '../config';
+import { AsyncStorage, DeviceEventEmitter } from 'react-native';
 
 class Player {
-
-    @observable playing = false;
     @observable song = {};
-    @observable playlist = {};
-    @observable tick = 500;
+    @observable playlist = [];
+    @observable progress = 0;
     @observable mode = PLAYER_MODE[0];
+    @observable playing = false;
+    @observable paused = false;
 
-    paused = false;
-    quene = [];
-    whoosh;
-    timer;
+    history = [];
 
     async stop() {
-
-        var { whoosh, timer } = self;
-
-        clearTimeout(timer);
-
-        if (self.whoosh) {
-            self.whoosh.stop();
-            self.whoosh.release();
-        }
-
-        self.tick = 0;
+        self.paused = false;
         self.playing = false;
+        self.progress = 0;
+        ReactNativeAudioStreaming.pause();
     }
 
-
     @action toggle() {
-        var playing = self.playing = !self.playing;
-
-        if (playing) {
-            self.whoosh.play();
+        if (self.paused) {
+            ReactNativeAudioStreaming.resume();
         } else {
-            self.whoosh.pause();
+            ReactNativeAudioStreaming.pause();
         }
 
         self.paused = !self.paused;
     }
 
-    @action async start() {
+    @action updatePlaylist(playlist) {
+        self.playlist.clear();
+        self.playlist.push(...playlist.slice());
+    }
 
-        if (self.playing) {
-            return;
+    @action async start({ song, playlist = self.playlist, needTrack = true }) {
+        var prev = self.song;
+
+        /** Keep playlist always reaction */
+        self.song = song;
+
+        if (prev.id === song.id
+            && self.playlist.uuid === playlist.uuid) {
+            if (self.paused) {
+                self.toggle();
+            }
+
+            if (self.playing) {
+                return;
+            }
         }
 
-        if (self.paused) {
-            return self.toggle();
+        if (prev.id !== song.id) {
+            self.stop();
         }
 
-        self.playing = true;
+        if (self.playlist.uuid !== playlist.uuid) {
+            self.history = [];
+            self.playlist.clear();
+            self.playlist.uuid = playlist.uuid;
+            self.playlist.push(...playlist.slice());
+        } else if (self.playlist.length !== playlist.length) {
+            self.playlist.clear();
+            self.playlist.push(...playlist.slice());
+        }
+
+        needTrack && self.history.push(song);
+
         self.paused = false;
 
-        var song = self.song;
         var response = axios.get(song.uri + '/streams', {
             params: {
                 client_id: CLIENT_ID,
@@ -67,64 +79,12 @@ class Player {
         }).catch(ex => {
             self.next();
         });
-        var fromUrl = (await response).data.http_mp3_128_url;
+        var streamurl = (await response).data.http_mp3_128_url;
 
-        self.whoosh = new Sound(fromUrl, '', async err => {
-
-            var whoosh = self.whoosh;
-
-            if (err) {
-                self.next();
-            } else {
-
-                var tick = 0;
-                clearTimeout(self.timer);
-                self.timer = setTimeout(function playing() {
-                    whoosh.getCurrentTime(seconds => {
-                        tick = seconds * 1000;
-
-                        /** Sometimes the play callback is not invoked by 'react-native-sound', we need check current time */
-                        if (seconds === 0) {
-                            return self.next();
-                        }
-                    });
-                    self.tick = tick;
-                    self.timer = setTimeout(playing, 500);
-                }, 500);
-
-                whoosh.play(success => {
-
-                    if (success) {
-                        self.next();
-                    } else {
-                        self.stop();
-                    }
-                });
-            }
-        });
-    }
-
-    @action setup(data, needTrack = true) {
-
-        var { song, playlist } = data;
-
-        if (playlist) {
-            self.quene = [];
-            self.playlist = playlist;
-        }
-
-        if (song && song.id !== self.song.id) {
-            self.song = song;
-            self.stop();
-
-            if (needTrack) {
-                self.quene.push(song);
-            }
-        }
+        ReactNativeAudioStreaming.play(streamurl, { showIniOSMediaCenter: true });
     }
 
     @action async changeMode() {
-
         var index = PLAYER_MODE.indexOf(self.mode);
 
         if (index === -1 || index === PLAYER_MODE.length - 1) {
@@ -137,13 +97,11 @@ class Player {
     }
 
     @action next() {
-
         var playlist = self.playlist;
         var index = playlist.findIndex(e => e.id === self.song.id);
         var song;
 
         if (self.mode === PLAYER_MODE[0]) {
-
             if (index === playlist.length - 1) {
                 song = playlist[0];
             } else {
@@ -159,26 +117,21 @@ class Player {
             song = playlist[Math.floor(Math.random() * shuffle.length)];
         }
 
-        self.setup({ song });
-        self.start();
+        self.stop();
+        self.start({ song });
     }
 
     @action prev() {
-
-        var song = self.quene[self.quene.length - 2];
+        var song = self.history[self.history.length - 2];
 
         if (!song) {
-            song = self.quene[0];
+            song = self.history[0];
         } else {
-            self.quene.pop();
+            self.history.pop();
         }
 
-        self.setup({ song }, false);
-        self.start();
-    }
-
-    @action appendPlaylist(songs) {
-        self.playlist.push(...songs);
+        self.stop();
+        self.start({ song, needTrack: false });
     }
 
     @action async init() {
@@ -187,6 +140,28 @@ class Player {
         if (PLAYER_MODE.includes(mode)) {
             self.mode = mode;
         }
+
+        DeviceEventEmitter.addListener('AudioBridgeEvent', e => {
+            var { status, duration, progress } = e;
+
+            if (status === 'ERROR') {
+                throw e;
+            }
+
+            self.playing = ['PLAYING', 'BUFFERING', 'PAUSED', 'STREAMING'].includes(status);
+
+            if (['BUFFERING', 'STOPPED'].includes(status)) {
+                self.progress = 0;
+            }
+
+            if (status === 'STOPPED' && self.playing === false) {
+                return self.next();
+            }
+
+            if (status === 'STREAMING') {
+                return (self.progress = progress / duration);
+            }
+        });
     }
 }
 

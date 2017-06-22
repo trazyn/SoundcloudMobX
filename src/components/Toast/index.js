@@ -1,19 +1,15 @@
 
 import React, { Component, PropTypes } from 'react';
-import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import {
-    View,
     Text,
     Animated,
     StatusBar,
     TouchableOpacity,
     Dimensions,
-    InteractionManager,
     StyleSheet,
 } from 'react-native';
 
 export default class Toast extends Component {
-
     static propTypes = {
         show: PropTypes.bool.isRequired,
         close: PropTypes.func.isRequired,
@@ -22,7 +18,7 @@ export default class Toast extends Component {
     };
 
     static defaultProps = {
-        color: '#000',
+        color: 'rgba(0,0,0,.75)',
     };
 
     state = {
@@ -30,30 +26,28 @@ export default class Toast extends Component {
     };
 
     componentWillReceiveProps(nextProps) {
-        StatusBar.setHidden(!!nextProps.show, true);
-
         if (nextProps.show) {
+            StatusBar.setHidden(true, true);
 
-            InteractionManager.runAfterInteractions(() => {
-                Animated.timing(this.state.height, {
-                    toValue: 40,
-                    duration: 200,
-                    delay: 200,
-                }).start();
-            });
+            Animated.timing(this.state.height, {
+                toValue: 60,
+                duration: 200,
+                delay: 200,
+            }).start();
         } else {
             Animated.timing(this.state.height, {
                 toValue: 0,
-                duration: 150,
-            }).start();
+                duration: 300,
+            }).start(() => {
+                StatusBar.setHidden(false, true);
+            });
         }
     }
 
     render() {
-
         var height = this.state.height;
         var opacity = height.interpolate({
-            inputRange: [0, 40],
+            inputRange: [0, 60],
             outputRange: [0, 1]
         });
 
@@ -73,7 +67,7 @@ export default class Toast extends Component {
     }
 }
 
-const { height, width } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
 
     container: {
@@ -87,21 +81,21 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: '#fff',
-        shadowColor: "#000000",
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
+        shadowColor: '#000',
+        shadowOpacity: 0.4,
+        shadowRadius: 8,
         zIndex: 99,
     },
 
     message: {
+        fontFamily: 'HelveticaNeue-Light',
         marginLeft: 5,
-        fontSize: 12,
-        fontWeight: '100',
+        width: width - 60,
+        fontSize: 13,
     },
 
     done: {
-        fontSize: 12,
-        fontWeight: '100',
+        fontFamily: 'HelveticaNeue-Light',
         color: '#ff4081'
     },
 });

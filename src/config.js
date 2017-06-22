@@ -1,8 +1,8 @@
 
-export const CLIENT_ID = 'BBgtXkQTDWKAu0R0DbI2qXrhE5xjg9n4';
-export const SECRET = 'TDnKAMed2vo2RomIthpq9CR2GP096eMw';
+const CLIENT_ID = 'BBgtXkQTDWKAu0R0DbI2qXrhE5xjg9n4';
+const SECRET = 'TDnKAMed2vo2RomIthpq9CR2GP096eMw';
 
-export const GENRES_MAP = [
+const GENRES_MAP = [
     'house',
     'chill',
     'deep',
@@ -13,13 +13,13 @@ export const GENRES_MAP = [
     'tropical',
 ];
 
-export const TAG_MAP = [
+const TAG_MAP = [
     'house',
     'trance',
     'dubstep',
 ];
 
-export const CHART_GENRES_MAP = [{
+const CHART_GENRES_MAP = [{
     name: 'Alternative Rock',
     key: 'alternativerock',
 }, {
@@ -111,12 +111,19 @@ export const CHART_GENRES_MAP = [{
     key: 'world'
 }];
 
-export const PLAYER_MODE = [
+const PLAYER_MODE = [
     'LOOP',
     'SHUFF',
 ];
 
-export const IMAGE_SIZES = {
+const IMAGE_SIZES = {
     LARGE: 't300x300',
     XLARGE: 't500x500',
 };
+
+/** Debug network in chrome devtools network tab */
+GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
+
+console.ignoredYellowBox = ['Warning: ReactNative.createElement', 'Possible Unhandlerd Promise ', 'Remote debugger', 'View '];
+
+export { CLIENT_ID, SECRET, GENRES_MAP, TAG_MAP, CHART_GENRES_MAP, PLAYER_MODE, IMAGE_SIZES };

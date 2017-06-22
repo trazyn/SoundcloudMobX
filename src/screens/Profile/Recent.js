@@ -1,23 +1,91 @@
 
 import React, { Component, PropTypes } from 'react';
+import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Text,
     TouchableOpacity,
     Dimensions,
+    Image,
     StyleSheet,
 } from 'react-native';
 
 import FadeImage from '../../components/FadeImage';
 
-export default class Recent extends Component {
+@inject(stores => ({
+    list: stores.profile.recent.slice(0, 3),
+    getList: stores.profile.getRecent,
+    isPlaying: () => {
+        var uuid4player = stores.player.playlist.uuid;
+        var uuid = stores.profile.recent.uuid;
 
+        return uuid4player
+            && uuid
+            && uuid === uuid4player;
+    },
+}))
+@observer
+export default class Recent extends Component {
     static propTypes = {
-        tracks: PropTypes.array.isRequired,
         showList: PropTypes.func.isRequired,
     };
 
+    componentWillMount() {
+        this.props.getList();
+    }
+
+    renderList(list) {
+        return list.map((track, index) => {
+            return (
+                <View key={index} style={styles.item}>
+                    <View>
+                        <FadeImage {...{
+                            source: {
+                                uri: track.artwork,
+                            },
+
+                            showLoading: true,
+
+                            style: {
+                                height: 100,
+                                width: 100,
+                                shadowOpacity: 0.3,
+                                shadowRadius: 12,
+                            }
+                        }} />
+                    </View>
+                </View>
+            );
+        });
+    }
+
+    renderEmpty() {
+        return new Array(3).fill('../../images/loading.gif').map((e, index) => {
+            return (
+                <View key={index} style={{
+                    height: 100,
+                    width: 100,
+                    backgroundColor: '#fff',
+                    shadowOpacity: 0.3,
+                    shadowRadius: 12,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}>
+                    <Image key={index} {...{
+                        source: require('../../images/loading.gif'),
+                        style: {
+                            height: 12,
+                            width: 12,
+                            zIndex: 1,
+                        },
+                    }} />
+                </View>
+            );
+        });
+    }
+
     render() {
+        var list = this.props.list;
 
         return (
             <View style={styles.container}>
@@ -27,31 +95,9 @@ export default class Recent extends Component {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                 }}>
-                {
-                    this.props.tracks.map((track, index) => {
-
-                        return (
-                            <View key={index} style={styles.item}>
-                                <View>
-                                    <FadeImage {...{
-                                        source: {
-                                            uri: track.artwork,
-                                        },
-
-                                        showLoading: true,
-
-                                        style: {
-                                            height: 100,
-                                            width: 100,
-                                            shadowOpacity: 0.3,
-                                            shadowRadius: 12,
-                                        }
-                                    }}></FadeImage>
-                                </View>
-                            </View>
-                        );
-                    })
-                }
+                    {
+                        list.length ? this.renderList(list) : this.renderEmpty()
+                    }
                 </View>
 
                 <View style={{
@@ -65,11 +111,11 @@ export default class Recent extends Component {
                         justifyContent: 'center',
                         borderRadius: 28,
                     }}>
-                        <Text style={{
+                        <Text style={[{
                             color: '#fff',
                             fontSize: 12,
                             fontWeight: '100',
-                        }}>Hear the tracks you’ve played</Text>
+                        }, this.props.isPlaying() && { color: '#f50' }]}>Hear the tracks you’ve played</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -77,7 +123,7 @@ export default class Recent extends Component {
     }
 }
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         width,

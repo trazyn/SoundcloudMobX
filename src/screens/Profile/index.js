@@ -1,20 +1,19 @@
 
 import React, { Component, PropTypes } from 'react';
-import { inject, observer } from 'mobx-react/native';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
+import { inject, observer } from 'mobx-react/native';
 import {
     View,
     Text,
     ListView,
-    ScrollView,
     TouchableOpacity,
     StyleSheet,
     StatusBar,
     Dimensions,
+    Linking,
 } from 'react-native';
 
 import FadeImage from '../../components/FadeImage';
-import Loader from '../../components/Loader';
 import Followers from './Followers';
 import Recent from './Recent';
 import Liked from './Liked';
@@ -22,61 +21,35 @@ import Suggestion from './Suggestion';
 
 @inject(stores => ({
     user: stores.session.user,
-    followers: stores.profile.followers,
-    getFollowers: stores.profile.getFollowers,
-    recent: stores.profile.recent,
-    getRecent: stores.profile.getRecent,
-    loadMoreRecent: stores.profile.loadMoreRecent,
-    likes: stores.profile.likes,
-    getLikes: stores.profile.getLikes,
-    loadMoreLikes: stores.profile.loadMoreLikes,
-    suggestions: stores.profile.suggestions,
-    getSuggestion: stores.profile.getSuggestion,
-    loadMoreSuggestion: stores.profile.loadMoreSuggestion,
-    showLoadMoreSuggestion: stores.profile.showLoadMoreSuggestion,
-
-    setup: stores.list.setup,
-    setRoute: stores.route.setRoute.bind(stores.route),
+    loading: stores.profile.loading4suggestion,
+    list: stores.profile.suggestions.slice(),
+    getList: stores.profile.getSuggestion,
+    loadMore: stores.profile.loadMoreSuggestion,
+    play: stores.player.start,
+    openModal: stores.openModal,
+    openHomePage: () => {
+        Linking.openURL(stores.session.user.permalink_url);
+    },
+    logout: stores.session.logout,
 }))
 @observer
 export default class Profile extends Component {
-
     static propTypes = {
-        user: PropTypes.object,
-        followers: PropTypes.object.isRequired,
-        getFollowers: PropTypes.func.isRequired,
-        recent: PropTypes.object.isRequired,
-        getRecent: PropTypes.func.isRequired,
-        loadMoreRecent: PropTypes.func.isRequired,
-        likes: PropTypes.object.isRequired,
-        getLikes: PropTypes.func.isRequired,
-        loadMoreLikes: PropTypes.func.isRequired,
-        suggestions: PropTypes.object.isRequired,
-        getSuggestion: PropTypes.func.isRequired,
-        loadMoreSuggestion: PropTypes.func.isRequired,
-        showLoadMoreSuggestion: PropTypes.bool.isRequired,
-
-        setRoute: PropTypes.func.isRequired,
+        navigation: PropTypes.object.isRequired,
     };
 
-    async componentWillMount() {
-
-        this.props.getRecent();
-        this.props.getFollowers(this.props.user.id);
-        this.props.getLikes(this.props.user.id);
-        this.props.getSuggestion();
+    componentWillMount() {
+        this.props.getList();
     }
 
     componentWillReceiveProps(nextProps) {
-        StatusBar.setNetworkActivityIndicatorVisible(nextProps.showLoadMoreSuggestion);
+        StatusBar.setNetworkActivityIndicatorVisible(nextProps.loading);
     }
 
     renderHeader() {
-
-        var { user, followers, recent, likes } = this.props;
+        var { user } = this.props;
 
         return (
-
             <View style={{
                 flex: 1,
             }}>
@@ -93,7 +66,7 @@ export default class Profile extends Component {
                         width,
                         height: 210,
                         backgroundColor: 'rgba(0,0,0,.4)',
-                    }}></View>
+                    }} />
 
                     <View style={{
                         justifyContent: 'space-between',
@@ -108,7 +81,7 @@ export default class Profile extends Component {
                                     height: 100,
                                     width: 100,
                                 }
-                            }}></FadeImage>
+                            }} />
                         </View>
 
                         <View style={{
@@ -120,123 +93,92 @@ export default class Profile extends Component {
                                 <Text style={styles.desc} numberOfLines={1} ellipsizeMode="tail">{user.description}</Text>
                             </View>
 
-                            <Followers users={followers.slice()} count={user.followers_count}></Followers>
+                            <Followers />
                         </View>
                     </View>
 
-                    <TouchableOpacity style={{
-                        height: 24,
-                        width: 24,
-                        flexDirection: 'row',
-                        justifyContent: 'flex-end',
-                    }}>
+                    <TouchableOpacity
+                        style={{
+                            height: 24,
+                            width: 24,
+                            flexDirection: 'row',
+                            justifyContent: 'flex-end',
+                        }}
+                        onPress={() => {
+                            this.props.openModal([{
+                                title: 'Logout',
+                                callback: () => {
+                                    this.props.logout();
+                                    this.props.navigation.navigate('Home');
+                                },
+                            }, {
+                                title: 'View Home Page',
+                                callback: this.props.openHomePage,
+                            }]);
+                        }}>
                         <Icon name="options-vertical" size={18} color="white" style={{
                             backgroundColor: 'transparent',
-                        }}></Icon>
+                        }} />
                     </TouchableOpacity>
                 </FadeImage>
 
-                <Recent tracks={recent.slice(0, 3)} showList={e => {
-
-                    var { getRecent, loadMoreRecent } = this.props;
-
-                    this.props.setup({
-                        data: recent,
-                        title: 'RECENTLY PLAYED',
-                        actions: {
-                            refresh: getRecent,
-                            loadmore: loadMoreRecent,
-                        }
-                    });
-                    this.props.setRoute({
-                        name: 'List',
-                    });
-                }}></Recent>
-                <Liked tracks={likes.slice()} showList={e => {
-
-                    var { getLikes, user, loadMoreLikes } = this.props;
-
-                    this.props.setup({
-                        data: likes,
-                        title: 'YOU\'VE LIKED',
-                        actions: {
-                            refresh: () => this.props.getLikes(user.id),
-                            loadmore: this.props.loadMoreLikes,
-                        }
-                    });
-                    this.props.setRoute({
-                        name: 'List',
-                    });
-                }}></Liked>
+                <Recent showList={e => this.props.navigation.navigate('RecentPlaylist')} />
+                <Liked showList={e => this.props.navigation.navigate('LikedPlaylist')} />
             </View>
         );
     }
 
     render() {
-        var { user, recent, suggestions } = this.props;
+        var { list } = this.props;
         var ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1.seed_sound.id !== r2.seed_sound.id
         });
-        var dataSource = ds.cloneWithRows(suggestions.slice());
+        var dataSource = ds.cloneWithRows(list);
 
         return (
-            (user && recent.length) ? (
-                <ListView
-
-                renderHeader={this.renderHeader.bind(this)}
+            <ListView
+                renderHeader={() => this.renderHeader()}
 
                 initialListSize={1}
                 onEndReachedThreshold={1}
                 pageSize={1}
                 onEndReached={() => {
-                    suggestions.length && this.props.loadMoreSuggestion();
+                    list.length && this.props.loadMore();
                 }}
 
                 enableEmptySections={true}
                 dataSource={dataSource}
                 renderRow={(collection, sectionId, rowId) => {
+                    var seed = collection.seed_sound;
+                    var tracks = collection.recommended;
 
                     return (
                         <View style={styles.suggestions}>
-                            <Suggestion seed={collection.seed_sound} tracks={collection.recommended.slice()}></Suggestion>
+                            <Suggestion {...{
+                                play: (song) => {
+                                    tracks.uuid = seed.id;
+                                    this.props.play({
+                                        song,
+                                        playlist: tracks,
+                                    });
+                                    this.props.navigation.navigate('Player');
+                                },
+                                seed,
+                                tracks: tracks.slice(),
+                            }} />
                         </View>
                     );
                 }}
-                style={styles.container}>
-                </ListView>
-            ) : (
-                <View style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width,
-                    height: height - 150,
-                    backgroundColor: 'rgba(255,255,255,.9)',
-                    zIndex: 99
-                }}>
-                    <Loader {...{
-                        show: true,
-                        animate: true,
-                        text: 'LOADING',
-                        style4container: {
-                            top: 340,
-                            width,
-                            transform: [{
-                                rotate: '0deg'
-                            }]
-                        }
-                    }}></Loader>
-                </View>
-            )
+                style={styles.container} />
         );
     }
 }
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        shadowColor: "#000",
+        shadowColor: '#000',
         shadowOpacity: 0.3,
         shadowRadius: 12,
         shadowOffset: {
@@ -266,6 +208,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '100',
         color: '#fff',
+        backgroundColor: 'transparent',
     },
 
     desc: {
@@ -273,6 +216,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '100',
         color: '#fff',
+        backgroundColor: 'transparent',
     },
 
     suggestions: {

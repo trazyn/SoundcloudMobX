@@ -1,22 +1,22 @@
 
-import route from './route';
 import player from './player';
 import home from './home';
-import discover from './discover';
-import chart from './chart';
+import charts from './charts';
+import category from './category';
 import session from './session';
 import toast from './toast';
+import modal from './modal';
 import profile from './profile';
-import list from './list';
+import comments from './comments';
 
 export default {
-    route,
     home,
     player,
-    discover,
-    chart,
+    charts,
+    category,
     session,
     toast,
+    modal,
     profile,
-    list,
+    comments,
 };

@@ -1,35 +1,30 @@
 
 import { observable, action } from 'mobx';
 import axios from 'axios';
+import uuid from 'uuid';
 import { CLIENT_ID, GENRES_MAP, TAG_MAP } from '../config';
 import songsFilter from '../utils/songsFilter';
 
 class PlayList {
-
     @observable genre = GENRES_MAP[0];
-    @observable songs = [];
+    @observable playlist = [];
     @observable loading = true;
-    @observable showRefresh = false;
-    @observable showLoadmore = false;
+    @observable loading4refresh = false;
+    @observable loading4loadmore = false;
 
     nextHref = '';
 
     filter(data) {
-
-        var genre = self.genre;
-
         this.nextHref = data['next_href'];
 
         return songsFilter(data.collection);
     }
 
     request() {
-
         var url = this.nextHref || `https://api.soundcloud.com/tracks?linked_partitioning=1&client_id=${CLIENT_ID}&limit=50`;
         var genre = self.genre;
 
         if (GENRES_MAP.includes(genre)) {
-
             if (TAG_MAP.indexOf(genre) === -1) {
                 genre = `${genre} house`;
             }
@@ -42,58 +37,56 @@ class PlayList {
         return url;
     }
 
-    @action async getSongs(genre = self.genre) {
-
+    @action async getPlaylist(genre = self.genre) {
         self.loading = true;
         self.nextHref = '';
 
         var response = await axios.get(self.request());
-        var songs = self.filter(response.data, genre);
+        var playlist = self.filter(response.data, genre);
 
         self.loading = false;
-        self.songs.clear();
-        self.songs.push(...songs);
+        self.playlist.uuid = uuid.v4();
+        self.playlist.clear();
+        self.playlist.push(...playlist);
     }
 
     @action changeGenre(genre) {
-
         if (!self.loading) {
-            self.songs.clear();
+            self.playlist.clear();
             self.genre = genre;
-            self.getSongs(genre);
+            self.getPlaylist(genre);
         }
     }
 
-    @action async doRefresh()  {
-
-        if (self.showRefresh) {
+    @action async doRefresh() {
+        if (self.loading4refresh) {
             return;
         }
 
-        self.showRefresh = true;
+        self.loading4refresh = true;
         self.nextHref = '';
 
         var response = await axios.get(self.request());
-        var songs = self.filter(response.data);
+        var playlist = self.filter(response.data);
 
-        self.showRefresh = false;
-        self.songs.clear();
-        self.songs.push(...songs);
+        self.playlist.uuid = uuid.v4();
+        self.playlist.clear();
+        self.playlist.push(...playlist);
+        self.loading4refresh = false;
     }
 
     @action async doLoadmore() {
-
-        if (self.showLoadmore) {
+        if (self.loading4loadmore) {
             return;
         }
 
-        self.showLoadmore = true;
+        self.loading4loadmore = true;
 
         var response = await axios.get(self.request());
-        var songs = self.filter(response.data);
+        var playlist = self.filter(response.data);
 
-        self.showLoadmore = false;
-        self.songs.push(...songs);
+        self.playlist.push(...playlist);
+        self.loading4loadmore = false;
     }
 }
 
