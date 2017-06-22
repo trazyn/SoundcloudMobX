@@ -4,6 +4,7 @@ import android.app.Application;
 import android.util.Log;
 
 import com.facebook.react.ReactApplication;
+import com.cboy.rn.splashscreen.SplashScreenReactPackage;
 import cl.json.RNSharePackage;
 import com.remobile.splashscreen.RCTSplashScreenPackage;
 import com.cmcewen.blurview.BlurViewPackage;
@@ -34,6 +35,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new SplashScreenReactPackage(),
             new RNSharePackage(),
             new RCTSplashScreenPackage(),
             new BlurViewPackage(),

@@ -111,6 +111,7 @@ export default class Login extends Component {
                         <TextInput
                             style={styles.input}
                             autoCapitalize="none"
+                            keyboardType="email-address"
                             autoCorrect={false}
                             maxLength={40}
                             placeholderTextColor="rgba(0,0,0,.45)"

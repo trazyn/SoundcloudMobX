@@ -151,7 +151,7 @@ const Sketch = StackNavigator({
 
 @observer
 export default class App extends Component {
-    async componentWillMount() {
+    async componentDidMount() {
         await stores.session.init();
         await stores.player.init();
     }
