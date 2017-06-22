@@ -1,6 +1,6 @@
 # SoundcloudMboX App
 
-
+[![Build Status](https://travis-ci.org/trazyn/SoundcloudMboX.svg?branch=master)](https://travis-ci.org/trazyn/SoundcloudMboX)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)](https://github.com/trazyn/SoundcloudMboX/pulls)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
