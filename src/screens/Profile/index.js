@@ -147,7 +147,6 @@ export default class Profile extends Component {
                     list.length && this.props.loadMore();
                 }}
 
-                scrollEventThrottle={16}
                 onScroll={(e) => {
                     var currentOffset = e.nativeEvent.contentOffset.y;
                     var direction = currentOffset - this.offset;
@@ -157,7 +156,7 @@ export default class Profile extends Component {
                     if (currentOffset <= 0) {
                         StatusBar.setHidden(false, true);
                     } else {
-                        StatusBar.setHidden(direction >= 0, true);
+                        direction !== 0 && StatusBar.setHidden(direction > 0, true);
                     }
                 }}
 
