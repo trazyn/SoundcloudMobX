@@ -147,6 +147,20 @@ export default class Profile extends Component {
                     list.length && this.props.loadMore();
                 }}
 
+                scrollEventThrottle={16}
+                onScroll={(e) => {
+                    var currentOffset = e.nativeEvent.contentOffset.y;
+                    var direction = currentOffset - this.offset;
+
+                    this.offset = currentOffset;
+
+                    if (currentOffset <= 0) {
+                        StatusBar.setHidden(false, true);
+                    } else {
+                        StatusBar.setHidden(direction >= 0, true);
+                    }
+                }}
+
                 enableEmptySections={true}
                 dataSource={dataSource}
                 renderRow={(collection, sectionId, rowId) => {
