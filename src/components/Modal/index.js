@@ -75,8 +75,8 @@ export default class Modal extends Component {
                 <Animated.View style={[styles.options, {
                     transform: [{
                         translateY: this.state.translateY,
-                        opacity,
-                    }]
+                    }],
+                    opacity,
                 }]}>
 
                     {

@@ -48,10 +48,9 @@ class Session {
                 } catch (ex) {
                     self.auth = 0;
                 }
-            } else {
-                await self.getUserInfo();
             }
 
+            await self.getUserInfo();
             console.log(`SET AUTH: ${self.auth.access_token}`);
             axios.defaults.headers.common['Authorization'] = `OAuth ${self.auth.access_token}`;
 

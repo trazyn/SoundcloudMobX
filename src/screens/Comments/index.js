@@ -101,8 +101,6 @@ export default class Comments extends Component {
                         var user = comment.user;
                         var index = list.indexOf(comment);
 
-                        console.log(user.avatar_url);
-
                         return (
                             <View>
                                 <View style={styles.comment}>
