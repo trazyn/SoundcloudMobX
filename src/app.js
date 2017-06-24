@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { Provider, observer } from 'mobx-react/native';
 import { View } from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 import {
     StackNavigator,
     TabRouter,
@@ -154,6 +155,8 @@ export default class App extends Component {
     async componentDidMount() {
         await stores.session.init();
         await stores.player.init();
+
+        SplashScreen.hide();
     }
 
     render() {

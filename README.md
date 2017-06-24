@@ -29,6 +29,5 @@ It's built with React-Native, MobX, React-Navigation.
 
 ## Todos
 
-- [ ] Splash screen
+- [x] Splash screen
 - [ ] Player seeking
-- [ ] Fix bugs
