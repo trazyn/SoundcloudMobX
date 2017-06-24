@@ -12,6 +12,7 @@
     "mobx": "^3.1.16",
     "mobx-react": "^4.0.3",
     "moment": "^2.18.1",
+    "prop-types": "^15.5.10",
     "react": "16.0.0-alpha.12",
     "react-native": "0.45.1",
     "react-native-audio-streaming": "^2.3.2",

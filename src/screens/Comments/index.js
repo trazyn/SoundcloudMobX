@@ -1,5 +1,6 @@
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react/native';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import moment from 'moment';

@@ -156,8 +156,6 @@ export default class App extends Component {
         await stores.session.init();
         await stores.player.init();
 
-        console.log(stores.session.user);
-
         SplashScreen.hide();
     }
 

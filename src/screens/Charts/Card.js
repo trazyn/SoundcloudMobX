@@ -1,5 +1,6 @@
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import MKIcon from 'react-native-vector-icons/MaterialIcons';
 import { inject, observer } from 'mobx-react/native';
 import {
