@@ -1,12 +1,26 @@
 {
   "name": "SoundcloudMboX",
+  "description": "SoundcloudMobX is the Soundcloud for iOS, Build with React-Native and MobX.",
   "version": "0.0.1",
-  "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "lint": "node node_modules/.bin/eslint .",
     "dev": "react-native run-ios"
   },
+  "keywords": [
+    "react-native",
+    "react",
+    "mobx",
+    "music-player",
+    "ios-app",
+    "soundcloud"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trazyn/SoundcloudMboX.git"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/trazyn/SoundcloudMboX",
   "dependencies": {
     "axios": "^0.16.2",
     "mobx": "^3.1.16",
